@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python3 on singleye</title>
+    <link>/tags/python3/</link>
+    <description>singleye (Python3)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 26 Feb 2018 23:30:06 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/python3/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>python2 和 python3 的一些区别</title>
+      <link>/2018/02/python2-%E5%92%8C-python3-%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Mon, 26 Feb 2018 23:30:06 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/02/python2-%E5%92%8C-python3-%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8C%BA%E5%88%AB/</guid>
+      <description>&lt;h1 id=&#34;python2与python3的区别&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#python2%e4%b8%8epython3%e7%9a%84%e5%8c%ba%e5%88%ab&#34;&gt;
+        ##
+    &lt;/a&gt;
+    python2与python3的区别
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;区别点&lt;/th&gt;
+&lt;th&gt;python2&lt;/th&gt;
+&lt;th&gt;python3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;write()&lt;/td&gt;
+&lt;td&gt;可以直接写utf8内容&lt;/td&gt;
+&lt;td&gt;写utf8内容碰到：TypeError: write() argument must be str, not bytes&lt;/br&gt;解决方法：open(file, &amp;lsquo;wb&amp;rsquo;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;super()&lt;/td&gt;
+&lt;td&gt;super(CLASS_NAME, self).method()&lt;/td&gt;
+&lt;td&gt;super().method()&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;/&lt;/td&gt;
+&lt;td&gt;除法运算，结果取整数&lt;/td&gt;
+&lt;td&gt;除法运算，结果为浮点数，取证书使用“//”&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;dict&lt;/td&gt;
+&lt;td&gt;has_key()可以用来查询是否存在某个键&lt;/td&gt;
+&lt;td&gt;has_key()方法不存了，使用&amp;rsquo;key in dictionary&amp;rsquo;来查询(python2也支持该方法)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;python3的新特性&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#python3%e7%9a%84%e6%96%b0%e7%89%b9%e6%80%a7&#34;&gt;
+        ##
+    &lt;/a&gt;
+    python3的新特性
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;新特性&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;th&gt;参考&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;@&lt;/td&gt;
+&lt;td&gt;矩阵乘法运算符，目前还没有定义built-in的矩阵数据类型&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://www.python.org/dev/peps/pep-0465&#34;&gt;PEP 465 - A dedicated infix operator for matrix multiplication&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;/&lt;/td&gt;
+&lt;td&gt;除法运算，结果浮点数&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;//&lt;/td&gt;
+&lt;td&gt;除法运算，结果取整数&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

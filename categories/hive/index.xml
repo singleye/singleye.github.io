@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hive on singleye</title>
+    <link>/categories/hive/</link>
+    <description>singleye (Hive)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 11 Jan 2018 22:25:07 +0800</lastBuildDate>
+    
+    <atom:link href="/categories/hive/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hive Intro</title>
+      <link>/2018/01/hive-intro/</link>
+      <pubDate>Thu, 11 Jan 2018 22:25:07 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/01/hive-intro/</guid>
+      <description>&lt;h1 id=&#34;reference&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#reference&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Reference
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h1 id=&#34;-hive-documenthttpscwikiapacheorgconfluencedisplayhivehome&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#-hive-documenthttpscwikiapacheorgconfluencedisplayhivehome&#34;&gt;
+        ##
+    &lt;/a&gt;
+    * &lt;a href=&#34;https://cwiki.apache.org/confluence/display/Hive/Home&#34;&gt;Hive document&lt;/a&gt;
+&lt;/div&gt;
+&lt;/h1&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

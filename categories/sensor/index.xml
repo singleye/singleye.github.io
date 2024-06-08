@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sensor on singleye</title>
+    <link>/categories/sensor/</link>
+    <description>singleye (Sensor)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Fri, 10 Nov 2017 11:56:13 +0800</lastBuildDate>
+    
+    <atom:link href="/categories/sensor/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Temp Sensor Comparasion</title>
+      <link>/2017/11/temp-sensor-comparasion/</link>
+      <pubDate>Fri, 10 Nov 2017 11:56:13 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/temp-sensor-comparasion/</guid>
+      <description>&lt;p&gt;DS18B20
+PT100&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;DS18B20&lt;/th&gt;
+&lt;th&gt;PT100&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;器件稳定性&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;温度测量范围&lt;/td&gt;
+&lt;td&gt;-55～125℃&lt;/td&gt;
+&lt;td&gt;-200～850℃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;测温时延&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;精度偏差&lt;/td&gt;
+&lt;td&gt;+-0.5℃&lt;/td&gt;
+&lt;td&gt;B级别可达0.5%，精度较高，但需要校准&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;年漂移量&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;工作电压&lt;/td&gt;
+&lt;td&gt;3-5.5V&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;体积&lt;/td&gt;
+&lt;td&gt;稍大，探头直径6mm&lt;/td&gt;
+&lt;td&gt;较小，探头直径5mm&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;引线长度&lt;/td&gt;
+&lt;td&gt;最长30米&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;信号接口数量&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;成本&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;寿命&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;开发难度&lt;/td&gt;
+&lt;td&gt;容易，直接数字信号输出&lt;/td&gt;
+&lt;td&gt;相对复杂，需要校准&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;特点&lt;/td&gt;
+&lt;td&gt;具有体积小、硬件开销低、抗干扰能力强、精度高的特点&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

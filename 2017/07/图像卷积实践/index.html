@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>图像卷积实践 - singleye</title>
+
+<meta name="description" content="最近对图像识别技术很感兴趣，了解到在这个领域中CNN的应用可以比较有效的解决问题，这里对卷积（convolution）相关的知识进行一下记录说明。">
+
+
+    <meta name="keywords" content="卷积,convolution,numpy">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">图像卷积实践</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-07-30">2017-07-30</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/07/%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF%E5%AE%9E%E8%B7%B5/">/2017/07/%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF%E5%AE%9E%E8%B7%B5/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
+                
+                    
+                    <li><a href="/categories/cnn/">CNN</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="">#卷积</a></li>
+                
+                    
+                    <li><a href="/tags/convolution/">#Convolution</a></li>
+                
+                    
+                    <li><a href="/tags/numpy/">#Numpy</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <p>最近对图像识别技术很感兴趣，了解到在这个领域中CNN的应用可以比较有效的解决问题，这里对卷积（convolution）相关的知识进行一下记录说明。</p>
+<h1 id="图像卷积是什么" >
+<div>
+    <a href="#%e5%9b%be%e5%83%8f%e5%8d%b7%e7%a7%af%e6%98%af%e4%bb%80%e4%b9%88">
+        ##
+    </a>
+    图像卷积是什么？
+</div>
+</h1>
+<p>将一张图片看作一张像素的矩阵的话，卷积就是把另一个矩阵（卷积核）在这张图片上移动，在移动的过程中取图片上对应大小的矩阵与卷积核进行运算，每次矩阵运算得出的结果保存成一个新的像素，这个过程就是图像的卷积运算。</p>
+<p>卷积的过程可以用下面的示意图展示：</p>
+<p><img src="https://ujwlkarn.files.wordpress.com/2016/07/convolution_schematic.gif?w=536&amp;h=392" alt="图像卷积过程"></p>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/convolution-001.png" alt="卷积计算"></p>
+<h1 id="为什么做卷积" >
+<div>
+    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e5%81%9a%e5%8d%b7%e7%a7%af">
+        ##
+    </a>
+    为什么做卷积？
+</div>
+</h1>
+<p>一张原始图像包含了大量的噪音信息，这些噪音信息会干扰后续的运算过程。如果将一张图像看作一个输入信号的话，如果找到一种过滤器将噪音信息过滤掉就可以提高后续运算的准确度。卷积就是这么一个过滤器，这个过滤器的正式称呼是卷积核。</p>
+<p>那么这个过滤器可以做些什么呢？其实常见的图像处理软件早已经在使用卷积进行图片处理了，比如图像锐化、模糊、浮雕效果等等&hellip;</p>
+<p>下面收集了一些常用的过滤器，对这张图片处理后可以看一下效果。</p>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/mini.png?x-oss-process=style/png2jpg" alt="原图"></p>
+<ul>
+<li>图像边界检测</li>
+</ul>
+<div>
+$$
+\left[
+\begin{matrix}
+-1 & -1 & -1 \\
+-1 & 8 & -1 \\
+-1 & -1 & -1
+\end{matrix}
+\right]
+$$
+</div>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/edge.png?x-oss-process=style/png2jpg" alt="边界检测"></p>
+<ul>
+<li>图像模糊</li>
+</ul>
+<div>
+$$
+\left[
+\begin{matrix}
+0 & 1 & 0 \\
+1 & 1 & 1 \\
+0 & 1 & 0
+\end{matrix}
+\right]
+$$
+</div>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/blur.png?x-oss-process=style/png2jpg" alt="模糊"></p>
+<ul>
+<li>图像锐化</li>
+</ul>
+<div>
+$$
+\left[
+\begin{matrix}
+-1 & -1 & -1 \\
+-1 & 9 & -1 \\
+-1 & -1 & -1
+\end{matrix}
+\right]
+$$
+</div>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/sharpen.png?x-oss-process=style/png2jpg" alt="锐化"></p>
+<ul>
+<li>浮雕</li>
+</ul>
+<div>
+$$
+\left[
+\begin{matrix}
+-1 & -1 & 0 \\
+-1 & 0 & 1 \\
+0 & 1 & 1
+\end{matrix}
+\right]
+$$
+</div>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/emboss.png?x-oss-process=style/png2jpg" alt="浮雕"></p>
+<h1 id="用numpy进行卷积计算" >
+<div>
+    <a href="#%e7%94%a8numpy%e8%bf%9b%e8%a1%8c%e5%8d%b7%e7%a7%af%e8%ae%a1%e7%ae%97">
+        ##
+    </a>
+    用numpy进行卷积计算
+</div>
+</h1>
+<p>以上的图片使用下面的算法生成，主要使用了numpy的array进行的计算。通过该算法生成的图片效果还不够理想：</p>
+<ol>
+<li>比如锐化及浮雕效果，锐化的边缘有些益处而其他部分亮度有些降低</li>
+<li>浮雕的效果感觉也不够明显</li>
+<li>程序执行速度有些慢</li>
+</ol>
+<pre tabindex="0"><code>    def convolution(self, kernel):
+        &#34;&#34;&#34;
+        Create a new Image instance by applying the kernel
+        &#34;&#34;&#34;
+        print &#34;Run convolution transform&#34;
+        print &#34;Start: %s&#34; % time.ctime()
+
+        k_height, k_width = kernel.shape
+        n_width = self.width - k_width + 1
+        n_height = self.height - k_height + 1
+
+        if self.color_space == COLOR_SPACE_BW:
+            new_img_data = np.zeros((n_height, n_width), dtype=self.img.dtype)
+            channel_kernel = kernel
+        elif self.color_space == COLOR_SPACE_RGB:
+            new_img_data = np.zeros((n_height, n_width, 3), dtype=self.img.dtype)
+            channel_kernel = np.zeros((k_height, k_width, 3))
+            for c in range(3):
+                channel_kernel[:,:,c] = kernel
+        elif self.color_space == COLOR_SPACE_RGBA:
+            # drop the alpha channel
+            new_img_data = np.zeros((n_height, n_width, 3), dtype=self.img.dtype)
+            channel_kernel = np.zeros((k_height, k_width, 3))
+            for c in range(3):
+                channel_kernel[:,:,c] = kernel
+        else:
+            print &#34;Unknow color space&#34;
+            return None
+
+        for y in range(n_height):
+            for x in range(n_width):
+                if self.color_space == COLOR_SPACE_RGBA:
+                    new_img_data[y][x] = sum(sum(self.img[y:y+k_height, x:x+k_width,:3]*channel_kernel))
+                else:
+                    new_img_data[y][x] = sum(sum(self.img[y:y+k_height, x:x+k_width]*channel_kernel))
+
+        imax = np.max(self.img)
+        nmax = np.max(new_img_data)
+        scale = 1.0*imax/nmax
+        print &#34;imax[{0}], nmax[{1}]&#34;.format(imax, nmax)
+        print &#34;Scale:&#34;, scale
+        new_img_data = (new_img_data * scale).astype(self.img.dtype)
+
+        print &#34;End: %s&#34; % time.ctime()
+
+        new_image = Image()
+        new_image.load_data(new_img_data)
+
+        return new_image
+</code></pre><p>完整的程序可以在<a href="https://github.com/singleye/MachineLearning/blob/master/convolution/convolution.py">GitHub</a>上找到。</p>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/2017/03/numpy%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01/">numpy学习笔记[1]</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

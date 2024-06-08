@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Script on singleye</title>
+    <link>/tags/script/</link>
+    <description>singleye (Script)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sun, 15 Jan 2017 22:08:38 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/script/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>一行代码让你的字符终端下起雪来！</title>
+      <link>/2017/01/%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E8%AE%A9%E4%BD%A0%E7%9A%84%E5%AD%97%E7%AC%A6%E7%BB%88%E7%AB%AF%E4%B8%8B%E8%B5%B7%E9%9B%AA%E6%9D%A5/</link>
+      <pubDate>Sun, 15 Jan 2017 22:08:38 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/01/%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E8%AE%A9%E4%BD%A0%E7%9A%84%E5%AD%97%E7%AC%A6%E7%BB%88%E7%AB%AF%E4%B8%8B%E8%B5%B7%E9%9B%AA%E6%9D%A5/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/01/snow.gif&#34; alt=&#34;snow&#34;&gt;&lt;/p&gt;
+&lt;p&gt;在网上一段[shell](&lt;a href=&#34;http://jerrygamblin.com/2016/12/21/making-it-snow-in-your-terminal/&#34;&gt;http://jerrygamblin.com/2016/12/21/making-it-snow-in-your-terminal/&lt;/a&gt; &amp;ldquo;Jerry Gamblin&amp;rdquo; target=&amp;quot;_blank&amp;quot;)脚本，虽然只有一行但运行后可以在屏幕上实现下雪的效果，实在让人佩服，决定好好研究一下。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;((&lt;/span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;I&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0;&lt;span style=&#34;color:#bb60d5&#34;&gt;J&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;--I;&lt;span style=&#34;color:#666&#34;&gt;))&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;do&lt;/span&gt; clear;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;((&lt;/span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;D&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;LINES;&lt;span style=&#34;color:#bb60d5&#34;&gt;S&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;++J**3%COLUMNS,--D;&lt;span style=&#34;color:#666&#34;&gt;))&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;do&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;printf&lt;/span&gt; %*s.&lt;span style=&#34;color:#4070a0;font-weight:bold&#34;&gt;\\&lt;/span&gt;n &lt;span style=&#34;color:#bb60d5&#34;&gt;$S&lt;/span&gt;;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;done&lt;/span&gt;;sleep .1;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;done&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;不过原代码虽然简洁但不太容易一下子看明白工作原理，而且只能在命令行上运行无法保存成脚本文件，所以自己按照理解重新写了一遍：
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#!/bin/sh
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;rows&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;tput lines&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;cols&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;tput cols&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;i&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#007020&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    clear
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#666&#34;&gt;((&lt;/span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;x&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;i,i++&lt;span style=&#34;color:#666&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;for&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;((&lt;/span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;r&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;0;r&amp;lt;rows;r++&lt;span style=&#34;color:#666&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#007020&#34;&gt;printf&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;%*s*\n&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$((&lt;/span&gt;x**3%cols&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#666&#34;&gt;((&lt;/span&gt;x--&lt;span style=&#34;color:#666&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sleep .1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;done&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

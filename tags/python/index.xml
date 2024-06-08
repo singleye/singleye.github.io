@@ -1,0 +1,1191 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on singleye</title>
+    <link>/tags/python/</link>
+    <description>singleye (Python)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 11 Jan 2018 23:10:50 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spark开发</title>
+      <link>/2018/01/spark%E5%BC%80%E5%8F%91/</link>
+      <pubDate>Thu, 11 Jan 2018 23:10:50 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/01/spark%E5%BC%80%E5%8F%91/</guid>
+      <description>&lt;h2 id=&#34;使用scala进行开发&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8scala%e8%bf%9b%e8%a1%8c%e5%bc%80%e5%8f%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用scala进行开发
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;step1-安装sbt&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step1-%e5%ae%89%e8%a3%85sbt&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step1: 安装sbt
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;
+$ curl https://bintray.com/sbt/rpm/rpm | sudo tee /etc/yum.repos.d/bintray-sbt-rpm.repo
+$ sudo yum install sbt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;配置源：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+# cat ~/.sbt/repositories
+[repositories]
+  # 本地源
+  local
+  # 阿里源
+  aliyun: http://maven.aliyun.com/nexus/content/groups/public/
+  typesafe: http://repo.typesafe.com/typesafe/ivy-releases/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext], bootOnly
+  sonatype-oss-releases
+  maven-central
+  sonatype-oss-snapshots
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;step2-创建项目&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step2-%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step2: 创建项目
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;可以使用Giter8模版创建项目。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ sbt new imarios/frameless.g8
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;spark相关的几个模版：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;holdenk/sparkProjectTemplate.g8 (Template for Scala Apache Spark project).&lt;/li&gt;
+&lt;li&gt;imarios/frameless.g8 (A simple frameless template to start with more expressive types for Spark)&lt;/li&gt;
+&lt;li&gt;nttdata-oss/basic-spark-project.g8 (Spark basic project.)&lt;/li&gt;
+&lt;li&gt;spark-jobserver/spark-jobserver.g8 (Template for Spark Jobserver)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;step3-编写代码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step3-%e7%bc%96%e5%86%99%e4%bb%a3%e7%a0%81&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step3: 编写代码
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;创建出的项目目录中包含一下主要条目：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ ls
+build.sbt  project  src  target
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;编写的代码放在 &amp;lsquo;src/main/scala/&amp;rsquo; 目录中：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ ls src/main/scala/
+SimpleApp.scala
+
+$ cat src/main/scala/SimpleApp.scala
+import org.apache.spark.sql.SparkSession
+
+object SimpleApp {
+  def main(args: Array[String]) {
+    val logFile = &#34;people.txt&#34; // Should be some file on your system
+    val spark = SparkSession.builder.appName(&#34;Simple Application&#34;).getOrCreate()
+    val logData = spark.read.textFile(logFile).cache()
+    val numAs = logData.filter(line =&gt; line.contains(&#34;a&#34;)).count()
+    val numBs = logData.filter(line =&gt; line.contains(&#34;b&#34;)).count()
+    println(s&#34;Lines with a: $numAs, Lines with b: $numBs&#34;)
+    spark.stop()
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;step4-编译打包&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step4-%e7%bc%96%e8%af%91%e6%89%93%e5%8c%85&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step4: 编译打包
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;程序开发好之后首先需要编译打包：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ sbt package
+[info] Loading project definition from /home/spark/scala/frameless/project
+[info] Updating {file:/home/spark/scala/frameless/project/}frameless-build...
+[info] Resolving org.fusesource.jansi#jansi;1.4 ...
+[info] Done updating.
+[info] Set current project to frameless (in build file:/home/spark/scala/frameless/)
+[info] Updating {file:/home/spark/scala/frameless/}root...
+[info] Resolving org.sonatype.oss#oss-parent;9 ...
+[info] downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.11/scala-library-2.11.11.jar ...
+[info]  [SUCCESSFUL ] org.scala-lang#scala-library;2.11.11!scala-library.jar (94788ms)
+
+...
+
+[info] downloading https://repo1.maven.org/maven2/jline/jline/2.14.3/jline-2.14.3.jar ...
+[info]  [SUCCESSFUL ] jline#jline;2.14.3!jline.jar (4836ms)
+[info] Done updating.
+[info] Compiling 1 Scala source to /home/spark/scala/frameless/target/scala-2.11/classes...
+[info] &#39;compiler-interface&#39; not yet compiled for Scala 2.11.11. Compiling...
+[info]   Compilation completed in 24.981 s
+[info] Packaging /home/spark/scala/frameless/target/scala-2.11/frameless_2.11-0.1.jar ...
+[info] Done packaging.
+[success] Total time: 2795 s, completed Jan 16, 2018 3:03:12 PM
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;编译打包成功后的文件输出在 &amp;rsquo;target/scala-2.11/&amp;rsquo; 目录中：&lt;/p&gt;
+&lt;p&gt;/home/spark/scala/frameless/target/scala-2.11/frameless_2.11-0.1.jar&lt;/p&gt;
+&lt;h3 id=&#34;step5-部署运行&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step5-%e9%83%a8%e7%bd%b2%e8%bf%90%e8%a1%8c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step5: 部署运行
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;
+# su - spark
+$ export SPARK_MAJOR_VERSION=2
+
+$ spark-submit --class SimpleApp --master yarn-client --num-executors 1 --driver-memory 512m --executor-memory 512m --executor-cores 1 target/scala-2.11/frameless_2.11-0.1.jar
+SPARK_MAJOR_VERSION is set to 2, using Spark2
+Warning: Master yarn-client is deprecated since 2.0. Please use master &#34;yarn&#34; with specified deploy mode instead.
+18/01/17 15:20:18 INFO SparkContext: Running Spark version 2.2.0.2.6.3.0-235
+18/01/17 15:20:19 INFO SparkContext: Submitted application: Simple Application
+18/01/17 15:20:19 INFO SecurityManager: Changing view acls to: spark
+18/01/17 15:20:19 INFO SecurityManager: Changing modify acls to: spark
+18/01/17 15:20:19 INFO SecurityManager: Changing view acls groups to:
+18/01/17 15:20:19 INFO SecurityManager: Changing modify acls groups to:
+18/01/17 15:20:19 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(spark); groups with view
+ permissions: Set(); users  with modify permissions: Set(spark); groups with modify permissions: Set()
+18/01/17 15:20:20 INFO Utils: Successfully started service &#39;sparkDriver&#39; on port 43573.
+
+...
+
+18/01/17 15:21:30 INFO YarnScheduler: Adding task set 3.0 with 1 tasks
+18/01/17 15:21:30 INFO TaskSetManager: Starting task 0.0 in stage 3.0 (TID 3, bdtest-002, executor 1, partition 0, NODE_LOCAL, 4737 bytes)
+18/01/17 15:21:30 INFO BlockManagerInfo: Added broadcast_4_piece0 in memory on bdtest-002:44065 (size: 3.7 KB, free: 93.2 MB)
+18/01/17 15:21:30 INFO MapOutputTrackerMasterEndpoint: Asked to send map output locations for shuffle 1 to 192.168.1.4:44312
+18/01/17 15:21:30 INFO MapOutputTrackerMaster: Size of output statuses for shuffle 1 is 141 bytes
+18/01/17 15:21:30 INFO TaskSetManager: Finished task 0.0 in stage 3.0 (TID 3) in 96 ms on bdtest-002 (executor 1) (1/1)
+18/01/17 15:21:30 INFO YarnScheduler: Removed TaskSet 3.0, whose tasks have all completed, from pool
+18/01/17 15:21:30 INFO DAGScheduler: ResultStage 3 (count at SimpleApp.scala:10) finished in 0.096 s
+18/01/17 15:21:30 INFO DAGScheduler: Job 1 finished: count at SimpleApp.scala:10, took 0.289165 s
+Lines with a: 1, Lines with b: 0
+18/01/17 15:21:30 INFO AbstractConnector: Stopped Spark@17b03218{HTTP/1.1,[http/1.1]}{0.0.0.0:4042}
+18/01/17 15:21:30 INFO SparkUI: Stopped Spark web UI at http://192.168.1.5:4042
+18/01/17 15:21:30 INFO YarnClientSchedulerBackend: Interrupting monitor thread
+18/01/17 15:21:30 INFO YarnClientSchedulerBackend: Shutting down all executors
+18/01/17 15:21:30 INFO YarnSchedulerBackend$YarnDriverEndpoint: Asking each executor to shut down
+18/01/17 15:21:30 INFO SchedulerExtensionServices: Stopping SchedulerExtensionServices
+(serviceOption=None,
+ services=List(),
+ started=false)
+18/01/17 15:21:30 INFO YarnClientSchedulerBackend: Stopped
+18/01/17 15:21:30 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+18/01/17 15:21:31 INFO MemoryStore: MemoryStore cleared
+18/01/17 15:21:31 INFO BlockManager: BlockManager stopped
+18/01/17 15:21:31 INFO BlockManagerMaster: BlockManagerMaster stopped
+18/01/17 15:21:31 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+18/01/17 15:21:31 INFO SparkContext: Successfully stopped SparkContext
+18/01/17 15:21:31 INFO ShutdownHookManager: Shutdown hook called
+18/01/17 15:21:31 INFO ShutdownHookManager: Deleting directory /tmp/spark-730219ef-2995-4225-8743-5769fa6269db
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;ndash;master: 指定spark driver的运行模式。
+&lt;ul&gt;
+&lt;li&gt;yarn-cluster: spark driver运行在yarn的application master进程中。如果应用只是进行计算可以使用这种方式运行，如果需要跟前台进行交互则可以考虑yarn-client模式。&lt;/li&gt;
+&lt;li&gt;yarn-client: spark driver运行在client进程中，此时application master只负责向yarn申请资源。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;使用python进行开发&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8python%e8%bf%9b%e8%a1%8c%e5%bc%80%e5%8f%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用python进行开发
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;使用hdp环境提交任务&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8hdp%e7%8e%af%e5%a2%83%e6%8f%90%e4%ba%a4%e4%bb%bb%e5%8a%a1&#34;&gt;
+        ##
+    &lt;/a&gt;
+    使用HDP环境提交任务
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;创建python文件&lt;code&gt;pi.py&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import sys
+from random import random
+from operator import add
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName(&amp;quot;PythonPi&amp;quot;)\.getOrCreate()
+
+partitions = int(sys.argv[1]) if len(sys.argv) &amp;gt; 1 else 2
+n = 100000 * partitions
+
+def f(any):
+    x = random() * 2 - 1
+    y = random() * 2 - 1
+    return 1 if x ** 2 + y ** 2 &amp;lt;= 1 else 0
+
+count = spark.sparkContext.parallelize(range(1, n + 1), partitions).map(f).reduce(add)
+print(&amp;quot;Pi is roughly %f&amp;quot; % (4.0 * count / n))
+
+spark.stop()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;运行&lt;code&gt;pi.py&lt;/code&gt;，这里指定使用yarn的cluster模式&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SPARK_MAJOR_VERSION=2 spark-submit --master yarn --deploy-mode cluster --driver-memory 512m --executor-memory 512m --deploy pi.py 10
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;在hdp环境运行jupyter-server&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%9c%a8hdp%e7%8e%af%e5%a2%83%e8%bf%90%e8%a1%8cjupyter-server&#34;&gt;
+        ##
+    &lt;/a&gt;
+    在HDP环境运行jupyter server
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;使用yarn的cluster模式运行，在运行期间会始终在yarn中占用资源，如果需要长期运行，使用&lt;code&gt;--master local&lt;/code&gt;比较好&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;XDG_RUNTIME_DIR=&amp;quot;&amp;quot; SPARK_MAJOR_VERSION=2 PYSPARK_DRIVER_PYTHON=jupyter PYSPARK_DRIVER_PYTHON_OPTS=&#39;notebook --no-browser --port 8888 --ip 121.43.171.231&#39; pyspark --master yarn --deploy-mode cluster --driver-memory 512m --executor-memory 512m
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;为jupyter server设置密码等操作参考&lt;a href=&#34;https://jupyter-notebook.readthedocs.io/en/stable/public_server.html&#34;&gt;jupyter文档&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;运行后访问服务器8888端口即可访问jupyter服务&lt;/p&gt;
+&lt;h3 id=&#34;非hdp环境开发&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%9d%9ehdp%e7%8e%af%e5%a2%83%e5%bc%80%e5%8f%91&#34;&gt;
+        ##
+    &lt;/a&gt;
+    非HDP环境开发
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;确保本机有一份spark二进制文件，比如&lt;code&gt;spark-2.2.1-bin-hadoop2.7&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;安装pyspark&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pip install pyspark
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;设置SPARK_HOME（可选）&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export SPARK_HOME=/home/xxx/spark-2.2.1-bin-hadoop2.7
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;通过代码提交任务&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import os
+from pyspark import SparkConf, SparkContext
+
+# if `SPARK_HOME` is undefined yet
+if &#39;SPARK_HOME&#39; not in os.environ:
+    os.environ[&#39;SPARK_HOME&#39;] = &#39;/home/xxx/spark-2.2.1-bin-hadoop2.7&#39;
+
+conf = SparkConf().setAppName(&#39;Demo&#39;).setMaster(&#39;yarn&#39;).set(&#39;spark.yarn.deploy.mode&#39;, &#39;cluster&#39;)
+sc = SparkContext(conf=conf)
+
+# Do something with sc...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;或者使用&lt;code&gt;SparkSession&lt;/code&gt; API&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;from spark.sql import SparkSession
+spark = (SparkSession.builder
+          .master(&amp;quot;yarn&amp;quot;)
+          .appName(&amp;quot;Demo&amp;quot;)
+          .config(&amp;quot;spark.yarn.deploy.mode&amp;quot;, &amp;quot;cluster&amp;quot;)
+          .getOrCreate())
+
+# Do something with spark...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;oozie自动化&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#oozie%e8%87%aa%e5%8a%a8%e5%8c%96&#34;&gt;
+        ##
+    &lt;/a&gt;
+    oozie自动化
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h1 id=&#34;development&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#development&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Development
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;Spark 2.0之前的开发接口主要是RDD（Resilient Distributed Dataset），从2.0之后原有&lt;a href=&#34;https://spark.apache.org/docs/latest/rdd-programming-guide.html&#34;&gt;RDD接口&lt;/a&gt;仍然支持，但RDD被Dataset取代，如果使用Dataset编程的话需要使用&lt;a href=&#34;https://spark.apache.org/docs/latest/sql-programming-guide.html&#34;&gt;Spark SQL&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;api&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#api&#34;&gt;
+        #
+    &lt;/a&gt;
+    API
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://spark.apache.org/docs/1.3.1/api/scala/index.html&#34;&gt;http://spark.apache.org/docs/1.3.1/api/scala/index.html&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;sparksession-vs-sparkcontext&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sparksession-vs-sparkcontext&#34;&gt;
+        #
+    &lt;/a&gt;
+    SparkSession vs SparkContext
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;Spark 2.0之前有3个主要的连接对象：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SparkContext: 建立与Spark执行环境相关的连接，用于创建RDD&lt;/li&gt;
+&lt;li&gt;SqlContext：利用SparkContext背后的SparkSQL建立连接&lt;/li&gt;
+&lt;li&gt;HiveContext：创建访问hive的接口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;从Spark 2.0开始，Datasets/Dataframes成为主要的数据访问接口，SparkSession(org.apache.spark.sql.SparkSession)成为主要的访问Spark执行环境的接口。&lt;/p&gt;
+&lt;h3 id=&#34;sparkconf&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sparkconf&#34;&gt;
+        ##
+    &lt;/a&gt;
+    SparkConf
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;Spark 2.0之前需要先创建SparkConf，在创建SparkContext。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+//set up the spark configuration and create contexts
+val sparkConf = new SparkConf().setAppName(&#34;SparkSessionZipsExample&#34;).setMaster(&#34;local&#34;)
+// your handle to SparkContext to access other context like SQLContext
+val sc = new SparkContext(sparkConf).set(&#34;spark.some.config.option&#34;, &#34;some-value&#34;)
+val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Spark 2.0之后可以不用显示的创建SparkConf对象就可以创建SparkSession对象。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+// Create a SparkSession. No need to create SparkContext
+// You automatically get it as part of the SparkSession
+val warehouseLocation = &#34;file:${system:user.dir}/spark-warehouse&#34;
+val spark = SparkSession
+   .builder()
+   .appName(&#34;SparkSessionZipsExample&#34;)
+   .config(&#34;spark.sql.warehouse.dir&#34;, warehouseLocation)
+   .enableHiveSupport()
+   .getOrCreate()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;在SparkSession创建完后，Spark的运行时配置属性还可以通过SparkSession.conf()被修改：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+//set new runtime options
+spark.conf.set(&#34;spark.sql.shuffle.partitions&#34;, 6)
+spark.conf.set(&#34;spark.executor.memory&#34;, &#34;2g&#34;)
+//get all settings
+val configMap:Map[String, String] = spark.conf.getAll()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.javachen.com/2015/06/07/spark-configuration.html&#34;&gt;Spark conf参考&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;sparksql&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sparksql&#34;&gt;
+        ##
+    &lt;/a&gt;
+    SparkSQL
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;2.0之前需要通过创建SqlContext来使用SparkSQL。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+val sc = new SparkContext(sparkConf).set(&#34;spark.some.config.option&#34;, &#34;some-value&#34;)
+val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;2.0后通过SparkSession可以很方便的访问SparkSession.sql()来使用SparkSQL。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+// Now create an SQL table and issue SQL queries against it without
+// using the sqlContext but through the SparkSession object.
+// Creates a temporary view of the DataFrame
+zipsDF.createOrReplaceTempView(&#34;zips_table&#34;)
+zipsDF.cache()
+val resultsDF = spark.sql(&#34;SELECT city, pop, state, zip FROM zips_table&#34;)
+resultsDF.show(10)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;访问catalog-metadata&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%ae%bf%e9%97%aecatalog-metadata&#34;&gt;
+        ##
+    &lt;/a&gt;
+    访问Catalog Metadata
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;SparkSession暴露了访问metastore的接口SparkSession.catalog，这个接口可以用来访问catalog metadata信息，比如（Hcatalog）&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+//fetch metadata data from the catalog
+spark.catalog.listDatabases.show(false)
+spark.catalog.listTables.show(false)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;
+scala&gt; spark.catalog.listDatabases.show(false)
++-------+---------------------+------------------------------------------+
+|name   |description          |locationUri                               |
++-------+---------------------+------------------------------------------+
+|default|Default Hive database|hdfs://bdtest-001:8020/apps/hive/warehouse|
++-------+---------------------+------------------------------------------+
+
+scala&gt; spark.catalog.listTables.show(false)
++-------------------------+--------+----------------------------------------+---------+-----------+
+|name                     |database|description                             |tableType|isTemporary|
++-------------------------+--------+----------------------------------------+---------+-----------+
+|activity_donate_record   |default |Imported by sqoop on 2018/01/08 19:03:33|MANAGED  |false      |
+|activity_periods_config  |default |Imported by sqoop on 2018/01/08 19:04:20|MANAGED  |false      |
+|activity_result          |default |Imported by sqoop on 2018/01/08 19:05:00|MANAGED  |false      |
+|activity_school_info     |default |Imported by sqoop on 2018/01/08 19:05:46|MANAGED  |false      |
+|activity_season_game_data|default |Imported by sqoop on 2018/01/08 19:06:23|MANAGED  |false      |
+|activity_season_game_log |default |Imported by sqoop on 2018/01/08 19:07:00|MANAGED  |false      |
+|ana_tag                  |default |Imported by sqoop on 2018/01/08 19:07:35|MANAGED  |false      |
+|ana_user_tag             |default |Imported by sqoop on 2018/01/08 19:08:18|MANAGED  |false      |
+|api_invoking_log         |default |Imported by sqoop on 2018/01/08 19:08:58|MANAGED  |false      |
+|app_function             |default |Imported by sqoop on 2018/01/08 19:09:34|MANAGED  |false      |
+|bank_card                |default |Imported by sqoop on 2018/01/08 19:10:09|MANAGED  |false      |
+|bank_card_bin            |default |Imported by sqoop on 2018/01/08 19:10:46|MANAGED  |false      |
+|command_invocation       |default |Imported by sqoop on 2018/01/08 19:11:26|MANAGED  |false      |
+|coupon_grant_log         |default |Imported by sqoop on 2018/01/08 19:12:05|MANAGED  |false      |
+|coupon_user              |default |Imported by sqoop on 2018/01/08 19:12:43|MANAGED  |false      |
+|device_command           |default |Imported by sqoop on 2018/01/08 19:13:18|MANAGED  |false      |
+|device_preorder          |default |Imported by sqoop on 2018/01/08 19:13:54|MANAGED  |false      |
+|dro_dropdetails          |default |null                                    |MANAGED  |false      |
+|dro_dropinfo             |default |Imported by sqoop on 2018/01/08 19:15:09|MANAGED  |false      |
+|dro_exchange_record      |default |Imported by sqoop on 2018/01/08 19:15:43|MANAGED  |false      |
++-------------------------+--------+----------------------------------------+---------+-----------+
+only showing top 20 rows
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;dataframe-和-datasets&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#dataframe-%e5%92%8c-datasets&#34;&gt;
+        #
+    &lt;/a&gt;
+    DataFrame 和 Datasets
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://databricks.com/wp-content/uploads/2016/06/Unified-Apache-Spark-2.0-API-1.png&#34; alt=&#34;DataFrame &amp;amp; Dataset&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;dataset&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#dataset&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Dataset：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;强类型&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;支持functional和relational操作&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;操作分类&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;转换（transformation）：用于产生新的Datasets
+&lt;ul&gt;
+&lt;li&gt;例如：map，filter，select，aggregate（groupBy）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;操作（actions）：触发计算并返回结果
+&lt;ul&gt;
+&lt;li&gt;例如：count，show，把数据写回文件系统&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;lazy：计算只有到action触发的时候才进行。Dataset内部可以理解为存储了如何进行计算的计划。当action执行的时候Spark query optimizer生成并优化计算方案后将其执行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Encoder&#34;&gt;Encoder&lt;/a&gt;：把JVM中的类型T跟Spark SQL的数据表现形式进行转换的机制。（marshal/unmarshal?）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;两种创建方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使用SparkSession的read()方法&lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;
+  val people = spark.read.parquet(&#34;...&#34;).as[Person]  // Scala
+  Dataset&lt;Person&gt; people = spark.read().parquet(&#34;...&#34;).as(Encoders.bean(Person.class)); // Java
+  &lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对现有Dataset做转换（transformation）&lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;
+  val names = people.map(_.name)  // in Scala; names is a Dataset[String]
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Dataset&lt;String&gt; names = people.map((Person p) -&amp;gt; p.name, Encoders.STRING));
+&lt;/code&gt;&lt;/pre&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Dataset操作也可以是untyped，通过：&lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Dataset&#34;&gt;Dataset&lt;/a&gt;, &lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Column&#34;&gt;Column&lt;/a&gt;, &lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.functions$&#34;&gt;DataFrame的function&lt;/a&gt;等。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;列操作&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;选择一列（抛弃其他列）：select(&amp;ldquo;column&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;增加一列：withColumn(&amp;ldquo;newColumn&amp;rdquo;, Column)&lt;/li&gt;
+&lt;li&gt;修改一列: withColumn(&amp;ldquo;column&amp;rdquo;, Column)&lt;/li&gt;
+&lt;li&gt;删除一列: drop(&amp;ldquo;column&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;类型转换：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;列高级操作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;UDF:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;dataframe&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#dataframe&#34;&gt;
+        ##
+    &lt;/a&gt;
+    DataFrame：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Dataset的无类型view (untyped view)，对应Dataset的Row&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.functions$&#34;&gt;DataFrame操作Functions&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;DataFrame是有名列（named columns）组成的数据集合，类似关系数据库中的表或者python/R中的pandas。&lt;/p&gt;
+&lt;p&gt;可以由多种数据源来构造DataFrame，比如Hive中的table，Spark的RDD（Resilient Distributed Datasets）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TODO: Datasets&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;SparkSession有很多种方法创建DataFrame和Datasets。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;DataFrame&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;创建API&lt;/td&gt;
+&lt;td&gt;SparkSession.createDataFrame&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;访问&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;其他&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;Datasets&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;创建API&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;访问&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;其他&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;rowhttpsparkapacheorgdocslatestapiscalaindexhtmlorgapachesparksqlrow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#rowhttpsparkapacheorgdocslatestapiscalaindexhtmlorgapachesparksqlrow&#34;&gt;
+        ##
+    &lt;/a&gt;
+    &lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Row&#34;&gt;Row&lt;/a&gt;
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;创建Row&lt;/li&gt;
+&lt;li&gt;访问
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;generic访问，使用ordinal序列访问&lt;/p&gt;
+&lt;p&gt;row(0)：访问列第一个成员&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;原始类型访问&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;columnhttpsparkapacheorgdocslatestapiscalaindexhtmlorgapachesparksqlcolumn&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#columnhttpsparkapacheorgdocslatestapiscalaindexhtmlorgapachesparksqlcolumn&#34;&gt;
+        ##
+    &lt;/a&gt;
+    &lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Column&#34;&gt;Column&lt;/a&gt;
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;DataSet API:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Dataset&#34;&gt;http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.Dataset&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;处理时间&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%a4%84%e7%90%86%e6%97%b6%e9%97%b4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    处理时间
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;h4 id=&#34;-ver--15&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#-ver--15&#34;&gt;
+        ###
+    &lt;/a&gt;
+    * ver &amp;lt;= 1.5
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;使用hiveContext来查询&lt;/p&gt;
+&lt;h4 id=&#34;--15--ver--22&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#--15--ver--22&#34;&gt;
+        ###
+    &lt;/a&gt;
+    *  1.5 &amp;lt;= ver &amp;lt; 2.2
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;Spark 1.5引入了unix_timestamp()，所以在1.5之后到2.2的spark版本中可以这样操作时间信息&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+import org.apache.spark.sql.functions.{unix_timestamp, to_date}
+
+val df = Seq((1L, &#34;01-APR-2015&#34;)).toDF(&#34;id&#34;, &#34;ts&#34;)
+
+df.select(to_date(unix_timestamp(
+  $&#34;ts&#34;, &#34;dd-MMM-yyyy&#34;
+).cast(&#34;timestamp&#34;)).alias(&#34;timestamp&#34;))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;-ver--22&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#-ver--22&#34;&gt;
+        ###
+    &lt;/a&gt;
+    * ver &amp;gt;= 2.2
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;
+import org.apache.spark.sql.functions.{to_date, to_timestamp}
+
+df.select(to_date($&#34;ts&#34;, &#34;dd-MMM-yyyy&#34;).alias(&#34;date&#34;))
+
+df.select(to_timestamp($&#34;ts&#34;, &#34;dd-MM-yyyy HH:mm:ss&#34;).alias(&#34;timestamp&#34;))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;import-sparkimplicits_&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#import-sparkimplicits_&#34;&gt;
+        ##
+    &lt;/a&gt;
+    import spark.implicits._
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;引入toDF()方法和“$”操作符&lt;/p&gt;
+&lt;h2 id=&#34;编程陷阱&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e7%a8%8b%e9%99%b7%e9%98%b1&#34;&gt;
+        #
+    &lt;/a&gt;
+    编程陷阱
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;陷阱1dataframe有元素但通过循环把值放入listbuffer后listbuffer却为空列表&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%99%b7%e9%98%b11dataframe%e6%9c%89%e5%85%83%e7%b4%a0%e4%bd%86%e9%80%9a%e8%bf%87%e5%be%aa%e7%8e%af%e6%8a%8a%e5%80%bc%e6%94%be%e5%85%a5listbuffer%e5%90%8elistbuffer%e5%8d%b4%e4%b8%ba%e7%a9%ba%e5%88%97%e8%a1%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    陷阱1：dataframe有元素，但通过循环把值放入ListBuffer()后ListBuffer()却为空列表
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;
+   val valueDF = allData.select(&#34;value&#34;).distinct()
+    valueDF.show()
+    //valueDF.foreach(r =&gt; valueList.append(r.getAs[Int](&#34;value&#34;)))
+
+    for (row &lt;- valueDF) {
+      println(&#34;value:&#34; + row.getAs[Int](&#34;value&#34;))
+      valueList.append(row.getAs[Int](&#34;value&#34;))
+    }
+    println(&#34;Values:&#34; + valueList)
+    valueList.foreach(println))
+
+// 程序运行输出
+
++-------+
+|value  |
++-------+
+|      1|
+|      3|
+|      5|
+|      4|
+|     10|
+|      2|
+|      0|
++-------+
+
+Values:ListBuffer()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;可以看出两个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;问题1: 虽然可以知道valueDF不为空，可是&amp;quot;println(&amp;hellip;)&amp;ldquo;却没有任何输出内容&lt;/li&gt;
+&lt;li&gt;问题2: 结果valueList为空&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;原因&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8e%9f%e5%9b%a0&#34;&gt;
+        ###
+    &lt;/a&gt;
+    原因：
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;Spark任务执行是通过Driver/Executor来完成的，Driver控制任务执行，Executor负责任务执行，foreach/for会被Driver分配给Executor来执行（分布式执行），每个Executor创建一个自己的ListBuffer拷贝，因此当任务结束后信息就丢失了。&lt;/p&gt;
+&lt;p&gt;参考Stackoverflow的讨论：&lt;a href=&#34;https://stackoverflow.com/questions/36203299/scala-listbuffer-emptying-itself-after-every-add-in-loop&#34;&gt;https://stackoverflow.com/questions/36203299/scala-listbuffer-emptying-itself-after-every-add-in-loop&lt;/a&gt;&lt;/p&gt;
+&lt;h4 id=&#34;修复方法使用collect&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bf%ae%e5%a4%8d%e6%96%b9%e6%b3%95%e4%bd%bf%e7%94%a8collect&#34;&gt;
+        ###
+    &lt;/a&gt;
+    修复方法：使用collect()
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;collect()定义：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+def collect(): Array[T]
+Returns an array that contains all rows in this Dataset.
+Running collect requires moving all the data into the application&#39;s driver
+process, and doing so on a very large dataset can crash the driver process with
+OutOfMemoryError.
+For Java API, use collectAsList.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;修复代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+val valueDF = allData.select(&#34;value&#34;).distinct()
+valueDF.show()
+//valueDF.foreach(r =&gt; valueList.append(r.getAs[Int](&#34;value&#34;)))
+
+for (row &lt;- valueDF.collect()) {
+  println(&#34;value:&#34; + row.getAs[Int](&#34;value&#34;))
+  valueList.append(row.getAs[Int](&#34;value&#34;))
+}
+println(&#34;getAllChannels:&#34; + valueList)
+
+
+// 程序运行输出如下
+
++-------+
+|value  |
++-------+
+|      1|
+|      3|
+|      5|
+|      4|
+|     10|
+|      2|
+|      0|
++-------+
+
+value:1
+value:3
+value:5
+value:4
+value:10
+value:2
+value:0
+getAllChannels:ListBuffer(1, 3, 5, 4, 10, 2, 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;reference&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#reference&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Reference
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://community.hortonworks.com/articles/84071/apache-ambari-workflow-manager-view-for-apache-ooz-2.html&#34;&gt;Ambari workflow manager&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://docs.scala-lang.org/tour/basics.html&#34;&gt;Scala basics&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/foundweekends/giter8/wiki/giter8-templates&#34;&gt;Giter8项目模版&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.6.0/bk_spark-component-guide/content/ch_oozie-spark-action.html&#34;&gt;Automating Spark job with Oozie&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://community.hortonworks.com/articles/104949/using-virtualenv-with-pyspark-1.html&#34;&gt;Using VirtualEnv with PySpark&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>softmax输出层公式推导及代码实验</title>
+      <link>/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</link>
+      <pubDate>Mon, 02 Oct 2017 02:11:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：
+&lt;ul&gt;
+&lt;li&gt;使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i + (1-y_i) \ln (1-a_i)] $&lt;/li&gt;
+&lt;li&gt;使用softmax和log-likelyhood代价函数作为输出层&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &amp;hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &amp;hellip; y_n | X) $，其中y1, &amp;hellip; yn之间相互关联，且总和为1。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。&lt;/p&gt;
+&lt;h1 id=&#34;softmax定义&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#softmax%e5%ae%9a%e4%b9%89&#34;&gt;
+        ##
+    &lt;/a&gt;
+    softmax定义：
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div&gt;
+$$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$
+&lt;/div&gt;
+&lt;p&gt;将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个神经元的输出为正数，并且输出数值介于0-1之间。&lt;/li&gt;
+&lt;li&gt;所有神经元的输出总和为1。&lt;/li&gt;
+&lt;li&gt;某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。&lt;/li&gt;
+&lt;li&gt;softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下图展示了softmax层工作的基本原理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/how_softmax_works.png?x-oss-process=style/png2jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;应用场景&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    应用场景：
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;从softmax的定义知道所有输出神经元的总和为1，因此softmax可以用在预测在多种可能性中只有一个结果的场景，比如mnist手写判定。&lt;/p&gt;
+&lt;h1 id=&#34;softmax输出层组成的神经网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#softmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bb%84%e6%88%90%e7%9a%84%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    softmax输出层组成的神经网络
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;下面的图展示了一个简单的softmax输出层神经网络，中间层依然使用sigmoid。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg&#34; alt=&#34;softmax NN&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;代价函数c&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0c&#34;&gt;
+        #
+    &lt;/a&gt;
+    代价函数C
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;为了解决在学习过程中出现的速度问题使用log-likelihood代价函数，函数定义为：&lt;/p&gt;
+$$ C=-\sum_i^m y_i \ln a_i $$
+&lt;p&gt;关于实际应用这个等式需要解释一下。假设softmax输出层有4个输出，预测a值为(0.1, 0.2, 0.3, 0.4)，实际结果y为(0, 1, 0, 0)，那么这个等式为 $C = -(0\ln(0.1) + 1\ln(0.2) + 0\ln(0.3) + 0\ln(0.4))$，可以看出来因为0的存在可以让这个等式只保留实际结果为真（1）的项。这时可以把等式简化为：&lt;/p&gt;
+$$ C=-\ln a_i | y_i=1 $$
+&lt;h2 id=&#34;用反向传播进行梯度下降&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%94%a8%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%bf%9b%e8%a1%8c%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d&#34;&gt;
+        #
+    &lt;/a&gt;
+    用反向传播进行梯度下降
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;反向传播算法要求几个关键值：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$ \delta_i^L $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial C}{\partial w_{ij}^L} $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial C}{\partial b_{i}^L} $&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果输出层使用softmax时，最后一层（L层）的相应值与使用sigmoid的情况有些不同，下面对使用softmax是的这3个值进行推导。&lt;/p&gt;
+&lt;h3 id=&#34;求解-delta_il--a_il---y_i-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e8%a7%a3-delta_il--a_il---y_i-&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求解$ \delta_i^L = ({a_i^L} - y_i) $
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;过程如下：&lt;/p&gt;
+&lt;div&gt;
+$$ {\delta_i^L} = {\frac {\partial C}{\partial z_{i}^L}} = {\frac {\partial }{\partial z_{i}^L}} (-\sum_k^m y_k \ln {a_k^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(\sum_k^m y_k {1 \over {a_k^L}} {\frac {\partial {a_k^L}}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(y_i {1 \over a_i^L} \frac {\partial a_i^L}{\partial z_{i}^L} + \sum_{k \neq i}^m y_k {1 \over a_k^L} {\frac {\partial a_k^L}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i {1 \over a_i^L} {a_i^L(1-a_i^L)} + \sum_{k \neq i}^m y_k {1 \over a_k^L} (-{a_i^L}{a_k^L}) )$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i (1-a_i^L) - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {y_i a_i^L} - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {a_i^L}{\sum_{k=1}^m y_k})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = ({a_i^L} - y_i)$$
+&lt;/div&gt;
+&lt;h3 id=&#34;求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-%e7%9a%84%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial w_{ij}^L}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\delta_i^L} {a_j^{L-1}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}}$$
+&lt;/div&gt;
+&lt;h3 id=&#34;求-frac-partial-cpartial-b_il--a_il---y_i-的过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82-frac-partial-cpartial-b_il--a_il---y_i-%e7%9a%84%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial b_{i}^L}}$$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\delta_i^L} = ({a_i^L} - y_i) $$
+&lt;/div&gt;
+&lt;p&gt;以上求解过程中用了两个重要的计算等式:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial a_j} {\partial {z_i}} = -{a_i \cdot a_j} | i \neq j$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面对这两个等式进行推导：&lt;/p&gt;
+&lt;h4 id=&#34;求导情况1--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b51--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-&#34;&gt;
+        ###
+    &lt;/a&gt;
+    求导情况1: $ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-acaf14aac554ab61ff6f32845fd5128e_b.png&#34; alt=&#34;i==j&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结论：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $$
+&lt;ul&gt;
+&lt;li&gt;推导过程：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \frac {\partial a_i} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_i}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1){\frac {\partial}{\partial z_i}({e^{z_i}})} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }})^2$$
+$$ = a_i - (a_i)^2 $$
+$$ = a_i \cdot (1- a_i) $$
+&lt;/div&gt;
+&lt;h4 id=&#34;求导情况2--frac-partial-a_j-partial-z_i---a_i-cdot-a_j&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b52--frac-partial-a_j-partial-z_i---a_i-cdot-a_j&#34;&gt;
+        ###
+    &lt;/a&gt;
+    求导情况2: $ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-f09fb0c50194f6cc0828fc285eb9bc1c_b.png&#34; alt=&#34;i neq j&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结论：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$$
+&lt;ul&gt;
+&lt;li&gt;推导过程：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \frac {\partial a_j} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_j} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_j}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_j}}$$
+$$ = 0 \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1) \cdot \frac {\partial}{\partial z_i}e^{z_i} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot e^{z_i} \cdot {e^{z_j}}$$
+$$ = - {e^{z_i} \over {\sum_{k=1}^m e^{z_k}}} \cdot {{e^{z_j}} \over {\sum_{k=1}^m e^{z_k}}}$$
+$$ = -a_i \cdot a_j$$
+&lt;/div&gt;
+&lt;h2 id=&#34;sigmoid隐藏层与softmax输出层网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sigmoid%e9%9a%90%e8%97%8f%e5%b1%82%e4%b8%8esoftmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bd%91%e7%bb%9c&#34;&gt;
+        #
+    &lt;/a&gt;
+    sigmoid隐藏层与softmax输出层网络
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;按照下图的拓扑构成的网络使用sigmoid进行隐藏层计算，使用softmax进行输出层计算，那么怎么进行网络训练呢？其实方法一样都是按照前馈网络计算代价值进行评估，使用反向传播算法进行梯度下降。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg&#34; alt=&#34;softmax NN&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;前馈网络计算步骤&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%89%8d%e9%a6%88%e7%bd%91%e7%bb%9c%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    前馈网络计算步骤：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;在隐藏层的计算时使用sigmoid&lt;/li&gt;
+&lt;li&gt;在最后输出层使用softmax&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;反向传播计算步骤&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    反向传播计算步骤：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;计算输出层，计算最后一层softmax输出层的下列值：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \delta_i^L = ({a_i^L} - y_i) $$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} = \delta_i^L \cdot a_j^{L-1} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) =\delta_i^L $$
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;计算隐藏层，反向一层一层计算sigmoid隐藏层的下列值：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \delta_j^{l-1} = (\sum_{k=1}^m {\delta_k^l \cdot w_{kj}}) \cdot { a_j^{l-1} (1 - a_j^{l-1}) } $$
+$$ \frac {\partial C}{\partial w_{ij}^l} = \delta_i^{l} \cdot a_j^{l-1} $$
+$$ \frac {\partial C}{\partial b_{i}^l} = \delta_i^{l} $$
+&lt;/div&gt;
+&lt;p&gt;计算过程中可以发现只有最后一层的$ \delta_i^L$计算较为特殊，计算权重和偏置的方法与之前的sigmoid构成的网络一致。&lt;/p&gt;
+&lt;h1 id=&#34;代码实例&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e7%a0%81%e5%ae%9e%e4%be%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    代码实例
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;下面的例子实验一个输入层有4个输入，隐藏层有5个神经元并且使用sigmoid激活函数，输出层有2个神经元并使用softmax激活函数的网络，拓扑如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/experiment-softmax.jpg&#34; alt=&#34;拓扑&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# construct the network
+
+# input layer: 4 inputs
+# hidden layer: 5 neurons with sigmoid as activate function
+# * weight: 4x5 matrices
+# * bias: 1x5 matrices
+# output layer: 2 neurons with softmax as activate function
+# * weight: 5x2 matrices
+# * bias: 1x2 matrices
+
+# initialize the weight/bias of the hidden layer (2nd layer)
+w2 = np.random.rand(4, 5)
+b2 = np.random.rand(1, 5)
+
+# initialize the weight/bias of the output layer (3rd layer) 
+w3 = np.random.rand(5, 2)
+b3 = np.random.rand(1, 2)
+num_epochs = 10000
+eta = 0.1
+
+x=[]
+y=[]
+
+# training process
+for i in xrange(num_epochs):
+    # feed forward
+    z2 = np.dot(input, w2) + b2
+    a2 = sigmoid(z2)
+
+    z3 = np.dot(a2, w3) + b3
+    #z3 = np.dot(a2, w3)
+    a3 = softmax(z3)
+    
+    if i%1000 == 0:
+        print &amp;quot;Perception&amp;quot;, a3
+        print &amp;quot;W2&amp;quot;, w2
+        print &amp;quot;B2&amp;quot;, b2
+        print &amp;quot;W3&amp;quot;, w3
+        print &amp;quot;B3&amp;quot;, b3
+
+    x.append(i)
+    y.append(cost(a3, output))
+
+    delta_l3 = a3 - output
+    deriv_w3 = np.dot(a2.T, delta_l3)
+    deriv_b3 = delta_l3
+    w3 -= eta*deriv_w3
+    b3 -= eta*np.mean(deriv_b3, 0)
+    
+    delta_l2 = np.dot(delta_l3, w3.T)*(a2*(1-a2))
+    deriv_w2 = np.dot(input.T, delta_l2)
+    deriv_b2 = delta_l2
+    w2 -= eta*deriv_w2
+    b2 -= eta*np.mean(deriv_b2, 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-cost.png&#34; alt=&#34;训练代价&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/Softmax/experiment-softmax.ipynb&#34;&gt;完整代码&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://neuralnetworksanddeeplearning.com/chap3.html#softmax&#34;&gt;http://neuralnetworksanddeeplearning.com/chap3.html#softmax&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/25723112&#34;&gt;https://zhuanlan.zhihu.com/p/25723112&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://colah.github.io/posts/2015-09-Visual-Information/&#34;&gt;http://colah.github.io/posts/2015-09-Visual-Information/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>python中__main__的作用域及变量使用</title>
+      <link>/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Sat, 10 Jun 2017 23:00:31 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/</guid>
+      <description>&lt;p&gt;今天使用python写一段小程序时发现了一个容易忽略掉的变量作用域的细节。先看一下问题。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat main_variable.py
+x = 1
+
+if __name__ == &amp;#34;__main__&amp;#34;:
+    global x
+    x = 2
+
+$ python main_area.py
+main_area.py:4: SyntaxWarning: name &amp;#39;x&amp;#39; is assigned to before global declaration
+  global x
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;程序的本来目的是在对全局变量前使用global进行声明，但却引发了SyntaxWarning异常。问题原因其实也很简单，因为虽然使用&amp;rsquo;if &lt;strong&gt;name&lt;/strong&gt; == &amp;ldquo;&lt;strong&gt;main&lt;/strong&gt;&amp;quot;&amp;lsquo;进行判断后再执行，但代码还是处于整个文件的作用域中，因此并不需要使用global进行声明。&lt;/p&gt;
+&lt;p&gt;因此程序可以有下面两种改法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;方法1:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat main_variable.py
+x = 1
+
+if __name__ == &amp;#34;__main__&amp;#34;:
+    x = 2
+
+$ python main_area.py
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;方法2:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat main_variable.py
+x = 1
+
+def main():
+    global x
+    x = 2
+
+if __name__ == &amp;#34;__main__&amp;#34;:
+    main()
+
+$ python main_area.py
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;写程序一定要注意细节啊！&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

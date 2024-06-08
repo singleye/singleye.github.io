@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GC on singleye</title>
+    <link>/tags/gc/</link>
+    <description>singleye (GC)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Tue, 21 Nov 2023 14:40:28 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/gc/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Python 内存管理</title>
+      <link>/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Tue, 21 Nov 2023 14:40:28 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/</guid>
+      <description>&lt;h1 id=&#34;引用和对象&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%bc%95%e7%94%a8%e5%92%8c%e5%af%b9%e8%b1%a1&#34;&gt;
+        ##
+    &lt;/a&gt;
+    引用和对象
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Programming/Python/python-memory/python-obj-ref.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;python 会缓冲短字符串和小整数对象（-5 ~ 256），多个引用会引用同一个对象&lt;/li&gt;
+&lt;li&gt;python 不会缓冲场字符串、容器、其他对象&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;对象&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%af%b9%e8%b1%a1&#34;&gt;
+        #
+    &lt;/a&gt;
+    对象
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;typedef struct_object{
+
+　　int ob_refcnt;
+
+　　struct_typeobject *ob_type;
+
+}PyObject;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;ob_refcnt：引用计数&lt;/li&gt;
+&lt;li&gt;ob_type：类型的类型（元类型 metatype）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;对象引用计数&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%af%b9%e8%b1%a1%e5%bc%95%e7%94%a8%e8%ae%a1%e6%95%b0&#34;&gt;
+        ##
+    &lt;/a&gt;
+    对象引用计数
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sys.getrefcount()
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;sys.getrefcount() 调用时因为 getrefcount() 也会增加引用，所以结果会比实际 ref count 大 1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;gc&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#gc&#34;&gt;
+        ##
+    &lt;/a&gt;
+    GC
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; import gc
+&amp;gt;&amp;gt;&amp;gt; gc.get_threshold()
+(700, 10, 10)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;代际和 GC：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;0 代：年轻代，对应 get_threshold() 第 1 项（700）
+&lt;ul&gt;
+&lt;li&gt;当 “新分配的对象(object allocation) - 释放的对象(object deallocation)” 大于 700 时触发 0 代扫描&lt;/li&gt;
+&lt;li&gt;当引用计数为 0 时放入 1 代&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;1 代：中年代，对应 get_threshold() 第 2 项（10）
+&lt;ul&gt;
+&lt;li&gt;当 0 代进行了 10 次扫描时触发扫描&lt;/li&gt;
+&lt;li&gt;当引用计数为 0 时放入 2 代&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;2 代：老年代，对应 get_threshold() 第 3 项（10）
+&lt;ul&gt;
+&lt;li&gt;当 1 代进行了 10 次扫描时出发扫描&lt;/li&gt;
+&lt;li&gt;当引用技术为 0 释放&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;手动触发 GC&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; result = gc.collect()
+&amp;gt;&amp;gt;&amp;gt; print(result)
+5
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;内存池机制&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%86%85%e5%ad%98%e6%b1%a0%e6%9c%ba%e5%88%b6&#34;&gt;
+        ##
+    &lt;/a&gt;
+    内存池机制
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;内存管理空间结构&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%86%85%e5%ad%98%e7%ae%a1%e7%90%86%e7%a9%ba%e9%97%b4%e7%bb%93%e6%9e%84&#34;&gt;
+        #
+    &lt;/a&gt;
+    内存管理空间结构
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Programming/Python/python-memory/memory-hierarchy.png&#34; alt=&#34;memory hierarchy&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;arena&lt;/li&gt;
+&lt;li&gt;pool&lt;/li&gt;
+&lt;li&gt;block&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;分层&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%88%86%e5%b1%82&#34;&gt;
+        #
+    &lt;/a&gt;
+    分层
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Programming/Python/python-memory/python-memory-layers.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;分配调用栈：
+&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Programming/Python/python-memory/allocation-stack.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Programming/Python/python-memory/allocation.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;第-0-层&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac-0-%e5%b1%82&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第 0 层
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;对接 OS 分配 python 所需内存&lt;/p&gt;
+&lt;h3 id=&#34;第-1-层&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac-1-%e5%b1%82&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第 1 层
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;管理 arena&lt;/li&gt;
+&lt;li&gt;arena 大小 256 KB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;第-2-层&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac-2-%e5%b1%82&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第 2 层
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;管理 pool 和 block&lt;/li&gt;
+&lt;li&gt;pool 大小 4 KB&lt;/li&gt;
+&lt;li&gt;block 小于 4 KB&lt;/li&gt;
+&lt;li&gt;block 状态：
+&lt;ul&gt;
+&lt;li&gt;已分配&lt;/li&gt;
+&lt;li&gt;使用完毕&lt;/li&gt;
+&lt;li&gt;未使用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;第-3-层&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac-3-%e5%b1%82&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第 3 层
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;管理 python 对象使用的内存&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bbs.huaweicloud.com/blogs/382075&#34;&gt;https://bbs.huaweicloud.com/blogs/382075&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://juejin.cn/post/6856235545220415496&#34;&gt;https://juejin.cn/post/6856235545220415496&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

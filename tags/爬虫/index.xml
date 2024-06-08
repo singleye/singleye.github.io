@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>爬虫 on singleye</title>
+    <link>/tags/%E7%88%AC%E8%99%AB/</link>
+    <description>singleye (爬虫)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 31 Aug 2017 09:46:00 +0000</lastBuildDate>
+    
+    <atom:link href="/tags/%E7%88%AC%E8%99%AB/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>用scrapy爬取京东商品信息</title>
+      <link>/2017/08/%E7%94%A8scrapy%E7%88%AC%E5%8F%96%E4%BA%AC%E4%B8%9C%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF/</link>
+      <pubDate>Thu, 31 Aug 2017 09:46:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/08/%E7%94%A8scrapy%E7%88%AC%E5%8F%96%E4%BA%AC%E4%B8%9C%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;scrapy是一个非常著名的爬虫框架，使用这个框架可以非常容易的生成一个网站爬虫程序框架，之后就可以在框架之上方便的进行爬虫的编写。&lt;/p&gt;
+&lt;p&gt;进来想要了解一些产品的市场信息，就用scrapy写了个简单的爬虫，写个笔记记录一下。&lt;/p&gt;
+&lt;h1 id=&#34;安装&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85&#34;&gt;
+        ##
+    &lt;/a&gt;
+    安装
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;使用python环境的话最好通过pip进行安装，这样操作简单方便，直接使用下面的命令即可：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ pip install scrapy
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;scrapy框架提供了&amp;rsquo;scrapy&amp;rsquo;命令进行项目的创建及运行管理，所以首先看一下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ scrapy --help
+Scrapy 1.4.0 - no active project
+
+Usage:
+  scrapy &amp;lt;command&amp;gt; [options] [args]
+
+Available commands:
+  bench         Run quick benchmark test
+  fetch         Fetch a URL using the Scrapy downloader
+  genspider     Generate new spider using pre-defined templates
+  runspider     Run a self-contained spider (without creating a project)
+  settings      Get settings values
+  shell         Interactive scraping console
+  startproject  Create new project
+  version       Print Scrapy version
+  view          Open URL in browser, as seen by Scrapy
+
+  [ more ]      More commands available when run from project directory
+
+Use &amp;quot;scrapy &amp;lt;command&amp;gt; -h&amp;quot; to see more info about a command
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;创建项目&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae&#34;&gt;
+        ##
+    &lt;/a&gt;
+    创建项目
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;首先使用&amp;rsquo;scrapy startproject&amp;rsquo;创建项目&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ scrapy startproject crawler
+New Scrapy project &#39;crawler&#39;, using template directory &#39;/Users/wangq/virtualenv/test/lib/python2.7/site-packages/scrapy/templates/project&#39;, created in:
+    /Users/wangq/tmp/crawler
+
+You can start your first spider with:
+    cd crawler
+    scrapy genspider example example.com
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;使用&amp;rsquo;scrapy genspider&amp;rsquo;创建爬虫&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ cd crawler
+$ scrapy genspider jd list.jd.com
+$ ls crawler/spiders/jd.py
+crawler/spiders/jd.py
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;到此爬虫的框架就创建好了，爬虫的主要代码需要在jd.py中完成。&lt;/p&gt;
+&lt;h1 id=&#34;编写爬虫&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e5%86%99%e7%88%ac%e8%99%ab&#34;&gt;
+        ##
+    &lt;/a&gt;
+    编写爬虫
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;爬虫代码框架&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%88%ac%e8%99%ab%e4%bb%a3%e7%a0%81%e6%a1%86%e6%9e%b6&#34;&gt;
+        #
+    &lt;/a&gt;
+    爬虫代码框架
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;爬虫的代码主要是在crawler/spiders/jd.py中，打开这个文件看到内容如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# -*- coding: utf-8 -*-
+import scrapy
+
+
+class JdSpider(scrapy.Spider):
+    name = &#39;jd&#39;
+    allowed_domains = [&#39;list.jd.com&#39;]
+    start_urls = [&#39;http://list.jd.com/&#39;]
+
+    def parse(self, response):
+        pass
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;简单解释下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;name: 爬虫的名字&lt;/li&gt;
+&lt;li&gt;allowed_domains: 当时用了OffsiteMiddleware的时候这个配置可以限定爬虫爬取的站点的域名列表&lt;/li&gt;
+&lt;li&gt;start_urls: 指定爬虫开始运行时的爬取URL&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在生成的代码中有一个parse()方法，每当爬虫获取一个新的页面爬去返回数据的时候就把这个数据通过response传递给parse()方法进行内容处理。&lt;/p&gt;
+&lt;h2 id=&#34;了解要爬取网页的结构&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%ba%86%e8%a7%a3%e8%a6%81%e7%88%ac%e5%8f%96%e7%bd%91%e9%a1%b5%e7%9a%84%e7%bb%93%e6%9e%84&#34;&gt;
+        #
+    &lt;/a&gt;
+    了解要爬取网页的结构
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;编写爬虫前先了解被爬取网页的结构信息，以及信息提取方法。这次我需要提取的信息主要是商品列表页面中的物品、价格、评论数这些基本信息，使用浏览器开发者功能查看对应的元素。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/08/scrapy/scrapy-001.png?x-oss-process=style/png2jpg&#34; alt=&#34;page structure&#34;&gt;&lt;/p&gt;
+&lt;p&gt;分析页面发现需要的条目的class都有&amp;rsquo;j-sku-item&amp;rsquo;属性值，知道这个规律后页就可以使用xpath获取到这个条目的具体内容了。&lt;/p&gt;
+&lt;h2 id=&#34;通过xpath获取选取的页面元素&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%80%9a%e8%bf%87xpath%e8%8e%b7%e5%8f%96%e9%80%89%e5%8f%96%e7%9a%84%e9%a1%b5%e9%9d%a2%e5%85%83%e7%b4%a0&#34;&gt;
+        #
+    &lt;/a&gt;
+    通过xpath获取选取的页面元素
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;每个div的class属性包含&amp;rsquo;j-sku-item&amp;rsquo;的元素可以通过xpath的这条规则来描述&amp;quot;//div[contains(@class, &amp;lsquo;j-sku-item&amp;rsquo;)]&amp;quot;，scrapy的response可以直接支持xpath，那么想要获取这个对应的元素就可以通过这行代码来获取了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;response.xpath(&amp;quot;//div[contains(@class, &#39;j-sku-item&#39;)]&amp;quot;):
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;获取价格及评论信息&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%8e%b7%e5%8f%96%e4%bb%b7%e6%a0%bc%e5%8f%8a%e8%af%84%e8%ae%ba%e4%bf%a1%e6%81%af&#34;&gt;
+        #
+    &lt;/a&gt;
+    获取价格及评论信息
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;通常的静态内容网站数据都可以使用xpath来获取，但在爬京东的网站过程中发现价格及评论数据不是后端与页面一起处理好之后一起发送过来的，所以这两个信息无法使用xpath获取，但仔细分析网络请求可以发现这些信息是通过两个web调用来获取的，我们可以使用python的requests库来获取。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;获取评论信息的调用：
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/08/scrapy/scrapy-002.jpeg?x-oss-process=style/png2jpg&#34; alt=&#34;comments信息&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;接下来可以使用curl来尝试获取评论信息的方法，最终发现访问可以通过类似的简化来完成：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;https://club.jd.com/comment/productCommentSummaries.action?my=pinglun&amp;amp;referenceIds=959228,1722097,1722101
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;主要参数是referenceIds，这里可以指定需要获取的sku的列表。获取的代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;def get_comments(sku_id_list):
+    &amp;quot;&amp;quot;&amp;quot;
+    url: https://club.jd.com/comment/productCommentSummaries.action?my=pinglun&amp;amp;referenceIds=959228,1722097,1722101&amp;quot;
+    &amp;quot;&amp;quot;&amp;quot;
+    ids = &#39;,&#39;.join(sku_id_list)
+    url = &amp;quot;https://club.jd.com/comment/productCommentSummaries.action?my=pinglun&amp;amp;referenceIds=&amp;quot; + ids
+    rsp = requests.get(url)
+    return rsp.json()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;获取价格信息的调用：
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/08/scrapy/scrapy-003.jpeg?x-oss-process=style/png2jpg&#34; alt=&#34;price信息&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;与获取评论信息类似，最终发现调用的接口可以简化成这个样子：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;https://p.3.cn/prices/mgets?skuIds=J_959228%2CJ_1722101%2CJ_2064343
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;不同之处是每个sku前面加了一个&amp;quot;J_&amp;ldquo;字段。参照获取评论的方法代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;def get_prices(sku_id_list):
+    &amp;quot;&amp;quot;&amp;quot;
+    url: https://p.3.cn/prices/mgets?skuIds=J_959228%2CJ_1722101%2CJ_2064343
+    &amp;quot;&amp;quot;&amp;quot;
+    str_id_list = map(lambda x: &amp;quot;J_&amp;quot;+x, sku_id_list)
+    ids = &#39;,&#39;.join(str_id_list)
+    url = &amp;quot;https://p.3.cn/prices/mgets?skuIds=&amp;quot; + ids
+    rsp = requests.get(url)
+    return rsp.json()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;分页处理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%88%86%e9%a1%b5%e5%a4%84%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    分页处理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;京东的商品条目很多的时候会分页展示，需要爬虫识别分页信息并自动抓取进行上面的处理。&lt;/p&gt;
+&lt;p&gt;首先先找到如何导向下一页的连接：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/08/scrapy/scrapy-004.png?x-oss-process=style/png2jpg&#34; alt=&#34;分页链接&#34;&gt;&lt;/p&gt;
+&lt;p&gt;获取链接的方式可以通过xpath抓取，把抓取的连接传给scrapy的Request()方法进行新页面的抓取，并指定抓取信息的处理回调即可。代码如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;next_page = response.xpath(&amp;quot;//a[@class=&#39;pn-next&#39;]/@href&amp;quot;).get()
+if next_page:
+    yield scrapy.Request(&amp;quot;https://list.jd.com&amp;quot;+next_page, callback=self.parse)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;抓取项目进行pipeline处理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%8a%93%e5%8f%96%e9%a1%b9%e7%9b%ae%e8%bf%9b%e8%a1%8cpipeline%e5%a4%84%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    抓取项目进行pipeline处理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;每一条被爬取好的信息条目会发给pipeline模块进行处理，因此pipeline可以对数据做很多后期的处理工作，包括但不限于：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;清洗抓起数据&lt;/li&gt;
+&lt;li&gt;验证抓取的数据&lt;/li&gt;
+&lt;li&gt;去重&lt;/li&gt;
+&lt;li&gt;存储数据&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这次实践主要用pipeline进行数据的存储处理。默认情况下scrapy使用自带的pipeline进行处理，如果需要进行特殊处理则需要对pipeline进行配置。配置文件是crawler/settings.py。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# Configure item pipelines
+# See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+    &#39;crawler.pipelines.CrawlerPipeline&#39;: 300,
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;pipeline的配置通过ITEM_PIPELINES完成，可以指定多个pipeline，这样一个pipeline处理完之后可以交给后面的pipeline处理。每一个pipeline条目有一个0-1000之间的整数参数，这个参数指定了pipeline的执行顺序。&lt;/p&gt;
+&lt;p&gt;配置好pipeline之后可以在crawler/pipelines.py中编写代码进行存储处理。默认生成的代码中只包含process_item()方法，但对于需要打开文件或者数据库的场景处理会不太方便，我们可以增加open_spider()和close_spider()方法进行处理，比如&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;class CrawlerPipeline(object):
+    def open_spider(self, spider):
+        self.file = open(&#39;result.json&#39;, &#39;w&#39;)
+
+    def close_spider(self, spider):
+        self.file.close()
+
+    def process_item(self, item, spider):
+        line = json.dumps(dict(item)).decode(&amp;quot;unicode_escape&amp;quot;).encode(&#39;utf-8&#39;) + &#39;\n&#39;
+        self.file.write(line)
+        return item
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;编码问题&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e7%a0%81%e9%97%ae%e9%a2%98&#34;&gt;
+        #
+    &lt;/a&gt;
+    编码问题
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;前面的process_item()方法中有一行处理编码的代码需要解释一下。在用下面这行代码不进行编码处理的情况下如果直接存储json.dumps()的结果时会存储成人类不能直接阅读的内容。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;line = json.dumps(dict(item)) + &#39;\n&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如下存储的其中一个条目，会发现&amp;quot;name&amp;quot;变成了&amp;rdquo;\uXXXX\uXXXX&amp;quot;的字符串。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;{&amp;quot;sku&amp;quot;: &amp;quot;10391738071&amp;quot;, &amp;quot;category&amp;quot;: &amp;quot;3128&amp;quot;, &amp;quot;vendor&amp;quot;: &amp;quot;138857&amp;quot;, &amp;quot;name&amp;quot;: &amp;quot;\u98de\u5229\u6d66\uff08PHILIPS\uff09\u51c0\u6c34\u5668 WP4170/00\u7eaf\u6c34\u673a+WP4100/00\u524d\u7f6e\u8fc7\u6ee4\u5668\u5957\u88c5&amp;quot;, &amp;quot;price&amp;quot;: 4699.0,            &amp;quot;comments&amp;quot;: 4}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;原因是因为json.dumps()对于中文字符的处理会进行escape处理，为了存储需要首先进行unescape，就是进行decode(&amp;ldquo;unicode_escape&amp;rdquo;)。处理后的结果变成了utf-8编码，需要注意的是这还不够。如果这行代码写成下面的形式，则会发现些文件的时候无法写入文件。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;line = json.dumps(dict(item)).decode(&amp;quot;unicode_escape&amp;quot;) + &#39;\n&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;产生的错误发生在file.write()中：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode characters in position 71-72: ordinal not in range(128)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这是因为直接写入文件时write()会认为所有的数据都是ascii码，但中文情况下显然是不成立的。因此需要对数据进行encode()，参照下面的代码写就没有问题了：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;line = json.dumps(dict(item)).decode(&amp;quot;unicode_escape&amp;quot;).encode(&#39;utf-8&#39;) + &#39;\n&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;注，有写地方会用sys.setdefaultencoding(&amp;lsquo;utf-8&amp;rsquo;)来进行处理，但是不是万不得已并不推荐这种直接改变全局环境的做法，有可能会让程序产生意料不到的情况。&lt;/p&gt;
+&lt;h1 id=&#34;数据分析&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%95%b0%e6%8d%ae%e5%88%86%e6%9e%90&#34;&gt;
+        ##
+    &lt;/a&gt;
+    数据分析
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;这次抓取数据主要是分析在各个价格区间的产品用户使用情况，因此可以通过柱状图来展示。横坐标表示价格，用100元为一个区间进行统计。纵坐标显示在这100元的价格范围内的用户评论数量。&lt;/p&gt;
+&lt;p&gt;画图使用matplotlib编写，主要的代码逻辑如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PRICE_UNIT = 100
+
+axis_price = range(PRICE_LOWER_RANGE, PRICE_UPPER_RANGE, PRICE_UNIT)
+axis_comment = [0] * len(axis_price)
+
+for item in get_all_sku(category=category):
+    idx = int(item.price/PRICE_UNIT)
+    
+    # 当超过统计价格的上限区间后将结果合并到最高价格范围中
+    if idx &amp;gt;= len(axis_price):
+        axis_comment[-1] += item.comment
+    else:
+        axis_comment[idx] += item.comment
+
+width=0.8*PRICE_UNIT
+plt.bar(axis_price, axis_comment, width, color=&#39;blue&#39;, align=&#39;edge&#39;)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;绘制结果如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/08/scrapy/scrapy-005.png?x-oss-process=style/png2jpg&#34; alt=&#34;绘图&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

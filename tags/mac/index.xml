@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mac on singleye</title>
+    <link>/tags/mac/</link>
+    <description>singleye (Mac)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 20 Nov 2017 00:08:15 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/mac/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Vim 8 Mac</title>
+      <link>/2017/11/vim-8-mac/</link>
+      <pubDate>Mon, 20 Nov 2017 00:08:15 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/vim-8-mac/</guid>
+      <description>&lt;h2 id=&#34;安装vim8&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85vim8&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装vim8
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;$ xcode-select --install
+$ ./configure --enable-luainterp=yes --enable-perlinterp=yes --enable-pythoninterp=yes --enable-tclinterp=yes --enable-rubyinterp=yes --enable-cscope --with-lua-prefix=/usr/local --enable-terminal --enable-multibyte --with-features=huge
+$ make
+$ make install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;安装插件&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e6%8f%92%e4%bb%b6&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装插件
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h2 id=&#34;安装youcompleteme&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85youcompleteme&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装YouCompleteMe:
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;$ ./install.py --clang-completer --go-completer --js-completer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;vim-folding&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#vim-folding&#34;&gt;
+        #
+    &lt;/a&gt;
+    vim folding
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;za&lt;/td&gt;
+&lt;td&gt;打开/关闭当前的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zc&lt;/td&gt;
+&lt;td&gt;关闭当前打开的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zo&lt;/td&gt;
+&lt;td&gt;打开当前的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zm&lt;/td&gt;
+&lt;td&gt;关闭所有折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zM&lt;/td&gt;
+&lt;td&gt;关闭所有折叠及其嵌套的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zr&lt;/td&gt;
+&lt;td&gt;打开所有折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zR&lt;/td&gt;
+&lt;td&gt;打开所有折叠及其嵌套的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zd&lt;/td&gt;
+&lt;td&gt;删除当前折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zE&lt;/td&gt;
+&lt;td&gt;删除所有折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zj&lt;/td&gt;
+&lt;td&gt;移动至下一个折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zk&lt;/td&gt;
+&lt;td&gt;移动至上一个折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zn&lt;/td&gt;
+&lt;td&gt;禁用折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zN&lt;/td&gt;
+&lt;td&gt;启用折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;issues&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#issues&#34;&gt;
+        #
+    &lt;/a&gt;
+    Issues
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;macos-iterm启动vim后第一行显示p字符&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#macos-iterm%e5%90%af%e5%8a%a8vim%e5%90%8e%e7%ac%ac%e4%b8%80%e8%a1%8c%e6%98%be%e7%a4%bap%e5%ad%97%e7%ac%a6&#34;&gt;
+        ##
+    &lt;/a&gt;
+    macos iTerm启动vim后第一行显示&amp;rsquo;$p&amp;rsquo;字符
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;解决方法：把终端类型从xterm或者xterm-256color改为linux&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Build Tensorflow v1.7 on NVIDIA Jetson tx2 - singleye</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="Machine Learning,Tensorflow,Jetson,TX2">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">Build Tensorflow v1.7 on NVIDIA Jetson tx2</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2018-04-12">2018-04-12</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2018/04/build-tensorflow-v1.7-on-nvidia-jetson-tx2/">/2018/04/build-tensorflow-v1.7-on-nvidia-jetson-tx2/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
+                
+                    
+                    <li><a href="/categories/tensorflow/">Tensorflow</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/machine-learning/">#Machine Learning</a></li>
+                
+                    
+                    <li><a href="/tags/tensorflow/">#Tensorflow</a></li>
+                
+                    
+                    <li><a href="/tags/jetson/">#Jetson</a></li>
+                
+                    
+                    <li><a href="/tags/tx2/">#TX2</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#environment">Environment</a></li>
+    <li><a href="#build-process">Build process</a>
+      <ul>
+        <li><a href="#step1-upgrade-jetpack">Step1: Upgrade Jetpack</a></li>
+        <li><a href="#step2-compile-bazelhttpsgithubcombazelbuildbazel">Step2: Compile <a href="https://github.com/bazelbuild/bazel">bazel</a></a></li>
+        <li><a href="#step3-build-tensorflow">Step3: Build tensorflow</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!--toc-->
+<h1 id="how-to-install-tensorflow-v17-on-nvidia-jetson-tx2" >
+<div>
+    <a href="#how-to-install-tensorflow-v17-on-nvidia-jetson-tx2">
+        ##
+    </a>
+    How to install tensorflow v1.7 on NVIDIA Jetson TX2
+</div>
+</h1>
+<p>Tensorflow is a popular machine learning platform and the latest version 1.7 comes out recently. I have a NVIDIA Jetson TX2 development board and I would like to use tensorflow on it, but tensorflow doesn&rsquo;t come along with the Jetpack. Here is what I did to compile one from the source code.</p>
+<h2 id="environment" >
+<div>
+    <a href="#environment">
+        #
+    </a>
+    Environment
+</div>
+</h2>
+<ul>
+<li>Platform: NVIDIA Jetson TX2</li>
+<li>Jetpack: v3.2</li>
+<li>CUDA: 9.0</li>
+<li>cuDNN: 7.0</li>
+</ul>
+<h2 id="build-process" >
+<div>
+    <a href="#build-process">
+        #
+    </a>
+    Build process
+</div>
+</h2>
+<h3 id="step1-upgrade-jetpack" >
+<div>
+    <a href="#step1-upgrade-jetpack">
+        ##
+    </a>
+    Step1: Upgrade Jetpack
+</div>
+</h3>
+<p>$ sudo apt-get upgrade</p>
+<h3 id="step2-compile-bazelhttpsgithubcombazelbuildbazel" >
+<div>
+    <a href="#step2-compile-bazelhttpsgithubcombazelbuildbazel">
+        ##
+    </a>
+    Step2: Compile <a href="https://github.com/bazelbuild/bazel">bazel</a>
+</div>
+</h3>
+<p>I tried 2 ways to build bazel and realized it&rsquo;s far more easier to build the &lsquo;dist&rsquo; version.</p>
+<ol>
+<li>Build Bazel</li>
+</ol>
+<p>On environment not bootstraping with protoc/grpc installed, use the &lsquo;dist&rsquo; distribution.</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-dist.zip
+</span></span></code></pre></div><p>Decompress the source and enter the source root directory, then run the commands below to build bazel:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>./compile.sh
+</span></span><span style="display:flex;"><span>cp output/bazel /usr/local/bin/
+</span></span></code></pre></div><p><strong>More words about the non-dist version:</strong></p>
+<p>If you would like to try build from the non-dist version of source code, you can download it from here:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>https://github.com/bazelbuild/bazel/archive/0.11.1.tar.gz
+</span></span></code></pre></div><p>Building it depends on a bunch of stuffs:</p>
+<ul>
+<li><a href="https://github.com/google/protobuf">protobuf</a></li>
+<li><a href="http://netty.io/wiki/forked-tomcat-native.html#wiki-h2-5">netty-tcnative</a></li>
+<li><a href="https://github.com/grpc/grpc-java/blob/master/COMPILING.md">grpc-java</a></li>
+</ul>
+<h3 id="step3-build-tensorflow" >
+<div>
+    <a href="#step3-build-tensorflow">
+        ##
+    </a>
+    Step3: Build tensorflow
+</div>
+</h3>
+<p>Install python 2.7 dependencies:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo apt-get install python-numpy python-dev python-pip python-wheel
+</span></span></code></pre></div><p>Install python 3.x dependencies:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ sudo apt-get install python3-numpy python3-dev python3-pip python3-wheel
+</span></span></code></pre></div><p>Download source:</p>
+<pre tabindex="0"><code>wget https://github.com/tensorflow/tensorflow/archive/v1.7.0.tar.gz
+</code></pre><p>Pre-build configure, here are the settings need to set manually:</p>
+<ul>
+<li>Disable Amazon S3 File System support (I have issue of &ldquo;undefined symbol: _ZN3Aws11Environment6GetEnvB5cxx11EPKc&rdquo; while importing tensorflow)</li>
+<li>Enable &lsquo;CUDA&rsquo; support</li>
+<li>cuDNN library path: /usr/lib/aarch64-linux-gnu</li>
+<li>Enable &lsquo;TensorRT&rsquo; and set library path: /usr/lib/aarch64-linux-gnu</li>
+<li>CUDA compute capability: 6.2</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ./configure
+</span></span><span style="display:flex;"><span>You have bazel 0.11.1- <span style="color:#ff6ac1">(</span>@non-git<span style="color:#ff6ac1">)</span> installed.
+</span></span><span style="display:flex;"><span>Please specify the location of python. <span style="color:#ff6ac1">[</span>Default is /usr/bin/python<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Found possible Python library paths:
+</span></span><span style="display:flex;"><span>  /usr/local/lib/python2.7/dist-packages
+</span></span><span style="display:flex;"><span>  /usr/lib/python2.7/dist-packages
+</span></span><span style="display:flex;"><span>Please input the desired Python library path to use.  Default is <span style="color:#ff6ac1">[</span>/usr/local/lib/python2.7/dist-packages<span style="color:#ff6ac1">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with jemalloc as malloc support? <span style="color:#ff6ac1">[</span>Y/n<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>jemalloc as malloc support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with Google Cloud Platform support? <span style="color:#ff6ac1">[</span>Y/n<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>Google Cloud Platform support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with Hadoop File System support? <span style="color:#ff6ac1">[</span>Y/n<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>Hadoop File System support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with Amazon S3 File System support? <span style="color:#ff6ac1">[</span>Y/n<span style="color:#ff6ac1">]</span>: n
+</span></span><span style="display:flex;"><span>No Amazon S3 File System support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with Apache Kafka Platform support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>No Apache Kafka Platform support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with XLA JIT support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>No XLA JIT support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with GDR support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>No GDR support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with VERBS support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>No VERBS support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with OpenCL SYCL support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>No OpenCL SYCL support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with CUDA support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>: y
+</span></span><span style="display:flex;"><span>CUDA support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify the CUDA SDK version you want to use, e.g. 7.0. <span style="color:#ff6ac1">[</span>Leave empty to default to CUDA 9.0<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify the location where CUDA 9.0 toolkit is installed. Refer to README.md <span style="color:#ff6ac1">for</span> more details. <span style="color:#ff6ac1">[</span>Default is /usr/local/cuda<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify the cuDNN version you want to use. <span style="color:#ff6ac1">[</span>Leave empty to default to cuDNN 7.0<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify the location where cuDNN <span style="color:#ff9f43">7</span> library is installed. Refer to README.md <span style="color:#ff6ac1">for</span> more details. <span style="color:#ff6ac1">[</span>Default is /usr/local/cuda<span style="color:#ff6ac1">]</span>:/usr/lib/aarch64-linux-gnu/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with TensorRT support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>: y
+</span></span><span style="display:flex;"><span>TensorRT support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify the location where TensorRT is installed. <span style="color:#ff6ac1">[</span>Default is /usr/lib/x86_64-linux-gnu<span style="color:#ff6ac1">]</span>:/usr/lib/aarch64-linux-gnu/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+</span></span><span style="display:flex;"><span>You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+</span></span><span style="display:flex;"><span>Please note that each additional compute capability significantly increases your build <span style="color:#ff5c57">time</span> and binary size. <span style="color:#ff6ac1">[</span>Default is: 3.5,5.2<span style="color:#ff6ac1">]</span>6.2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you want to use clang as CUDA compiler? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>nvcc will be used as CUDA compiler.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify which gcc should be used by nvcc as the host compiler. <span style="color:#ff6ac1">[</span>Default is /usr/bin/gcc<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Do you wish to build TensorFlow with MPI support? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>No MPI support will be enabled <span style="color:#ff6ac1">for</span> TensorFlow.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please specify optimization flags to use during compilation when bazel option <span style="color:#5af78e">&#34;--config=opt&#34;</span> is specified <span style="color:#ff6ac1">[</span>Default is -march<span style="color:#ff6ac1">=</span>native<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Would you like to interactively configure ./WORKSPACE <span style="color:#ff6ac1">for</span> Android builds? <span style="color:#ff6ac1">[</span>y/N<span style="color:#ff6ac1">]</span>:
+</span></span><span style="display:flex;"><span>Not configuring the WORKSPACE <span style="color:#ff6ac1">for</span> Android builds.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Preconfigured Bazel build configs. You can use any of the below by adding <span style="color:#5af78e">&#34;--config=&lt;&gt;&#34;</span> to your build command. See tools/bazel.rc <span style="color:#ff6ac1">for</span> more details.
+</span></span><span style="display:flex;"><span>        --config<span style="color:#ff6ac1">=</span>mkl            <span style="color:#78787e"># Build with MKL support.</span>
+</span></span><span style="display:flex;"><span>        --config<span style="color:#ff6ac1">=</span>monolithic     <span style="color:#78787e"># Config for mostly static monolithic build.</span>
+</span></span><span style="display:flex;"><span>Configuration finished
+</span></span></code></pre></div><p>Apply patch <a href="https://github.com/singleye/KnowledgeBase/blob/master/Tensorflow/Jetpack3.2/tensorrt.patch">Jetpack3.2/tensorrt.patch</a> if you want TensorRT support.</p>
+<p>Start the build:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ bazel build --config<span style="color:#ff6ac1">=</span>opt --local_resources 3072,4.0,1.0 --config<span style="color:#ff6ac1">=</span>cuda //tensorflow/tools/pip_package:build_pip_package
+</span></span></code></pre></div><p>After compilation, generate pip package to &rsquo;target&rsquo; directory:</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ ./bazel-bin/tensorflow/tools/pip_package/build_pip_package target
+</span></span></code></pre></div><h1 id="easy-usage" >
+<div>
+    <a href="#easy-usage">
+        ##
+    </a>
+    Easy usage
+</div>
+</h1>
+<p>I&rsquo;ve build out the pip <a href="https://pan.baidu.com/s/1ORp_FCb-ZR-ZAZoGd8CuRw">package</a>, feel free to use it to save some time ;-)</p>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/">使用Nvidia Jetson TX2挖以太币</a></li>
+                
+                <li><a href="/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/">在 Nvidia Jetson TX2 上编译安装tensorflow</a></li>
+                
+                <li><a href="/2017/09/the-current-state-of-machine-intelligence-from-shivon-zilis/">The Current State of Machine Intelligence (from Shivon Zilis)</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

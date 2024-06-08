@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Mysql charset/collation字符编码设置 - My New Hugo Site</title>
+
+<meta name="description" content="mysql在创建数据库时有两个跟字符编码相关的参数&quot;character set&quot;和&quot;collate&quot;，这里解释一下这两个参数的作用。
+# character set **“character set”**很容易解释，就是指定字符在存储到mysql中时使用的编码集。数据库支持哪些编码可以通过&quot;show character set&quot;获得。
+# collate 这个参数指定mysql根据哪些规则来比较存储的数据的字符集，这些信息可以用来进行数据的比较排序。
+这个参数的格式构成规则如下：
+&ldquo;&lt;字符集&gt;_&lt;语言相关信息&gt;_&lt;后缀&gt;&rdquo;
+例如： &ldquo;utf8_general_ci&rdquo;, &ldquo;latin1_danish_ci&rdquo;
+# mysql一些其他特性 ## 1.">
+
+
+    <meta name="keywords" content="DataBase,mysql,charset,collate">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">Mysql charset/collation字符编码设置</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2018-01-23">2018-01-23</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/database/mysql_charset_collation/">/post/database/mysql_charset_collation/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/database/">Database</a></li>
+                
+                    
+                    <li><a href="/categories/mysql/">Mysql</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/database/">#DataBase</a></li>
+                
+                    
+                    <li><a href="/tags/mysql/">#Mysql</a></li>
+                
+                    
+                    <li><a href="/tags/charset/">#Charset</a></li>
+                
+                    
+                    <li><a href="/tags/collate/">#Collate</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#character-set">character set</a></li>
+    <li><a href="#collate">collate</a></li>
+    <li><a href="#mysql一些其他特性">mysql一些其他特性</a>
+      <ul>
+        <li><a href="#1-mysql支持4个级别的字符集设置服务器数据库表列">1. mysql支持4个级别的字符集设置：服务器，数据库，表，列。</a></li>
+        <li><a href="#clientserver通讯字符编码">client/server通讯字符编码</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <p>mysql在创建数据库时有两个跟字符编码相关的参数&quot;character set&quot;和&quot;collate&quot;，这里解释一下这两个参数的作用。</p>
+<h2 id="character-set" >
+<div>
+    <a href="#character-set">
+        #
+    </a>
+    character set
+</div>
+</h2>
+<p>**“character set”**很容易解释，就是指定字符在存储到mysql中时使用的编码集。数据库支持哪些编码可以通过&quot;show character set&quot;获得。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h2 id="collate" >
+<div>
+    <a href="#collate">
+        #
+    </a>
+    collate
+</div>
+</h2>
+<p>这个参数指定mysql根据哪些规则来比较存储的数据的字符集，这些信息可以用来进行数据的比较排序。</p>
+<p>这个参数的格式构成规则如下：</p>
+<p>&ldquo;&lt;字符集&gt;_&lt;语言相关信息&gt;_&lt;后缀&gt;&rdquo;</p>
+<p>例如： &ldquo;utf8_general_ci&rdquo;, &ldquo;latin1_danish_ci&rdquo;</p>
+<h2 id="mysql一些其他特性" >
+<div>
+    <a href="#mysql%e4%b8%80%e4%ba%9b%e5%85%b6%e4%bb%96%e7%89%b9%e6%80%a7">
+        #
+    </a>
+    mysql一些其他特性
+</div>
+</h2>
+<h3 id="1-mysql支持4个级别的字符集设置服务器数据库表列" >
+<div>
+    <a href="#1-mysql%e6%94%af%e6%8c%814%e4%b8%aa%e7%ba%a7%e5%88%ab%e7%9a%84%e5%ad%97%e7%ac%a6%e9%9b%86%e8%ae%be%e7%bd%ae%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e8%a1%a8%e5%88%97">
+        ##
+    </a>
+    1. mysql支持4个级别的字符集设置：服务器，数据库，表，列。
+</div>
+</h3>
+<h4 id="11-服务器级别" >
+<div>
+    <a href="#11-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%ba%a7%e5%88%ab">
+        ###
+    </a>
+    1.1 服务器级别
+</div>
+</h4>
+<ul>
+<li>作用：</li>
+</ul>
+<p>服务器的字符集可以作为&quot;CREATE DATABASE&quot;的默认值</p>
+<ul>
+<li>设置方法：</li>
+</ul>
+<p>启动参数： &lsquo;&ndash;character-set-server&rsquo; &lsquo;&ndash;collation-server&rsquo;</p>
+<ul>
+<li>查询：</li>
+</ul>
+<p>SHOW VARIABLES 查询 character_set_server/collation_server</p>
+<h4 id="12-数据库级别" >
+<div>
+    <a href="#12-%e6%95%b0%e6%8d%ae%e5%ba%93%e7%ba%a7%e5%88%ab">
+        ###
+    </a>
+    1.2 数据库级别
+</div>
+</h4>
+<ul>
+<li>作用：</li>
+</ul>
+<p>作为创建表时的默认值</p>
+<p>影响LOAD_DATA语句中的CHARACTER SET的值</p>
+<p>影响存储过程中与字符编码相关的操作</p>
+<ul>
+<li>设置方法：</li>
+</ul>
+<p>&lsquo;CREATE DATABASE&rsquo;或&rsquo;ALTER DATABASE&rsquo; 的参数 &lsquo;CHARACTER SET&rsquo; &lsquo;COLLATE&rsquo;</p>
+<ul>
+<li>查询：</li>
+</ul>
+<p>USE db_name;<!-- raw HTML omitted -->SELECT @@character_set_database, @@collation_database;</p>
+<h4 id="13-表级别" >
+<div>
+    <a href="#13-%e8%a1%a8%e7%ba%a7%e5%88%ab">
+        ###
+    </a>
+    1.3 表级别
+</div>
+</h4>
+<ul>
+<li>作用：</li>
+</ul>
+<p>每张表可以有表级别的字符集。</p>
+<ul>
+<li>设置方法：</li>
+</ul>
+<p>使用 CREATE TABLE 和 ALTER TABLE 命令进行设置。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li>查询：</li>
+</ul>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h4 id="14-列级别" >
+<div>
+    <a href="#14-%e5%88%97%e7%ba%a7%e5%88%ab">
+        ###
+    </a>
+    1.4 列级别
+</div>
+</h4>
+<ul>
+<li>作用：</li>
+</ul>
+<p>字符类型的列（CHAR, VARCHAR, TEXT）可以有一个本列相关的 character set和collation设置。</p>
+<ul>
+<li>设置方法：</li>
+</ul>
+<p>设置方法是在CREATE TABLE时使用相应的列参数。</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>比如：</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li>查询：</li>
+</ul>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h3 id="clientserver通讯字符编码" >
+<div>
+    <a href="#clientserver%e9%80%9a%e8%ae%af%e5%ad%97%e7%ac%a6%e7%bc%96%e7%a0%81">
+        ##
+    </a>
+    client/server通讯字符编码
+</div>
+</h3>
+<ul>
+<li>设置：</li>
+</ul>
+<p>mysql数据库client/server之间通讯的字符编码也可以单独设置，设置的方法有若干种：</p>
+<p><strong>使用SQL命令&quot;SET NAME &lsquo;charset_name&quot;和 &ldquo;SET CHAARACTER SET &lsquo;charset_name&rsquo;&ldquo;设置：</strong></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p><strong>使用mysql配置文件设置：</strong></p>
+<p>[mysql]
+default-character-set=koi8r</p>
+<p><strong>使用mysql客户端设置：</strong></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<ul>
+<li>查询：</li>
+</ul>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h1 id="参考" >
+<div>
+    <a href="#%e5%8f%82%e8%80%83">
+        ##
+    </a>
+    参考
+</div>
+</h1>
+<p>*<a href="https://dev.mysql.com/doc/refman/5.7/en/charset.html">https://dev.mysql.com/doc/refman/5.7/en/charset.html</a></p>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

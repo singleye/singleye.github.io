@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>PubSubClient on singleye</title>
+    <link>/tags/pubsubclient/</link>
+    <description>singleye (PubSubClient)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sun, 07 May 2017 16:20:58 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/pubsubclient/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>在ESP 8266 nodeMCU上运行MQTT</title>
+      <link>/2017/05/%E5%9C%A8esp-8266-nodemcu%E4%B8%8A%E8%BF%90%E8%A1%8Cmqtt/</link>
+      <pubDate>Sun, 07 May 2017 16:20:58 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/05/%E5%9C%A8esp-8266-nodemcu%E4%B8%8A%E8%BF%90%E8%A1%8Cmqtt/</guid>
+      <description>&lt;p&gt;自动接触nodeMCU后发现8266是一个非常好的物联网开发Wi-Fi模块，因此就想把MQTT通讯协议在上面运行起来做些简单的事情。&lt;/p&gt;
+&lt;h1 id=&#34;开发目标&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%bc%80%e5%8f%91%e7%9b%ae%e6%a0%87&#34;&gt;
+        ##
+    &lt;/a&gt;
+    开发目标
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;将nodeMCU作为一个MQTT的客户端运行。&lt;/li&gt;
+&lt;li&gt;使用PubSubClient这个MQTT协议实现。&lt;/li&gt;
+&lt;li&gt;程序每次启动后先把将芯片设置到STA模式下，并连接指定的WI-FI路由器。&lt;/li&gt;
+&lt;li&gt;连接建立好之后连接指定的MQTT服务器，并注册从服务器接收数据的topic，并定期将数据（uptime）发送到服务器端指定的topic上。
+&lt;ul&gt;
+&lt;li&gt;上传topic：&amp;ldquo;MAC地址/uplink&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;接收topic：&amp;ldquo;MAC地址/downlink&amp;rdquo;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;当收到downlink消息后把数据进行解析并执行，目前只支持&amp;rsquo;blink&amp;rsquo;命令。该命令可以把芯片上的LED灯按照指定的次数点亮的简单操作。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;程序开发&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a8%8b%e5%ba%8f%e5%bc%80%e5%8f%91&#34;&gt;
+        ##
+    &lt;/a&gt;
+    程序开发
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;程序启动设置&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a8%8b%e5%ba%8f%e5%90%af%e5%8a%a8%e8%ae%be%e7%bd%ae&#34;&gt;
+        #
+    &lt;/a&gt;
+    程序启动设置
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;程序启动的入口为&amp;rsquo;setup()&amp;lsquo;函数，这个函数做几件事情：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;设置LED控制PIN模式&lt;/li&gt;
+&lt;li&gt;将WI-FI芯片设置到STA运行模式，并连接Wi-Fi路由器&lt;/li&gt;
+&lt;li&gt;连接MQTT服务器，监听&amp;rsquo;downlink&amp;rsquo;消息&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;程序片段解析：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void setup() {
+  Serial.begin(BAUD_RATE);
+  pinMode(LED_PIN, OUTPUT);  // 设置LED控制端口
+
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA);       // 设置启动为STA模式
+  WiFi.setAutoConnect(true);
+  WiFi.begin(wifi_ssid, wifi_pwd);  // 连接Wi-Fi路由器
+
+  Serial.printf(&amp;#34;Connecting to AP(%s), password(%s)\n&amp;#34;, wifi_ssid, wifi_pwd);
+  while (WL_CONNECTED != WiFi.status()) {
+    Serial.print(&amp;#34;.&amp;#34;);
+    blink(BLINK_SLOWLY);
+  }
+  Serial.printf(&amp;#34;\nWifi connection is setup!\n&amp;#34;);
+  Serial.printf(&amp;#34;MAC: %s, IP: %s\n&amp;#34;, WiFi.macAddress().c_str(), WiFi.localIP().toString().c_str());
+
+  while (!setup_mqtt_connection()) {   // 连接MQTT服务器
+    Serial.print(&amp;#34;.&amp;#34;);
+    blink(BLINK_SLOWLY);
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;连接mqtt服务器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%bf%9e%e6%8e%a5mqtt%e6%9c%8d%e5%8a%a1%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    连接MQTT服务器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;这个方法的工作就是建立连接并且注册接收的topic。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;bool setup_mqtt_connection()
+{
+  char client_id[CLIENT_ID_LEN];
+
+  snprintf(client_id, CLIENT_ID_LEN, &amp;#34;%s&amp;#34;, WiFi.macAddress().c_str());
+  Serial.printf(&amp;#34;Client[%s] is connecting MQTT server!\n&amp;#34;, client_id);
+  mqtt_connected = mq_client.connect(client_id);  // 连接MQTT服务器
+  if (!mqtt_connected) {
+    Serial.println(&amp;#34;MQTT connection failure&amp;#34;);
+    return false;
+  }
+
+  mq_client.setCallback(mqtt_callback);  // 指定接收downlink消息的处理函数
+
+  memset(uplink_topic, 0, TOPIC_LEN);
+  snprintf(uplink_topic, TOPIC_LEN, &amp;#34;%s/uplink&amp;#34;, WiFi.macAddress().c_str());
+  
+  memset(downlink_topic, 0, TOPIC_LEN);
+  snprintf(downlink_topic, TOPIC_LEN, &amp;#34;%s/downlink&amp;#34;, WiFi.macAddress().c_str());
+  Serial.printf(&amp;#34;Subscribing to topic: %s\n&amp;#34;, downlink_topic);
+  mqtt_connected = mq_client.subscribe(downlink_topic);  // 注册接收downlink消息
+  if (!mqtt_connected) {
+    Serial.println(&amp;#34;MQTT connection failure&amp;#34;);
+    return false;
+  }
+
+  Serial.println(&amp;#34;MQTT connection is setup&amp;#34;);
+  return true;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;接收消息处理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%8e%a5%e6%94%b6%e6%b6%88%e6%81%af%e5%a4%84%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    接收消息处理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;MQTT消息处理函数遵循PubSubClient的接口开发就行了。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void mqtt_callback(char *topic, uint8_t* buffer, unsigned int len) {
+  blink(BLINK_QUICKLY);
+  memset(recv_buffer, 0, RECV_BUFFER_LEN);
+  strncpy(recv_buffer, (char *)buffer, (RECV_BUFFER_LEN&amp;lt;len ? RECV_BUFFER_LEN-1:len));
+  Serial.printf(&amp;#34;Received [topic:%s]:%s\n&amp;#34;, topic, (char*)recv_buffer);
+  parse_cmd((char *)recv_buffer);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;但这里需要注意&amp;rsquo;len&amp;rsquo;这个参数的使用细节。&amp;rsquo;len&amp;rsquo;这个参数表明接收到的消息的实际长度，最好在处理函数中将数据复制出来后进行处理。最开始我没有这样处理，结果发现&amp;rsquo;buffer&amp;rsquo;中的数据会包含发出数据的信息，研究了一下源代码发现PubSubClient的发出／接收缓冲区是共用的，而且发出／接收后都不会重置。另外需要注意的是这个缓冲区并不大，默认为MQTT_MAX_PACKET_SIZE(128)个子节
+。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;class PubSubClient {
+   ...
+   uint8_t buffer[MQTT_MAX_PACKET_SIZE];  // PubSubClient中的数据共用缓冲区
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;主循环&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%bb%e5%be%aa%e7%8e%af&#34;&gt;
+        #
+    &lt;/a&gt;
+    主循环
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;程序主循环的主要任务就是数据周期发送并处理MQTT消息接收&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void loop() {
+  // send message every 10 second
+  if (millis() - last_uplink_tick &amp;gt;= UPLINK_INTERVAL) {
+    memset(send_buffer, 0, SEND_BUFFER_LEN);
+    snprintf(send_buffer, SEND_BUFFER_LEN, &amp;#34;Client[%s@%s]: uptime:%ld&amp;#34;,
+             WiFi.macAddress().c_str(),
+             WiFi.localIP().toString().c_str(),
+             millis());
+    Serial.printf(&amp;#34;Sending: %s\n&amp;#34;, send_buffer);
+    blink(BLINK_QUICKLY);
+    mq_client.publish(uplink_topic, send_buffer);  // 发送数据到MQTT服务器
+    last_uplink_tick = millis();
+  }
+
+  mq_client.loop();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;使用方法&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95&#34;&gt;
+        ##
+    &lt;/a&gt;
+    使用方法
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;编译&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e8%af%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    编译
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;我使用Arduino IDE进行开发，这是一个蛮不错的开发环境。不熟悉的人可以参考我另外一篇&lt;a href=&#34;http://www.singleye.net/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/&#34;&gt;“使用Arduino IDE进行nodeMCU开发”&lt;/a&gt;的blog。&lt;/p&gt;
+&lt;h2 id=&#34;运行&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%bf%90%e8%a1%8c&#34;&gt;
+        #
+    &lt;/a&gt;
+    运行
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;nodemcu客户端&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#nodemcu%e5%ae%a2%e6%88%b7%e7%ab%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    nodeMCU客户端
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;将程序烧入nodeMCU后每次只要通电程序就会自动运行。启动后程序有以下类似输出。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Connecting to AP(your_wifi_ssid), password(your_wifi_password)
+....
+Wifi connection is setup!
+MAC: A0:20:A6:18:47:F1, IP: 192.168.102.102
+Client[A0:20:A6:18:47:F1] is connecting MQTT server!
+Subscribing to topic: A0:20:A6:18:47:F1/downlink
+MQTT connection is setup
+Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:21959   &amp;lt;-- 上传数据
+Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:32036
+Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:42077
+Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:52160
+Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:62233
+Received [topic:A0:20:A6:18:47:F1/downlink]:#blink#3#      &amp;lt;-- 接收控制命令
+Received [topic:A0:20:A6:18:47:F1/downlink]:bli     &amp;lt;-- 接收到非法命令
+Received unknown command: bli
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;数据接收端&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%95%b0%e6%8d%ae%e6%8e%a5%e6%94%b6%e7%ab%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    数据接收端
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;简单运行可以使用&amp;rsquo;mosquitto_sub&amp;rsquo;。命令可以参照下面的写法，需要用&amp;rsquo;-h&amp;rsquo;指定你的MQTT服务器地址，用&amp;rsquo;-t&amp;rsquo;指定接收的topic，这个topic会在nodeMCU每次运行时在串口输出，nodeMCU的MAC地址也会从串口输出。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mosquitto_sub -h &amp;#34;your_mqtt_server&amp;#34; -t &amp;#34;MAC_ADDRESS/uplink&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我直接是在MQTT服务器上运行数据接收端，因此我实际运行的命令如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ mosquitto_sub -t &amp;#34;A0:20:A6:18:47/uplink&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;远程控制端&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%bf%9c%e7%a8%8b%e6%8e%a7%e5%88%b6%e7%ab%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    远程控制端
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;可以使用&amp;rsquo;mosquitto_pub&amp;rsquo;进行远程数据发送实现对nodeMCU的控制。下面的例子可以把LED连续点亮3次。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mosquitto_pub -h &amp;#34;your_mqtt_server&amp;#34; -t &amp;#34;MAC_ADDRESS/downlink&amp;#34; -m &amp;#34;blink#3&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我也是从MQTT服务器端直接发送的控制数据，因此命令可以这样写：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ mosquitto_pub -t &amp;#34;A0:20:A6:18:47:F1/downlink&amp;#34; -m &amp;#34;#blink#3#&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;demo&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#demo&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Demo
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;embed src=&#39;http://player.youku.com/player.php/Type/Folder/Fid//Ob//sid/XMjc1MDE4Njg2MA==/v.swf&#39; quality=&#39;high&#39; width=&#39;480&#39; height=&#39;400&#39; align=&#39;middle&#39; allowScriptAccess=&#39;always&#39; allowFullScreen=&#39;true&#39; mode=&#39;transparent&#39; type=&#39;application/x-shockwave-flash&#39;&gt;&lt;/embed&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://youtu.be/sUh0jkb34zY?list=PLtYMWBKPeJhV7YmKgXZK3j_Pe73ljN-Dx&#34;&gt;Video on YouTube&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文中程序的完整代码可以在&lt;a href=&#34;https://github.com/singleye/esp8266/tree/master/mqtt&#34;&gt;github&lt;/a&gt;上面找到。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

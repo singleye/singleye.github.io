@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>在 Nvidia Jetson TX2 上编译安装tensorflow - My New Hugo Site</title>
+
+<meta name="description" content="## 系统环境 Jetpack：v3.0 CUDA：8.0 cuDNN：5.1.10 ## 编译安装bazel bazel是google开发的一套开发管理工具，功能类似makefile和maven，特点是速度快，编译tensorflow时需要用到这个工具。
+在TX2上安装bazel需要对bazel源代码做一点修改以支持该平台。下载代码后修改文件 &ldquo;bazel/src/main/java/com/google/devtools/build/lib/util/CPU.java&rdquo;，修改如下：
+public enum CPU { X86_32(&quot;x86_32&quot;, ImmutableSet.of(&quot;i386&quot;, &quot;i486&quot;, &quot;i586&quot;, &quot;i686&quot;, &quot;i786&quot;, &quot;x86&quot;)), X86_64(&quot;x86_64&quot;, ImmutableSet.">
+
+
+    <meta name="keywords" content="nvidia,Jetson,TX2,tensorflow">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">在 Nvidia Jetson TX2 上编译安装tensorflow</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-09-14">2017-09-14</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/machinelearning/tensorflow/tensorflow_on_jetson2/">/post/machinelearning/tensorflow/tensorflow_on_jetson2/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
+                
+                    
+                    <li><a href="/categories/tensorflow/">Tensorflow</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/nvidia/">#Nvidia</a></li>
+                
+                    
+                    <li><a href="/tags/jetson/">#Jetson</a></li>
+                
+                    
+                    <li><a href="/tags/tx2/">#TX2</a></li>
+                
+                    
+                    <li><a href="/tags/tensorflow/">#Tensorflow</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#下载tensorflow源码">下载tensorflow源码</a></li>
+    <li><a href="#编译tensorflow">编译tensorflow</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#错误1-jacobih-has-no-member-named-pmul">错误1: Jacobi.h has no member named &lsquo;pmul&rsquo;</a></li>
+    <li><a href="#错误2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl参数错误">错误2: tensorflow/core/lib/core/threadpool.cc NonBlockingThreadPoolTempl()参数错误</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- raw HTML omitted -->
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg" alt="TX2"></p>
+<h1 id="系统环境" >
+<div>
+    <a href="#%e7%b3%bb%e7%bb%9f%e7%8e%af%e5%a2%83">
+        ##
+    </a>
+    系统环境
+</div>
+</h1>
+<ul>
+<li>Jetpack：v3.0</li>
+<li>CUDA：8.0</li>
+<li>cuDNN：5.1.10</li>
+</ul>
+<h1 id="编译安装bazel" >
+<div>
+    <a href="#%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85bazel">
+        ##
+    </a>
+    编译安装bazel
+</div>
+</h1>
+<p>bazel是google开发的一套开发管理工具，功能类似makefile和maven，特点是速度快，编译tensorflow时需要用到这个工具。</p>
+<p>在TX2上安装bazel需要对bazel源代码做一点修改以支持该平台。下载代码后修改文件 &ldquo;bazel/src/main/java/com/google/devtools/build/lib/util/CPU.java&rdquo;，修改如下：</p>
+<pre><code>public enum CPU {
+  X86_32(&quot;x86_32&quot;, ImmutableSet.of(&quot;i386&quot;, &quot;i486&quot;, &quot;i586&quot;, &quot;i686&quot;, &quot;i786&quot;, &quot;x86&quot;)),
+  X86_64(&quot;x86_64&quot;, ImmutableSet.of(&quot;amd64&quot;, &quot;x86_64&quot;, &quot;x64&quot;)),
+  PPC(&quot;ppc&quot;, ImmutableSet.of(&quot;ppc&quot;, &quot;ppc64&quot;, &quot;ppc64le&quot;)),
+-  ARM(&quot;arm&quot;, ImmutableSet.of(&quot;arm&quot;, &quot;armv7l&quot;)),
++  ARM(&quot;arm&quot;, ImmutableSet.of(&quot;arm&quot;, &quot;armv7l&quot;, &quot;aarch64&quot;)),
+  S390X(&quot;s390x&quot;, ImmutableSet.of(&quot;s390x&quot;, &quot;s390&quot;)),
+  UNKNOWN(&quot;unknown&quot;, ImmutableSet.&lt;String&gt;of());
+</code></pre>
+<p>修改好之后在代码目录运行 &ldquo;compile.sh&rdquo; 进行编译，编译好后将程序拷贝到执行环境：</p>
+<pre><code>$ sudo cp output/bazel /usr/local/bin
+</code></pre>
+<h1 id="安装tensorflow" >
+<div>
+    <a href="#%e5%ae%89%e8%a3%85tensorflow">
+        ##
+    </a>
+    安装tensorflow
+</div>
+</h1>
+<h2 id="下载tensorflow源码" >
+<div>
+    <a href="#%e4%b8%8b%e8%bd%bdtensorflow%e6%ba%90%e7%a0%81">
+        #
+    </a>
+    下载tensorflow源码
+</div>
+</h2>
+<p>写这篇文章的时候tensorflow已经发展到了v1.3，下载release版本代码：</p>
+<pre><code>$ wget https://github.com/tensorflow/tensorflow/archive/v1.3.0.tar.gz
+</code></pre>
+<h2 id="编译tensorflow" >
+<div>
+    <a href="#%e7%bc%96%e8%af%91tensorflow">
+        #
+    </a>
+    编译tensorflow
+</div>
+</h2>
+<ul>
+<li>配置configure</li>
+</ul>
+<p>首先configure编译环境：</p>
+<pre><code>nvidia@tegra-ubuntu:~/tensorflow/tensorflow-1.3.0$ ./configure
+You have bazel 0.4.5- installed.
+Please specify the location of python. [Default is /usr/bin/python]:
+Found possible Python library paths:
+  /usr/local/lib/python2.7/dist-packages
+  /usr/lib/python2.7/dist-packages
+Please input the desired Python library path to use.  Default is [/usr/local/lib/python2.7/dist-packages]
+
+Using python library path: /usr/local/lib/python2.7/dist-packages
+Do you wish to build TensorFlow with MKL support? [y/N]
+No MKL support will be enabled for TensorFlow
+Please specify optimization flags to use during compilation when bazel option &quot;--config=opt&quot; is specified [Default is -march=native]:
+Do you wish to use jemalloc as the malloc implementation? [Y/n]
+jemalloc enabled
+Do you wish to build TensorFlow with Google Cloud Platform support? [y/N]
+No Google Cloud Platform support will be enabled for TensorFlow
+Do you wish to build TensorFlow with Hadoop File System support? [y/N]
+No Hadoop File System support will be enabled for TensorFlow
+Do you wish to build TensorFlow with the XLA just-in-time compiler (experimental)? [y/N]
+No XLA support will be enabled for TensorFlow
+Do you wish to build TensorFlow with VERBS support? [y/N]
+No VERBS support will be enabled for TensorFlow
+Do you wish to build TensorFlow with OpenCL support? [y/N]
+No OpenCL support will be enabled for TensorFlow
+Do you wish to build TensorFlow with CUDA support? [y/N] y
+CUDA support will be enabled for TensorFlow
+Do you want to use clang as CUDA compiler? [y/N]
+nvcc will be used as CUDA compiler
+Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to default to CUDA 8.0]: 8.0
+Please specify the location where CUDA 8.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]:
+Please specify the cuDNN version you want to use. [Leave empty to default to cuDNN 6.0]: 5.1.10
+Please specify the location where cuDNN 5.1.10 library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:
+./configure: line 669: /usr/local/cuda/extras/demo_suite/deviceQuery: No such file or directory
+Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+Please note that each additional compute capability significantly increases your build time and binary size.
+[Default is: &quot;3.5,5.2&quot;]: 6.2
+Do you wish to build TensorFlow with MPI support? [y/N]
+MPI support will not be enabled for TensorFlow
+Configuration finished
+</code></pre>
+<p>这里主要说一下配置&quot;compute capability&quot;的方法，默认值为&quot;3.5,5.2&quot;，但到底该填写什么值可以通过一个jetpack自带的程序查询出来：</p>
+<pre><code>nvidia@tegra-ubuntu:~/NVIDIA_CUDA-8.0_Samples/1_Utilities/deviceQuery$ ./deviceQuery
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: &quot;GP10B&quot;
+  CUDA Driver Version / Runtime Version          8.5 / 8.0
+  CUDA Capability Major/Minor version number:    6.2
+  Total amount of global memory:                 7854 MBytes (8235577344 bytes)
+  ( 2) Multiprocessors, (128) CUDA Cores/MP:     256 CUDA Cores
+  GPU Max Clock rate:                            1301 MHz (1.30 GHz)
+  Memory Clock rate:                             13 Mhz
+  Memory Bus Width:                              64-bit
+  L2 Cache Size:                                 524288 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 32768
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            Yes
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
+  Compute Mode:
+     &lt; Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) &gt;
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 8.5, CUDA Runtime Version = 8.0, NumDevs = 1, Device0 = GP10B
+Result = PASS
+</code></pre>
+<p>主意上面的内容中有下面一行内容，这行的内容就是&quot;compute capability&quot;：</p>
+<pre><code>CUDA Capability Major/Minor version number:    6.2
+</code></pre>
+<ul>
+<li>编译tensorflow</li>
+</ul>
+<p>执行下面的命令进行编译，并指定使用cuda</p>
+<pre><code>nvidia@tegra-ubuntu:~/tensorflow$ bazel build --config=opt --config=cuda //tensorflow/tools/pip_package:build_pip_package
+</code></pre>
+<ul>
+<li>生成pip安装包</li>
+</ul>
+<p>执行完之后会生成pip包生成脚本 &ldquo;./bazel-bin/tensorflow/tools/pip_package/build_pip_package&rdquo;，可以执行这个脚本生成pip安装包：</p>
+<pre><code>nvidia@tegra-ubuntu:~/tensorflow/tensorflow-1.3.0$ ./bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/tensorflow
+Wed Sep 13 14:41:13 UTC 2017 : === Using tmpdir: /tmp/tmp.F109O2nAzd
+~/tensorflow/tensorflow-1.3.0/bazel-bin/tensorflow/tools/pip_package/build_pip_package.runfiles ~/tensorflow/tensorflow-1.3.0
+~/tensorflow/tensorflow-1.3.0
+/tmp/tmp.F109O2nAzd ~/tensorflow/tensorflow-1.3.0
+Wed Sep 13 14:41:20 UTC 2017 : === Building wheel
+warning: no files found matching '*.dll' under directory '*'
+warning: no files found matching '*.lib' under directory '*'
+warning: no files found matching '*.h' under directory 'tensorflow/include/tensorflow'
+warning: no files found matching '*' under directory 'tensorflow/include/Eigen'
+warning: no files found matching '*' under directory 'tensorflow/include/external'
+warning: no files found matching '*.h' under directory 'tensorflow/include/google'
+warning: no files found matching '*' under directory 'tensorflow/include/third_party'
+warning: no files found matching '*' under directory 'tensorflow/include/unsupported'
+~/tensorflow/tensorflow-1.3.0
+Wed Sep 13 14:41:52 UTC 2017 : === Output wheel file is in: /home/nvidia/tensorflow
+</code></pre>
+<ul>
+<li>安装tensorflow</li>
+</ul>
+<p>执行下面的命令安装：</p>
+<pre><code>$ pip install tensorflow-1.3.0-cp27-cp27mu-linux_aarch64.whl
+</code></pre>
+<h1 id="eigen导致编译错误处理" >
+<div>
+    <a href="#eigen%e5%af%bc%e8%87%b4%e7%bc%96%e8%af%91%e9%94%99%e8%af%af%e5%a4%84%e7%90%86">
+        ##
+    </a>
+    eigen导致编译错误处理
+</div>
+</h1>
+<p>在编译tensorflow的过程中碰到了几个问题，主要是由于eigen引起。</p>
+<h2 id="错误1-jacobih-has-no-member-named-pmul" >
+<div>
+    <a href="#%e9%94%99%e8%af%af1-jacobih-has-no-member-named-pmul">
+        #
+    </a>
+    错误1: Jacobi.h has no member named &lsquo;pmul&rsquo;
+</div>
+</h2>
+<pre><code>...
+
+In file included from external/eigen_archive/Eigen/Jacobi:27:0,
+                 from external/eigen_archive/Eigen/Eigenvalues:16,
+                 from ./third_party/eigen3/Eigen/Eigenvalues:1,
+                 from tensorflow/core/kernels/self_adjoint_eig_v2_op.cc:19:
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h: In instantiation of 'void Eigen::internal::apply_rotation_in_the_plane(Eigen::DenseBase&lt;Derived&gt;&amp;, Eigen::DenseBase&lt;Derived&gt;&amp;, const Eigen::J
+acobiRotation&lt;OtherScalar&gt;&amp;) [with VectorX = Eigen::Block&lt;Eigen::Map&lt;Eigen::Matrix&lt;std::complex&lt;float&gt;, -1, -1&gt;, 0, Eigen::Stride&lt;0, 0&gt; &gt;, -1, 1, true&gt;; VectorY = Eigen::Block&lt;Eigen::Map&lt;Eige
+n::Matrix&lt;std::complex&lt;float&gt;, -1, -1&gt;, 0, Eigen::Stride&lt;0, 0&gt; &gt;, -1, 1, true&gt;; OtherScalar = float]':
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:297:40:   required from 'void Eigen::MatrixBase&lt;Derived&gt;::applyOnTheRight(Eigen::Index, Eigen::Index, const Eigen::JacobiRotation&lt;OtherScalar&gt;
+&amp;) [with OtherScalar = float; Derived = Eigen::Map&lt;Eigen::Matrix&lt;std::complex&lt;float&gt;, -1, -1&gt;, 0, Eigen::Stride&lt;0, 0&gt; &gt;; Eigen::Index = long int]'
+external/eigen_archive/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:861:7:   required from 'void Eigen::internal::tridiagonal_qr_step(RealScalar*, RealScalar*, Index, Index, Scalar*, Index)
+ [with int StorageOrder = 0; RealScalar = float; Scalar = std::complex&lt;float&gt;; Index = long int]'
+external/eigen_archive/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:520:87:   required from 'Eigen::ComputationInfo Eigen::internal::computeFromTridiagonal_impl(DiagType&amp;, SubDiagType&amp;, Eig
+en::Index, bool, MatrixType&amp;) [with MatrixType = Eigen::Matrix&lt;std::complex&lt;float&gt;, -1, -1&gt;; DiagType = Eigen::Matrix&lt;float, -1, 1&gt;; SubDiagType = Eigen::Matrix&lt;float, -1, 1&gt;; Eigen::Index =
+long int]'
+
+....
+
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:386:35: error: 'struct Eigen::internal::conj_helper&lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&gt;' has no member named 'pmul'
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:415:22: error: 'struct Eigen::internal::conj_helper&lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&gt;' has no member named 'pmul'
+       pstore(px, padd(pm.pmul(pc,xi),pcj.pmul(ps,yi)));
+                      ^
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:415:22: error: 'struct Eigen::internal::conj_helper&lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&gt;' has no member named 'pmul'
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:416:22: error: 'struct Eigen::internal::conj_helper&lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&gt;' has no member named 'pmul'
+       pstore(py, psub(pcj.pmul(pc,yi),pm.pmul(ps,xi)));
+                      ^
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:416:22: error: 'struct Eigen::internal::conj_helper&lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&gt;' has no member named 'pmul'
+Target //tensorflow/tools/pip_package:build_pip_package failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 2366.425s, Critical Path: 2221.96s
+</code></pre>
+<h2 id="错误2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl参数错误" >
+<div>
+    <a href="#%e9%94%99%e8%af%af2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl%e5%8f%82%e6%95%b0%e9%94%99%e8%af%af">
+        #
+    </a>
+    错误2: tensorflow/core/lib/core/threadpool.cc NonBlockingThreadPoolTempl()参数错误
+</div>
+</h2>
+<pre><code>ERROR: /home/nvidia/tensorflow/tensorflow-1.3.0/tensorflow/core/BUILD:1244:1: C++ compilation of rule '//tensorflow/core:lib_internal' failed: crosstool_wrapper_driver_is_not_gcc failed: error executing command external/              local_config_cuda/crosstool/clang/bin/crosstool_wrapper_driver_is_not_gcc -U_FORTIFY_SOURCE '-D_FORTIFY_SOURCE=1' -fstack-protector -fPIE -Wall -Wunused-but-set-parameter ... (remaining 115 argument(s) skipped): com.google.devtools.build.lib.shell.BadExitStatusException: Process exited with status 1.
+tensorflow/core/lib/core/threadpool.cc: In constructor 'tensorflow::thread::ThreadPool::Impl::Impl(tensorflow::Env*, const tensorflow::ThreadOptions&amp;, const string&amp;, int, bool)':
+tensorflow/core/lib/core/threadpool.cc:91:56: error: no matching function for call to 'Eigen::NonBlockingThreadPoolTempl&lt;tensorflow::thread::EigenEnvironment&gt;::NonBlockingThreadPoolTempl(int&amp;, bool&amp;, tensorflow::thread::              EigenEnvironment)'
+             EigenEnvironment(env, thread_options, name)) {}
+                                                        ^
+In file included from external/eigen_archive/unsupported/Eigen/CXX11/ThreadPool:58:0,
+                 from external/eigen_archive/unsupported/Eigen/CXX11/Tensor:72,
+                 from ./third_party/eigen3/unsupported/Eigen/CXX11/Tensor:1,
+                 from tensorflow/core/lib/core/threadpool.cc:19:
+external/eigen_archive/unsupported/Eigen/CXX11/src/ThreadPool/NonBlockingThreadPool.h:22:3: note: candidate: Eigen::NonBlockingThreadPoolTempl&lt;Environment&gt;::NonBlockingThreadPoolTempl(int, Environment) [with Environment = tensorflow::thread::EigenEnvironment]
+   NonBlockingThreadPoolTempl(int num_threads, Environment env = Environment())
+   ^
+external/eigen_archive/unsupported/Eigen/CXX11/src/ThreadPool/NonBlockingThreadPool.h:22:3: note:   candidate expects 2 arguments, 3 provided
+Target //tensorflow/tools/pip_package:build_pip_package failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 292.433s, Critical Path: 68.80s
+</code></pre>
+<p>解决方法是使用正确版本的eigen，其中“问题一”是用v3.3.4的eigen可以解决，“问题二”需要使用最新的eigen：</p>
+<p>修复的方法是编辑&quot;tensorflow/workspace.bzl&quot;，并指定最新的eigen：</p>
+<pre><code>  native.new_http_archive(
+      name = &quot;eigen_archive&quot;,
+      #urls = [
+      #    &quot;http://mirror.bazel.build/bitbucket.org/eigen/eigen/get/f3a22f35b044.tar.gz&quot;,
+      #    &quot;https://bitbucket.org/eigen/eigen/get/f3a22f35b044.tar.gz&quot;,
+      #],
+      #sha256 = &quot;ca7beac153d4059c02c8fc59816c82d54ea47fe58365e8aded4082ded0b820c4&quot;,
+      #strip_prefix = &quot;eigen-eigen-f3a22f35b044&quot;,
+      urls = [
+          &quot;https://bitbucket.org/eigen/eigen/get/tip.tar.gz&quot;,
+      ],
+      sha256 = &quot;6fe7af8244ab5d9c314a26bc8615adc61269896cfd66f1ae2cce3d6ee91a5b88&quot;,
+      strip_prefix = &quot;eigen-eigen-034fba127699&quot;,
+      build_file = str(Label(&quot;//third_party:eigen.BUILD&quot;)),
+  )
+</code></pre>
+<p>其中“sha256”和“strip_prefix”需要根据新的eigen修正。</p>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/post/machinelearning/tensorflow/tensorflow/">tensorflow playground</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

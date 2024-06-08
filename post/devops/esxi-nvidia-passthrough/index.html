@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑 - My New Hugo Site</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="devops,vmware,nvidia,GPU,passthrough">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2019-07-08">2019-07-08</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/devops/esxi-nvidia-passthrough/">/post/devops/esxi-nvidia-passthrough/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/devops/">Devops</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/devops/">#DevOps</a></li>
+                
+                    
+                    <li><a href="/tags/vmware/">#Vmware</a></li>
+                
+                    
+                    <li><a href="/tags/nvidia/">#Nvidia</a></li>
+                
+                    
+                    <li><a href="/tags/gpu/">#GPU</a></li>
+                
+                    
+                    <li><a href="/tags/passthrough/">#Passthrough</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#第一个坑虚拟机类型">第一个坑：虚拟机类型</a></li>
+    <li><a href="#第二个坑内存预留">第二个坑：内存预留</a></li>
+    <li><a href="#第三个坑添加参数-hypervisorcpuidv0--false">第三个坑：添加参数 hypervisor.cpuid.v0 = &ldquo;FALSE&rdquo;</a></li>
+    <li><a href="#第四个坑ubuntu-1804-虚机升级系统后重启黑屏">第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏</a></li>
+    <li><a href="#第五个坑系统自带-nouveau-驱动造成-nvidia-驱动无法加载">第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- raw HTML omitted -->
+<p>最近新买的服务器上安装了 ESXi v6.7.0 update 2，想把手上的一块显卡配起来在虚拟机中使用，查了官方资料发现可以使用直通（PassThrough）模式让虚拟机直接使用显卡。配置 ESXi 的过程还是基本顺利的，可是在把显卡分配给 Ubuntu 18.04 虚拟机时却碰到了意想不到的问题。</p>
+<h1 id="esxi-配置显卡直通passthorugh模式" >
+<div>
+    <a href="#esxi-%e9%85%8d%e7%bd%ae%e6%98%be%e5%8d%a1%e7%9b%b4%e9%80%9apassthorugh%e6%a8%a1%e5%bc%8f">
+        ##
+    </a>
+    ESXi 配置显卡直通（PassThorugh）模式
+</div>
+</h1>
+<p>这里主要列出配置的关键点不展开说明。配置的方法过程可以参考这篇文档：</p>
+<p><a href="https://blogs.vmware.com/apps/2018/04/how-enable-compute-accelerators-vsphere-6-5-machine-learning-hpc-workloads.html">https://blogs.vmware.com/apps/2018/04/how-enable-compute-accelerators-vsphere-6-5-machine-learning-hpc-workloads.html</a></p>
+<p>如果使用 vGPU 的模式进行配置时需要在 ESXi 中安装对应的驱动，如果是NVidia显卡可以从这里下载，不过多数家用级的 GPU 本身不支持这种模式，所以安装之前最好确认一下。</p>
+<p><a href="https://www.nvidia.com/drivers/results/116135">https://www.nvidia.com/drivers/results/116135</a></p>
+<p>另外，服务器的 BIOS 需要进行正确设置，主要是查看 VT-D / IOMMU / SR-IOV 相关的设置</p>
+<h1 id="安装虚拟机" >
+<div>
+    <a href="#%e5%ae%89%e8%a3%85%e8%99%9a%e6%8b%9f%e6%9c%ba">
+        ##
+    </a>
+    安装虚拟机
+</div>
+</h1>
+<p>安装完 Ubuntu 18.04 后问题就接踵而至。</p>
+<h2 id="第一个坑虚拟机类型" >
+<div>
+    <a href="#%e7%ac%ac%e4%b8%80%e4%b8%aa%e5%9d%91%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%b1%bb%e5%9e%8b">
+        #
+    </a>
+    第一个坑：虚拟机类型
+</div>
+</h2>
+<p>原本按照默认的 ESXi 6.7 类型创建虚拟机但无论后面怎么设置都无法让驱动跟显卡正常工作，这里一定要选择 ESXi 6.7 U2 类型的机器。</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-type-u2.png" alt="VM type U2"></p>
+<h2 id="第二个坑内存预留" >
+<div>
+    <a href="#%e7%ac%ac%e4%ba%8c%e4%b8%aa%e5%9d%91%e5%86%85%e5%ad%98%e9%a2%84%e7%95%99">
+        #
+    </a>
+    第二个坑：内存预留
+</div>
+</h2>
+<p>创建虚拟机时的默认配置不会将虚拟机的内存选项设置成“预留所有客户机内存 (全部锁定)”，但在使用 GPU PassThrough 的情况下需要把这个选项打开才行。</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/07/ESXi-GPU-PassThrough/1.jpeg" alt="memory reserve"></p>
+<h2 id="第三个坑添加参数-hypervisorcpuidv0--false" >
+<div>
+    <a href="#%e7%ac%ac%e4%b8%89%e4%b8%aa%e5%9d%91%e6%b7%bb%e5%8a%a0%e5%8f%82%e6%95%b0-hypervisorcpuidv0--false">
+        #
+    </a>
+    第三个坑：添加参数 hypervisor.cpuid.v0 = &ldquo;FALSE&rdquo;
+</div>
+</h2>
+<p>一定要添加这个参数，让驱动把虚拟机当做物理机来处理。</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-param-hypervisor.png" alt="hypervisor-cpuid"></p>
+<h2 id="第四个坑ubuntu-1804-虚机升级系统后重启黑屏" >
+<div>
+    <a href="#%e7%ac%ac%e5%9b%9b%e4%b8%aa%e5%9d%91ubuntu-1804-%e8%99%9a%e6%9c%ba%e5%8d%87%e7%ba%a7%e7%b3%bb%e7%bb%9f%e5%90%8e%e9%87%8d%e5%90%af%e9%bb%91%e5%b1%8f">
+        #
+    </a>
+    第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏
+</div>
+</h2>
+<p>这个问题折腾了很久才弄明白是由于升级 Intel CPU 的微代码固件（Meltdown安全漏洞）造成的，为了能够使用虚拟机只能放弃这个固件的升级：</p>
+<pre tabindex="0"><code>$ sudo apt-mark hold intel-microcode
+</code></pre><p>该问题的讨论可以参考这个帖子：<a href="https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system">https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system</a></p>
+<h2 id="第五个坑系统自带-nouveau-驱动造成-nvidia-驱动无法加载" >
+<div>
+    <a href="#%e7%ac%ac%e4%ba%94%e4%b8%aa%e5%9d%91%e7%b3%bb%e7%bb%9f%e8%87%aa%e5%b8%a6-nouveau-%e9%a9%b1%e5%8a%a8%e9%80%a0%e6%88%90-nvidia-%e9%a9%b1%e5%8a%a8%e6%97%a0%e6%b3%95%e5%8a%a0%e8%bd%bd">
+        #
+    </a>
+    第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载
+</div>
+</h2>
+<p>在虚拟机中安装 NVidia 驱动后重启系统后，正常情况可以看到系统正常加载 nvidia 驱动。</p>
+<p>安装 NVidia 驱动方法：</p>
+<pre tabindex="0"><code>$ sudo apt install gcc g++ make
+
+$ sudo apt-get install nvidia-driver-410 xserver-xorg-video-nvidia-410 libnvidia-compute-410 libnvidia-decode-410 libnvidia-encode-410 libnvidia-ifr1-410 libnvidia-fbc1-410 libnvidia-gl-410 xorg-video-abi-23
+</code></pre><p>但重启虚拟机后会发现有时系统会正常加载 nvidia.ko 驱动，有时会加载 nouveau.ko 驱动，造成无法正常使用显卡。</p>
+<p>驱动加载的确认方法可以用 &rsquo;lsmod | grep nvidia&rsquo; 或 &rsquo;lsmod | grep nouveau&rsquo; 命令。</p>
+<p>可以用下面这个比较暴力的方法禁用 nouveau 驱动：</p>
+<pre tabindex="0"><code>sudo mv /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko.disabled
+</code></pre><p>这里多说一些禁用 nouveau 驱动过程中碰到的坑：</p>
+<p><strong>失败经历1：在 grub 及系统加载模块中禁用 nouveau</strong></p>
+<p>使用这个方法我发现在 Ubuntu 18.04 虚机启动后有时会正确加载 nvidia 驱动，有时却依然会加载 nouveau，确认的方法可以用 &rsquo;lsmod | grep nvidia&rsquo; 或 &rsquo;lsmod | grep nouveau&rsquo; 命令来确认。</p>
+<p>在此把这个方法记录下来，也可能对别的虚拟机有效。</p>
+<p>第一步：在 grub 中禁止 nouveau</p>
+<p>先把下面的配置添加到 /etc/default/grub 文件中</p>
+<pre tabindex="0"><code>GRUB_CMDLINE_LINUX=&#34;nouveau.blacklist=1&#34;
+</code></pre><p>然后更新 grub：</p>
+<pre tabindex="0"><code>$ sudo update-grub
+</code></pre><p>第二步：禁用 modprobe</p>
+<p>创建文件 &lsquo;/etc/modprobe.d/nvidia-graphics-drivers.conf&rsquo;，在其中添加下面内容：</p>
+<pre tabindex="0"><code>blacklist nouveau
+blacklist lbm-nouveau
+alias nouveau off
+alias lbm-nouveau off
+options nouveau modeset=0
+</code></pre><p>Then update initrd:</p>
+<pre tabindex="0"><code>$ sudo update-initramfs -u
+$ sudo reboot
+</code></pre><p>**失败经历2：在 gdm 中禁用 Wayland **</p>
+<p>参考了这个讨论后尝试后问题依然存在
+<a href="https://askubuntu.com/questions/1031511/cant-disable-nouveau-drivers-in-ubuntu-18-04">https://askubuntu.com/questions/1031511/cant-disable-nouveau-drivers-in-ubuntu-18-04</a></p>
+<p>查看 gdm 是否使用 wayland 模式的方法：</p>
+<pre tabindex="0"><code> $ loginctl
+ SESSION     UID  USER     SEAT     TTY             
+       2    1000  velix    seat0    tty2            
+      c2    1000  velix                                             
+      c1     120  gdm      seat0    tty1
+The command loginctl show-session &lt;session-n&gt; -p Type show the session type:
+
+$ loginctl show-session c1 -p Type
+Type=Wayland
+</code></pre><p>在 gdm 配置文件 /etc/gdm3/custom.conf 中禁用的方法是添加下面一行配置后重启系统：</p>
+<pre tabindex="0"><code>WaylandEnable=false.
+</code></pre><p>趟过去上面几个坑之后就可以正常的在 Ubuntu 18.04 虚拟机中使用显卡直通模式了。</p>
+<pre tabindex="0"><code>$ nvidia-smi
+Thu Aug  8 17:31:13 2019
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 410.48                 Driver Version: 410.48                    |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 108...  Off  | 00000000:03:00.0 Off |                  N/A |
+|  0%   50C    P8    18W / 250W |   1001MiB / 11178MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|    0      4913      C   /conda/envs/cudf/bin/python                  191MiB |
+|    0     10664      C   /home/jupyter/testing-libgdf                 203MiB |
+|    0     10871      C   /conda/envs/cudf/bin/python                  191MiB |
+|    0     11730      C   /conda/envs/cudf/bin/python                  203MiB |
+|    0     11826      C   /conda/envs/cudf/bin/python                  203MiB |
++-----------------------------------------------------------------------------+
+</code></pre>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/post/machinelearning/tensorflow/tensorflow_on_jetson2/">在 Nvidia Jetson TX2 上编译安装tensorflow</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

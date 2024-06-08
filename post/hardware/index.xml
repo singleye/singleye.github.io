@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hardware on singleye</title>
+    <link>/post/hardware/</link>
+    <description>singleye (Hardware)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Tue, 20 Mar 2018 16:42:45 +0800</lastBuildDate>
+    
+    <atom:link href="/post/hardware/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>自动饮水机</title>
+      <link>/2018/03/%E8%87%AA%E5%8A%A8%E9%A5%AE%E6%B0%B4%E6%9C%BA/</link>
+      <pubDate>Tue, 20 Mar 2018 16:42:45 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/03/%E8%87%AA%E5%8A%A8%E9%A5%AE%E6%B0%B4%E6%9C%BA/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;Youtube观看：&lt;/p&gt;
+&lt;div id=&#34;video-area&#34; align=&#34;center&#34;&gt;
+	&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/lCAez16g8Dg&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+&lt;p&gt;Youku观看:&lt;/p&gt;
+&lt;div id=&#34;video-area&#34; align=&#34;center&#34;&gt;
+	&lt;iframe height=498 width=510 src=&#39;http://player.youku.com/embed/XMzQ3ODMyNzQ0OA==&#39; frameborder=0 &#39;allowfullscreen&#39;&gt;&lt;/iframe&gt;
+&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Temp Sensor Comparasion</title>
+      <link>/2017/11/temp-sensor-comparasion/</link>
+      <pubDate>Fri, 10 Nov 2017 11:56:13 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/temp-sensor-comparasion/</guid>
+      <description>&lt;p&gt;DS18B20
+PT100&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;DS18B20&lt;/th&gt;
+&lt;th&gt;PT100&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;器件稳定性&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;温度测量范围&lt;/td&gt;
+&lt;td&gt;-55～125℃&lt;/td&gt;
+&lt;td&gt;-200～850℃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;测温时延&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;精度偏差&lt;/td&gt;
+&lt;td&gt;+-0.5℃&lt;/td&gt;
+&lt;td&gt;B级别可达0.5%，精度较高，但需要校准&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;年漂移量&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;工作电压&lt;/td&gt;
+&lt;td&gt;3-5.5V&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;体积&lt;/td&gt;
+&lt;td&gt;稍大，探头直径6mm&lt;/td&gt;
+&lt;td&gt;较小，探头直径5mm&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;引线长度&lt;/td&gt;
+&lt;td&gt;最长30米&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;信号接口数量&lt;/td&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;成本&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;寿命&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;开发难度&lt;/td&gt;
+&lt;td&gt;容易，直接数字信号输出&lt;/td&gt;
+&lt;td&gt;相对复杂，需要校准&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;特点&lt;/td&gt;
+&lt;td&gt;具有体积小、硬件开销低、抗干扰能力强、精度高的特点&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Macbook Air换电池记</title>
+      <link>/2017/10/macbook-air%E6%8D%A2%E7%94%B5%E6%B1%A0%E8%AE%B0/</link>
+      <pubDate>Fri, 06 Oct 2017 01:58:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/10/macbook-air%E6%8D%A2%E7%94%B5%E6%B1%A0%E8%AE%B0/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;家里的Macbook Air年事已高电池也充不了电了，而且最近电池鼓包已经影响到了触摸板的使用，趁着假期买了块国产电池换上去。&lt;/p&gt;
+&lt;p&gt;秀一下新电池和拆机工具：
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/01.JPG&#34; alt=&#34;新电池&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Air后盖的螺丝是特殊的5角形状必需用电池包里的黄色螺丝刀把10颗螺丝先拧下来：
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/02.JPG&#34; alt=&#34;拆背盖&#34;&gt;&lt;/p&gt;
+&lt;p&gt;拆下后盖发现鼓包的电池块了，没想到都鼓到这种程度了 -___-!
+拆电池也很简单，用附带的黑色螺丝刀把图里面标红的螺丝拆下来就搞定了，别忘记把电池跟主板连接的插销取下来：
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/03.jpg&#34; alt=&#34;拆电池&#34;&gt;&lt;/p&gt;
+&lt;p&gt;换电池之前给Air做了次内部SPA看起来清爽多了！
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/04.JPG&#34; alt=&#34;拆掉&#34;&gt;&lt;/p&gt;
+&lt;p&gt;安装电池也非常的方便，按照拆下来的顺序装回去就完成了！
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/05.JPG&#34; alt=&#34;换好了&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Postgres on singleye</title>
+    <link>/tags/postgres/</link>
+    <description>singleye (Postgres)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 16 Mar 2017 00:08:17 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>postgres数据库使用指南</title>
+      <link>/2017/03/postgres%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</link>
+      <pubDate>Thu, 16 Mar 2017 00:08:17 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/03/postgres%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</guid>
+      <description>&lt;p&gt;在此省略postgres数据库的安装过程。&lt;/p&gt;
+&lt;h2 id=&#34;1-初始化数据库环境&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%b0%e6%8d%ae%e5%ba%93%e7%8e%af%e5%a2%83&#34;&gt;
+        #
+    &lt;/a&gt;
+    1. 初始化数据库环境
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;安装完postgres后需要先初始化数据库的环境，可以使用命令行工具 initdb 完成。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;initdb &amp;lt;DB env path&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;2-数据库管理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2-%e6%95%b0%e6%8d%ae%e5%ba%93%e7%ae%a1%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    2. 数据库管理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;21-创建数据库&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#21-%e5%88%9b%e5%bb%ba%e6%95%b0%e6%8d%ae%e5%ba%93&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2.1 创建数据库
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;方法1：使用命令行 createdb ，并直接指定用户&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;createdb -O &amp;lt;DB user&amp;gt; &amp;lt;DB name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;方法2：使用 SQL 创建&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# CREATE DATABASE xxxx2;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;创建时指定数据库的拥有人：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# CREATE DATABASE exampledb OWNER dbuser;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;22-删除数据库&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#22-%e5%88%a0%e9%99%a4%e6%95%b0%e6%8d%ae%e5%ba%93&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2.2 删除数据库
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dropdb &amp;lt;DB name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;3-用户及权限管理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3-%e7%94%a8%e6%88%b7%e5%8f%8a%e6%9d%83%e9%99%90%e7%ae%a1%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    3. 用户及权限管理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;31-添加用户&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#31-%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3.1 添加用户
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;初始化完数据库环境后需要创建用户，之后再进行数据库创建和使用。&lt;/p&gt;
+&lt;p&gt;有两种方法可以创建用户：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;方法1:使用命令行 createuser&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;createuser --interactive
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;按照提示信息一步步进行用户信息的输入就可以了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;方法2:使用命令行工具&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo -s -u postgres psql
+postgres# CREATE USER xxxx1 WITH PASSWORD &amp;#39;xxxx&amp;#39;;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;32-删除用户&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#32-%e5%88%a0%e9%99%a4%e7%94%a8%e6%88%b7&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3.2 删除用户
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dropuser &amp;lt;DB user&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;33-设置用户访问数据库密码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#33-%e8%ae%be%e7%bd%ae%e7%94%a8%e6%88%b7%e8%ae%bf%e9%97%ae%e6%95%b0%e6%8d%ae%e5%ba%93%e5%af%86%e7%a0%81&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3.3 设置用户访问数据库密码
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;方法1：使用内建命令设置密码&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ psql &amp;lt;DB name&amp;gt;
+&amp;lt;DB name&amp;gt;=&amp;gt; \password dbuser
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;方法2：使用SQL设置密码&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# create user dbuser with password &amp;#39;password&amp;#39;;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修改密码：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# alter user dbuser with password &amp;#39;password&amp;#39;;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;34-设置访问权限&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#34-%e8%ae%be%e7%bd%ae%e8%ae%bf%e9%97%ae%e6%9d%83%e9%99%90&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3.4 设置访问权限
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# GRANT ALL PRIVILEGES ON DATABASE xxxx2 to xxxx1;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;4-数据库运行&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#4-%e6%95%b0%e6%8d%ae%e5%ba%93%e8%bf%90%e8%a1%8c&#34;&gt;
+        #
+    &lt;/a&gt;
+    4 数据库运行
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;启动：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;pg_ctl start -D /usr/local/var/postgres -l /usr/local/var/log/postgres.log
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;停止：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;pg_ctl stop -D /usr/local/var/postgres
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

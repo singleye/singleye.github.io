@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ahash, Dhash, Phash on singleye</title>
+    <link>/tags/ahash-dhash-phash/</link>
+    <description>singleye (Ahash, Dhash, Phash)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 03 Jun 2019 15:19:04 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/ahash-dhash-phash/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>哈希计算图片相似性</title>
+      <link>/2019/06/%E5%93%88%E5%B8%8C%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%89%87%E7%9B%B8%E4%BC%BC%E6%80%A7/</link>
+      <pubDate>Mon, 03 Jun 2019 15:19:04 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/06/%E5%93%88%E5%B8%8C%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%89%87%E7%9B%B8%E4%BC%BC%E6%80%A7/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;ahash平均哈希&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#ahash%e5%b9%b3%e5%9d%87%e5%93%88%e5%b8%8c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    aHash（平均哈希）
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;将图片缩小到8x8的尺寸&lt;/li&gt;
+&lt;li&gt;将缩小后的图片转换成灰度图&lt;/li&gt;
+&lt;li&gt;计算8x8图片所有像素灰度值的平均值&lt;/li&gt;
+&lt;li&gt;创建一个新的8x8矩阵，矩阵的每个值取值为0或1，计算方法是将原矩阵中对应像素的的灰度值与平均值进行对比，当大于等于平均值时记1，小于平均值时记0&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;def ahash(filepath):
+    img = cv2.imread(filepath)
+    small = cv2.resize(img, (8, 8), interpolation=cv2.INTER_AREA)
+    gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+    fp = 0
+    mean = gray.mean()
+    w, h = gray.shape
+    for x in range(w):
+        for y in range(h):
+            if gray[x][y] &amp;gt;= mean:
+                fp += ((fp &amp;lt;&amp;lt; 1) + 1)
+            else:
+                fp += ((fp &amp;lt;&amp;lt; 1) + 0)
+    return fp
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;dhash差值哈希&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#dhash%e5%b7%ae%e5%80%bc%e5%93%88%e5%b8%8c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    dHash（差值哈希）
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;def dhash(filepath):
+    img = cv2.imread(filepath)
+    small = cv2.resize(img, (9, 8), interpolation=cv2.INTER_AREA)
+    gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+    fp = 0
+    mean = gray.mean()
+    w, h = gray.shape
+    for x in range(w-1):
+        for y in range(h):
+            # if the pixel on the left is brighter mark it as 1
+            if gray[x][y] &amp;gt; gray[x+1][y]:
+                fp += ((fp &amp;lt;&amp;lt; 1) + 1)
+            else:
+                fp += ((fp &amp;lt;&amp;lt; 1) + 0)
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;phash感知哈希&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#phash%e6%84%9f%e7%9f%a5%e5%93%88%e5%b8%8c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    pHash（感知哈希）
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;pHash算法主要是使用了离散余弦变换（DCT）进行转换。&lt;/p&gt;
+&lt;p&gt;利用感知哈希算法计算图片相似度
+计算步骤：&lt;/p&gt;
+&lt;p&gt;缩放图片：一般大小为32*32，这样方便DCT计算&lt;/p&gt;
+&lt;p&gt;简化色彩，转化为灰度图：可以使用Image的convert(&amp;lsquo;L&amp;rsquo;)方法&lt;/p&gt;
+&lt;p&gt;计算DCT（离散余弦变换）:&lt;/p&gt;
+&lt;p&gt;获得图像的二维数据矩阵f(x,y)&lt;/p&gt;
+&lt;p&gt;求离散余弦变换的系数矩阵[A]&lt;/p&gt;
+&lt;p&gt;求系数矩阵对应的转置矩阵[A]T&lt;/p&gt;
+&lt;p&gt;根据公式[F(u,v)]=[A][f(x,y)][A]T 计算离散余弦变换
+缩小DCT：DCT计算后的矩阵是32&lt;em&gt;32，保留左上角的8&lt;/em&gt;8，这些代表的图片的最低频率&lt;/p&gt;
+&lt;p&gt;计算平均值：计算缩小DCT后的所有像素点的平均&lt;/p&gt;
+&lt;p&gt;进一步减小DCT：大于平均值记录为1，否则为0&lt;/p&gt;
+&lt;p&gt;得到64位信息指纹&lt;/p&gt;
+&lt;p&gt;记录两张图片的图像指纹的汉明距离，计算图片相似度&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;def phash(filepath, shape=(1, 1)):
+    fp = np.zeros(shape, dtype=np.ulonglong)
+    try:
+        img = cv2.imread(filepath)
+        resize = cv2.resize(img, (32, 32))
+        gray = cv2.cvtColor(resize, cv2.COLOR_BGR2GRAY)
+    except Exception as e:
+        print(&amp;#39;-&amp;#39;*80)
+        print(&amp;#39;Exception: image [%s]&amp;#39; % filepath)
+        print(e)
+        print(&amp;#39;-&amp;#39;*80)
+        return fp
+
+    left_upper = cv2.dct(gray.astype(float))[:8, :8]
+    mean = left_upper.mean()
+    h, w = left_upper.shape
+    for x in range(w):
+        for y in range(h):
+            val = int(fp[y//8, x//8])
+            if left_upper[y, x] &amp;gt;= mean:
+                fp[y//8, x//8] = ((val &amp;lt;&amp;lt; 1) | 1)
+            else:
+                fp[y//8, x//8] = ((val &amp;lt;&amp;lt; 1) | 0)
+    return fp
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;直方图&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%9b%b4%e6%96%b9%e5%9b%be&#34;&gt;
+        ##
+    &lt;/a&gt;
+    直方图
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/nivance/image-similarity&#34;&gt;https://github.com/nivance/image-similarity&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/nivance/image-similarity/blob/master/src/main/java/image/similarity/ImageHistogram.java&#34;&gt;https://github.com/nivance/image-similarity/blob/master/src/main/java/image/similarity/ImageHistogram.java&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;直方图算法是对源图像与要筛选的图像进行直方图数据采集，对采集的各自图像直方图进行归一化再使用巴氏系数算法对直方图数据进行计算，最终得出图像相似度值，其值范围在[0, 1]之间0表示极其不同，1表示极其相似（相同）。&lt;/p&gt;
+&lt;p&gt;算法步骤大致可以分为两步，根据源图像与候选图像的像素数据，生成各自直方图数据。第二步：使用第一步输出的直方图结果，运用巴氏系数（Bhattacharyya coefficient）算法，计算出相似程度值。&lt;/p&gt;
+&lt;p&gt;第一步：直方图计算 直方图分为灰度直方图与RGB直方图，对于灰度图像直方图计算十分简单，只要初始化一个大小为256的直方图数组H，然后根据像素值完成频率分布统计，假设像素值为124，则H[124] += 1, 而对于彩色RGB像素来说直方图表达有两种方式，一种是单一直方图，另外一种是三维直方图，三维直方图比较简单明了，分别对应RGB三种颜色，定义三个直方图HR,HG, HB, 假设某一个像素点P的RGB值为(4, 231,129), 则对于的直方图计算为HR[4] += 1,HG[231] += 1, HB[129] += 1, 如此对每个像素点完成统计以后，RGB彩色直方图数据就生成了。 而RGB像素的单一直方图SH表示稍微复杂点，每个颜色的值范围为0 ~ 255之间的，假设可以分为一定范围等份，当8等份时，每个等份的值范围为32， 16等份时，每个等份值范围为16，当4等份时候，每个等份值的范围为64，假设RGB值为(14, 68, 221), 16等份之后，它对应直方图索引值(index)分别为: (0, 4, 13), 根据计算索引值公式:index = R + G * 16 + B * 16 * 16 对应的直方图index = 0 + 4 * 16 + 13 * 16 * 16， SH[3392] += 1如此遍历所有RGB像素值，完成直方图数据计算。&lt;/p&gt;
+&lt;p&gt;第二步：巴氏系数计算，计算公式如下：$\sum_{i=1}^N\sqrt{p(i)p^{&amp;rsquo;}(i)}$ 。其中p, p&amp;rsquo;分别代表源与候选的图像直方图数据，对每个相同i的数据点乘积开平方以后相加得出的结果即为图像相似度值（巴氏系数因子值），范围为0到1之间。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.cse.yorku.ca/~kosta/CompVis_Notes/bhattacharyya.pdf&#34;&gt;Bhattacharyya Coefficient&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;其他思想&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%85%b6%e4%bb%96%e6%80%9d%e6%83%b3&#34;&gt;
+        ##
+    &lt;/a&gt;
+    其他思想
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;大津法&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%a4%a7%e6%b4%a5%e6%b3%95&#34;&gt;
+        #
+    &lt;/a&gt;
+    大津法
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.labbookpages.co.uk/software/imgProc/otsuThreshold.html&#34;&gt;Otsu Thresholding&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.ruanyifeng.com/blog/2013/03/similar_image_search_part_ii.html&#34;&gt;阮一峰blog&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1979年，日本学者大津展之证明了，&amp;ldquo;类内差异最小&amp;quot;与&amp;quot;类间差异最大&amp;quot;是同一件事，即对应同一个阈值。他提出一种简单的算法，可以求出这个阈值，这被称为&amp;quot;大津法&amp;rdquo;（Otsu&amp;rsquo;s method）。下面就是他的计算方法。&lt;/p&gt;
+&lt;p&gt;假定一张图片共有n个像素，其中灰度值小于阈值的像素为 n1 个，大于等于阈值的像素为 n2 个（ n1 + n2 = n ）。w1 和 w2 表示这两种像素各自的比重。
+　　w1 = n1 / n
+　　w2 = n2 / n
+再假定，所有灰度值小于阈值的像素的平均值和方差分别为 μ1 和 σ1，所有灰度值大于等于阈值的像素的平均值和方差分别为 μ2 和 σ2。于是，可以得到
+　　类内差异 = w1(σ1的平方) + w2(σ2的平方)
+　　类间差异 = w1w2(μ1-μ2)^2
+可以证明，这两个式子是等价的：得到&amp;quot;类内差异&amp;quot;的最小值，等同于得到&amp;quot;类间差异&amp;quot;的最大值。不过，从计算难度看，后者的计算要容易一些。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

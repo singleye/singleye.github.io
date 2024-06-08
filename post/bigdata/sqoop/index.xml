@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sqoop on singleye</title>
+    <link>/post/bigdata/sqoop/</link>
+    <description>singleye (Sqoop)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 25 Dec 2017 18:11:29 +0800</lastBuildDate>
+    
+    <atom:link href="/post/bigdata/sqoop/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Sqoop介绍及使用</title>
+      <link>/2017/12/sqoop%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Mon, 25 Dec 2017 18:11:29 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/12/sqoop%E4%BB%8B%E7%BB%8D%E5%8F%8A%E4%BD%BF%E7%94%A8/</guid>
+      <description>&lt;h1 id=&#34;1-hdp中使用sqoop进行工作流处理准备工作&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-hdp%e4%b8%ad%e4%bd%bf%e7%94%a8sqoop%e8%bf%9b%e8%a1%8c%e5%b7%a5%e4%bd%9c%e6%b5%81%e5%a4%84%e7%90%86%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1. HDP中使用sqoop进行工作流处理准备工作
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;11-准备hdfs中的用户目录&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#11-%e5%87%86%e5%a4%87hdfs%e4%b8%ad%e7%9a%84%e7%94%a8%e6%88%b7%e7%9b%ae%e5%bd%95&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.1 准备hdfs中的用户目录
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在进行hdfs操作前需要切换用户到&amp;rsquo;hdfs&#39;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  # su - hdfs
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为操作用户创建hdfs环境&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;此处为ambari的admin用户准备环境：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	$ hdfs dfs -mkdir /user/admin
+	$ hdfs dfs -chown admin:hdfs /user/admin
+	$ hdfs dfs -ls /user
+	$ hdfs dfs -chmod -R 770 /user/admin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;12-配置ozzie&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#12-%e9%85%8d%e7%bd%aeozzie&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.2 配置ozzie
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;设置ozzie进程在hdfs中的proxy user&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  配置项：hadoop.proxyuser.oozie.groups
+  值：$USER_GROUPS_THAT_ALLOW_IMPERSONATION
+
+  配置项: hadoop.proxyuser.oozie.hosts
+  值：$OOZIE_SERVER_HOSTNAME
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;PS. 代理机制&lt;/strong&gt; ：&lt;a href=&#34;http://dongxicheng.org/mapreduce-nextgen/hadoop-secure-impersonation/&#34;&gt;http://dongxicheng.org/mapreduce-nextgen/hadoop-secure-impersonation/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://dongxicheng.org/wp-content/uploads/2014/03/Hadoop%E7%94%A8%E6%88%B7%E4%BC%AA%E8%A3%85%E6%9C%BA%E5%88%B6.jpg&#34; alt=&#34;proxy user mechanism&#34;&gt;&lt;/p&gt;
+&lt;p&gt;主备namenode和resoucemanager（hadoop 2.0）上的core-site.xml中增加以下配置:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	&amp;lt;property&amp;gt;
+	   &amp;lt;name&amp;gt;hadoop.proxyuser.oozie.groups&amp;lt;/name&amp;gt;
+	   &amp;lt;value&amp;gt;group1,group2&amp;lt;value&amp;gt;
+	&amp;lt;/property&amp;gt;
+	&amp;lt;property&amp;gt;
+	    &amp;lt;name&amp;gt;hadoop.proxyuser.oozie.hosts&amp;lt;/name&amp;gt;
+	    &amp;lt;value&amp;gt;host1,host2&amp;lt;value&amp;gt;
+	&amp;lt;/property&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这里，假设用户user1属于group1（注意，这里的user1和group1都是linux用户和用户组，需要在namenode和jobtracker上进行添加），此外，为了限制客户端随意部署，超级用户代理功能只支持host1和host2两个节点。经过以上配置后，在host1和host2上的客户端上，属于group1和group2的用户可以sudo成oozie用户，执行作业流。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;拷贝mysql-connector及配置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;切换到oozie用户后执行：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	# 复制mysql-connector
+	$ hdfs dfs -put /$PATH/mysql-connector-java-5.1.37.jar /user/oozie/share/lib/lib_$TIMESTAMP/sqoop
+	
+	# 复制配置文件
+	$ hdfs dfs -put /etc/hive/conf/hive-site.xml /user/oozie/share/lib/lib_20171226172323/hive
+	$ hdfs dfs -put /etc/hive2/conf/hive-site.xml /user/oozie/share/lib/lib_20171226172323/hive2
+
+	# 通知Ozzie使用新的sharelib
+	$ oozie admin -sharelibupdate
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.6.3/bk_workflow-management/content/copy_files.html&#34;&gt;HDP doc&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;sqoop基本操作&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sqoop%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    sqoop基本操作
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://sqoop.apache.org/docs/1.4.4/SqoopUserGuide.html#_importing_data_into_hive&#34;&gt;https://sqoop.apache.org/docs/1.4.4/SqoopUserGuide.html#_importing_data_into_hive&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;列举数据库(list-databases)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; # sqoop list-databases --connect jdbc:mysql://192.168.1.1/iot_test_12 --username iot -P
+ SLF4J: Class path contains multiple SLF4J bindings.
+ SLF4J: Found binding in [jar:file:/usr/hdp/2.6.3.0-235/hadoop/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+ SLF4J: Found binding in [jar:file:/usr/hdp/2.6.3.0-235/accumulo/lib/slf4j-log4j12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+ SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+ SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+ 17/12/25 18:27:40 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6.2.6.3.0-235
+ Enter password:
+ 17/12/25 18:27:44 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+ information_schema
+ iot_test_12
+ mysql
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;简单查询(eval)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; # sqoop eval --connect jdbc:mysql://192.168.1.1/iot_test_12 --username iot -P --query &amp;quot;select date(add_time), count(*) from device group by date(add_time)&amp;quot;
+ SLF4J: Class path contains multiple SLF4J bindings.
+ SLF4J: Found binding in [jar:file:/usr/hdp/2.6.3.0-235/hadoop/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+ SLF4J: Found binding in [jar:file:/usr/hdp/2.6.3.0-235/accumulo/lib/slf4j-log4j12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+ SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+ SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+ 17/12/25 18:32:47 INFO sqoop.Sqoop: Running Sqoop version: 1.4.6.2.6.3.0-235
+ Enter password:
+ 17/12/25 18:32:52 INFO manager.MySQLManager: Preparing to use a MySQL streaming resultset.
+ -------------------------------------
+ | date(add_time) | count(*)             |
+ -------------------------------------
+ | 2017-06-16 | 3                    |
+ | 2017-06-23 | 1                    |
+ | 2017-06-28 | 1                    |
+ | 2017-07-06 | 1                    |
+ | 2017-07-15 | 1                    |
+ | 2017-07-24 | 6                    |
+ | 2017-07-25 | 2                    |
+ | 2017-07-26 | 11                   |
+ | 2017-07-27 | 56                   |
+ | 2017-07-28 | 2                    |
+ | 2017-07-29 | 28                   |
+ | 2017-07-31 | 373                  |
+ | 2017-08-01 | 96                   |
+ | 2017-08-02 | 3                    |
+ | 2017-08-03 | 2                    |
+ | 2017-08-09 | 2                    |
+ | 2017-08-15 | 1                    |
+ | 2017-08-19 | 1                    |
+ | 2017-09-02 | 4                    |
+ | 2017-09-07 | 4                    |
+ | 2017-09-08 | 1                    |
+ | 2017-09-19 | 3                    |
+ | 2017-10-10 | 1                    |
+ | 2017-11-02 | 2                    |
+ | 2017-11-03 | 1                    |
+ | 2017-11-17 | 1                    |
+ | 2017-11-29 | 1                    |
+ | 2017-12-04 | 2                    |
+ | 2017-12-05 | 1                    |
+ | 2017-12-07 | 1                    |
+ | 2017-12-15 | 1                    |
+ -------------------------------------
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;导入hive&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;将一张表导入hive：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意，需要使用hive用户：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# su - hive
+$ sqoop-import --connect jdbc:mysql://192.168.1.1/iot_test_12 --username iot -P --table device --hive-import -m 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;导入后的数据可以从hdfs中看到：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ hdfs dfs -ls /apps/hive/warehouse/device
+Found 1 items
+-rwxrwxrwx   3 hive hadoop      62177 2017-12-27 18:11 /apps/hive/warehouse/device/part-m-00000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;配置hive-site.xml的warehouse：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;lt;property&amp;gt;
+  &amp;lt;name&amp;gt;hive.warehouse.subdir.inherit.perms&amp;lt;/name&amp;gt;
+  &amp;lt;value&amp;gt;true&amp;lt;/value&amp;gt;
+&amp;lt;/property&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;将所有表导入hive:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  # su - hive
+  $ sqoop import-all-tables --connect jdbc:mysql://192.168.1.1/iot_test_12 --username iot -P --warehouse-dir /apps/hive/warehouse/IOT --hive-import --create-hive-table -m 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;指定目标目录（&amp;ndash;warehouse-dir /apps/hive/warehouse/IOT）：&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;从hive导出&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; $ sqoop export --connect jdbc:mysql://localhost/db --username root --table employee --export-dir /emp/emp_data
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Job管理&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; sqoop job --list
+
+ sqoop job --show &#39;jobname&#39;
+
+ sqoop job --exec &#39;jobname&#39;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;issue-1&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#issue-1&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Issue 1:
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;Application is added to the scheduler and is not yet activated. Queue&amp;rsquo;s AM resource limit exceeded. Details :
+AM Partition = &amp;lt;DEFAULT_PARTITION&amp;gt;;
+AM Resource Request = &amp;lt;memory:512, vCores:1&amp;gt;;
+Queue Resource Limit for AM = &amp;lt;memory:512, vCores:1&amp;gt;;
+User AM Resource Limit of the queue = &amp;lt;memory:512, vCores:1&amp;gt;;
+Queue AM Resource Usage = &amp;lt;memory:1023, vCores:1&amp;gt;;&lt;/p&gt;
+&lt;h1 id=&#34;创建工作流wfm&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%88%9b%e5%bb%ba%e5%b7%a5%e4%bd%9c%e6%b5%81wfm&#34;&gt;
+        ##
+    &lt;/a&gt;
+    创建工作流(WFM)
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://community.hortonworks.com/articles/84394/apache-ambari-workflow-manager-view-for-apache-ooz-3.html&#34;&gt;https://community.hortonworks.com/articles/84394/apache-ambari-workflow-manager-view-for-apache-ooz-3.html&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;1创建动作用sqoop获取数据&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1%e5%88%9b%e5%bb%ba%e5%8a%a8%e4%bd%9c%e7%94%a8sqoop%e8%8e%b7%e5%8f%96%e6%95%b0%e6%8d%ae&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.创建动作用sqoop获取数据
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;​Create the Sqoop Action to Extract Data&lt;/p&gt;
+&lt;p&gt;Command:
+import &amp;ndash;connect jdbc:mysql://192.168.1.1/iot_test_12 &amp;ndash;username iot &amp;ndash;password-file /user/admin/iot.passwd &amp;ndash;table iottest &amp;ndash;split-by rowkey &amp;ndash;hive-import -m 1&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-command.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Advanced -&amp;gt; File:&lt;/p&gt;
+&lt;p&gt;/user/oozie/share/lib/lib_20171226172323/hive/hive-site.xml
+&lt;img src=&#34;http://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-adv.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;2&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2&#34;&gt;
+        #
+    &lt;/a&gt;
+    2.
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h1 id=&#34;ambari-restart&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#ambari-restart&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Ambari restart
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Shut down all services using Ambari.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Shutdown ambari-agents on all nodes.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Shutdown ambari-server.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Reboot all nodes as required .&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Restart ambari-server, agents and services in that order.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;hadoop&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#hadoop&#34;&gt;
+        ##
+    &lt;/a&gt;
+    hadoop
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;停止Hadoop任务：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  hadoop job -kill job-id
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;misc&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#misc&#34;&gt;
+        ##
+    &lt;/a&gt;
+    misc
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;apache-tezhttpstezapacheorg&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#apache-tezhttpstezapacheorg&#34;&gt;
+        #
+    &lt;/a&gt;
+    &lt;a href=&#34;https://tez.apache.org&#34;&gt;Apache Tez&lt;/a&gt;
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Apache TEZ® project is aimed at building an application framework which allows for a complex directed-acyclic-graph of tasks for processing data. It is currently built atop Apache Hadoop YARN.&lt;/p&gt;
+&lt;p&gt;Tez &amp;mdash; (manage DAG task)  &amp;mdash;&amp;gt; Yarn&lt;/p&gt;
+&lt;p&gt;Empowering end users by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Expressive dataflow definition APIs&lt;/li&gt;
+&lt;li&gt;Flexible Input-Processor-Output runtime model&lt;/li&gt;
+&lt;li&gt;Data type agnostic&lt;/li&gt;
+&lt;li&gt;Simplifying deployment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Execution Performance:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Performance gains over Map Reduce&lt;/li&gt;
+&lt;li&gt;Optimal resource management&lt;/li&gt;
+&lt;li&gt;Plan reconfiguration at runtime&lt;/li&gt;
+&lt;li&gt;Dynamic physical data flow decisions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://tez.apache.org/images/PigHiveQueryOnMR.png&#34; alt=&#34;Pig/Hive - MR&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://tez.apache.org/images/PigHiveQueryOnTez.png&#34; alt=&#34;Pig/Hive - TEZ&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;HDP中提交的Hive查询任务通过Tez调度执行&lt;/strong&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

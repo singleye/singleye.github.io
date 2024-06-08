@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>GO语言中array与slice的比较 - My New Hugo Site</title>
+
+<meta name="description" content="go语言中array与slice的区别总结">
+
+
+    <meta name="keywords" content="Go,array vs slice">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">GO语言中array与slice的比较</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-07">2017-11-07</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/programming/go/go-slice-array/">/post/programming/go/go-slice-array/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+                    
+                    <li><a href="/categories/go/">Go</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/go/">#Go</a></li>
+                
+                    
+                    <li><a href="/tags/array/">#Array</a></li>
+                
+                    
+                    <li><a href="/tags/slice/">#Slice</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- raw HTML omitted -->
+<p>go语言中array与slice的区别总结</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>数组array</th>
+<th>切片slice</th>
+<th>区别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>声明定义</td>
+<td><!-- raw HTML omitted -->var arrayName [arrayLength] dataType<!-- raw HTML omitted --></td>
+<td>var sliceName [] dataType</td>
+<td>声明数组需要长度信息，定义slice时不需要</td>
+</tr>
+<tr>
+<td>初始化</td>
+<td>var arrayName = [arrayLength] dataType {Val1, &hellip; Valn} <!-- raw HTML omitted --><!-- raw HTML omitted -->var arrayName = [&hellip;] dataType {Val1, &hellip; Valn}</td>
+<td>var sliceName = [] dataType {Val1, &hellip; Valn}<!-- raw HTML omitted --><!-- raw HTML omitted -->var slice [] type = make([] type, length)<!-- raw HTML omitted --><!-- raw HTML omitted -->通过数组初始化：<!-- raw HTML omitted -->slice := array[:]<!-- raw HTML omitted -->slice := array[startIndex:endIndex]</td>
+<td>初始化数组时需要长度信息，初始化slice时不需要</td>
+</tr>
+<tr>
+<td>取值</td>
+<td>通过索引index取相应的元素值:<!-- raw HTML omitted -->arrayName[index]</td>
+<td>通过index取元素值：<!-- raw HTML omitted -->slice[index] <!-- raw HTML omitted --><!-- raw HTML omitted -->返回一个新切片值:<!-- raw HTML omitted --> slice[startIndex:endIndex]</td>
+<td>slice取值除了可以获取一个元素的值外，还可以获取一个新的切片</td>
+</tr>
+<tr>
+<td>赋值</td>
+<td>元素赋值：<!-- raw HTML omitted -->array[index] = value <!-- raw HTML omitted --><!-- raw HTML omitted --> 数组赋值：<!-- raw HTML omitted --> var new_array = array <!-- raw HTML omitted --> new_array := array</td>
+<td>元素赋值：<!-- raw HTML omitted --> slice[index] = value <!-- raw HTML omitted --><!-- raw HTML omitted -->将单个单个值append()到slice中，返回的新slice长度会增加:<!-- raw HTML omitted -->slice = append(slice, v1, v2&hellip;) <!-- raw HTML omitted --><!-- raw HTML omitted -->将一个slice copy()到另一个slice中，目标slice长度不变，最多copy截止到目标元素最后一个元素：<!-- raw HTML omitted --> copy(slice1, slice2) <!-- raw HTML omitted --> copy(slice1[si:], slice2)</td>
+<td>数组支持简单的单元素或者整体赋值，slice则支持更加精细度的赋值</td>
+</tr>
+<tr>
+<td>扩展</td>
+<td>不支持</td>
+<td>append()，新的slice length和capacity均发生变化：<!-- raw HTML omitted --><!-- raw HTML omitted --> var slice = []int {1, 2, 3, 4, 5}<!-- raw HTML omitted -->slice = append(slice, 1, 2)<!-- raw HTML omitted -->fmt.Printf(&ldquo;length: %d, capacity: %d\n&rdquo;, len(slice), cap(slice)) <!-- raw HTML omitted --><!-- raw HTML omitted --> length: 7, capacity: 10</td>
+<td>slice支持扩展，扩展后的新slice长度为新元素的个数，capacity是原capacity的2的指数倍</td>
+</tr>
+<tr>
+<td>函数传参</td>
+<td>值传递，被传递的array所有的值copy給形式参数，函数内对数组的改变不会传播给传入的数组</td>
+<td>引用传递，函数内对slice的改变会反应到传入的参数中</td>
+<td>数组是值传递，所以直接传递数组代价很高，使用slice相应代价会降低。因此go的标准库中多以slice实现</td>
+</tr>
+<tr>
+<td>判断长度</td>
+<td>len()</td>
+<td>len()</td>
+<td>相同</td>
+</tr>
+</tbody>
+</table>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rotation on singleye</title>
+    <link>/tags/rotation/</link>
+    <description>singleye (Rotation)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Wed, 25 Oct 2023 14:38:55 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/rotation/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>左乘/右乘旋转</title>
+      <link>/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/</link>
+      <pubDate>Wed, 25 Oct 2023 14:38:55 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/</guid>
+      <description>&lt;h1 id=&#34;左乘旋转&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%b7%a6%e4%b9%98%e6%97%8b%e8%bd%ac&#34;&gt;
+        ##
+    &lt;/a&gt;
+    左乘旋转
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;左乘对应的物理转动为绕固定坐标轴旋转&lt;/p&gt;
+&lt;p&gt;下图表示的是左乘  $R_z(\alpha) R_y(\beta) R_x(\gamma)$&lt;/p&gt;
+&lt;p&gt;对应的旋转为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;绕固定坐标系 X 轴旋转 $\gamma$&lt;/li&gt;
+&lt;li&gt;绕固定坐标系 Y 轴旋转 $\beta$&lt;/li&gt;
+&lt;li&gt;绕固定坐标系 Z 轴旋转 $\alpha$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Robotics/left_right_rotation/xyz%E5%9B%BA%E5%AE%9A%E8%A7%92.png&#34; alt=&#34;左乘旋转&#34;&gt;&lt;/p&gt;
+&lt;p&gt;右乘旋转
+绕自身坐标系旋转&lt;/p&gt;
+&lt;p&gt;下图对应的是右乘 $R_z(\alpha) R_y(\beta) R_x(\gamma)$&lt;/p&gt;
+&lt;p&gt;对应的旋转为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;绕 Z 轴旋转 $\alpha$&lt;/li&gt;
+&lt;li&gt;绕旋转后得到的坐标系 Y 轴旋转 $\beta$&lt;/li&gt;
+&lt;li&gt;绕旋转后得到的坐标系 X 轴旋转 $\gamma$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/Robotics/left_right_rotation/zyx%E6%AC%A7%E6%8B%89%E8%A7%92.png&#34; alt=&#34;右乘&#34;&gt;&lt;/p&gt;
+&lt;p&gt;This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;
+&lt;p&gt;These are block equations:&lt;/p&gt;
+\[a^*=x-b^*\]
+\[ a^*=x-b^* \]
+\[
+a^*=x-b^*
+\]
+&lt;p&gt;These are block equations using alternate delimiters:&lt;/p&gt;
+$$a^*=x-b^*$$
+$$ a^*=x-b^* $$
+$$
+a^*=x-b^*
+$$</description>
+    </item>
+    
+  </channel>
+</rss>

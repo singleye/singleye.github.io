@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MAP on singleye</title>
+    <link>/categories/map/</link>
+    <description>singleye (MAP)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 28 Mar 2019 15:49:48 +0800</lastBuildDate>
+    
+    <atom:link href="/categories/map/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>模型评估指标</title>
+      <link>/2019/03/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</link>
+      <pubDate>Thu, 28 Mar 2019 15:49:48 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/03/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;!--
+精确率
+
+召回率
+
+# AP
+## step1
+
+1. 将检测结果按照confidence排序
+2. 
+--&gt;
+&lt;p&gt;关于mAP这篇文章写得不错：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://medium.com/@chih.sheng.huang821/&#34;&gt;https://medium.com/@chih.sheng.huang821/&lt;/a&gt;深度學習系列-什麼是ap-map-aaf089920848&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2019/03/TP-TF-FP-FN.jpg&#34; alt=&#34;TP-FP-FN-TN&#34;&gt;&lt;/p&gt;
+&lt;p&gt;mAP定义及相关概念mAP: mean Average Precision, 即各类别AP的平均值AP: PR曲线下面积，后文会详细讲解PR曲线: Precision-Recall曲线Precision: TP / (TP + FP)Recall: TP / (TP + FN)TP: IoU&amp;gt;0.5的检测框数量（同一Ground Truth只计算一次）FP: IoU&amp;lt;=0.5的检测框，或者是检测到同一个GT的多余检测框的数量FN: 没有检测到的GT的数量&lt;/p&gt;
+&lt;p&gt;mAP计算示例假设，对于Aeroplane类别，我们网络有以下输出(BB表示BoundingBox序号，IoU&amp;gt;0.5时GT=1)：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;BB  | confidence | GT
+----------------------
+BB1 |  0.9       | 1
+----------------------
+BB2 |  0.9       | 1
+----------------------
+BB1 |  0.8       | 1
+----------------------
+BB3 |  0.7       | 0
+----------------------
+BB4 |  0.7       | 0
+----------------------
+BB5 |  0.7       | 1
+----------------------
+BB6 |  0.7       | 0
+----------------------
+BB7 |  0.7       | 0
+----------------------
+BB8 |  0.7       | 1
+----------------------
+BB9 |  0.7       | 1
+----------------------
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因此，我们有 TP=5 (BB1, BB2, BB5, BB8, BB9), FP=5 (重复检测到的BB1也算FP)。除了表里检测到的5个GT以外，我们还有2个GT没被检测到，因此: FN = 2. 这时我们就可以按照Confidence的顺序给出各处的PR值，如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;rank=1  precision=1.00 and recall=0.14
+----------
+rank=2  precision=1.00 and recall=0.29
+----------
+rank=3  precision=0.66 and recall=0.29
+----------
+rank=4  precision=0.50 and recall=0.29
+----------
+rank=5  precision=0.40 and recall=0.29
+----------
+rank=6  precision=0.50 and recall=0.43
+----------
+rank=7  precision=0.43 and recall=0.43
+----------
+rank=8  precision=0.38 and recall=0.43
+----------
+rank=9  precision=0.44 and recall=0.57
+----------
+rank=10 precision=0.50 and recall=0.71
+----------
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;作者：知乎用户
+链接：https://www.zhihu.com/question/53405779/answer/419532990
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Matploblib on singleye</title>
+    <link>/tags/matploblib/</link>
+    <description>singleye (Matploblib)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 02 Oct 2017 02:11:00 +0000</lastBuildDate>
+    
+    <atom:link href="/tags/matploblib/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>softmax输出层公式推导及代码实验</title>
+      <link>/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</link>
+      <pubDate>Mon, 02 Oct 2017 02:11:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：
+&lt;ul&gt;
+&lt;li&gt;使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i + (1-y_i) \ln (1-a_i)] $&lt;/li&gt;
+&lt;li&gt;使用softmax和log-likelyhood代价函数作为输出层&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &amp;hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &amp;hellip; y_n | X) $，其中y1, &amp;hellip; yn之间相互关联，且总和为1。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。&lt;/p&gt;
+&lt;h1 id=&#34;softmax定义&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#softmax%e5%ae%9a%e4%b9%89&#34;&gt;
+        ##
+    &lt;/a&gt;
+    softmax定义：
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div&gt;
+$$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$
+&lt;/div&gt;
+&lt;p&gt;将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个神经元的输出为正数，并且输出数值介于0-1之间。&lt;/li&gt;
+&lt;li&gt;所有神经元的输出总和为1。&lt;/li&gt;
+&lt;li&gt;某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。&lt;/li&gt;
+&lt;li&gt;softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下图展示了softmax层工作的基本原理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/how_softmax_works.png?x-oss-process=style/png2jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;应用场景&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    应用场景：
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;从softmax的定义知道所有输出神经元的总和为1，因此softmax可以用在预测在多种可能性中只有一个结果的场景，比如mnist手写判定。&lt;/p&gt;
+&lt;h1 id=&#34;softmax输出层组成的神经网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#softmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bb%84%e6%88%90%e7%9a%84%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    softmax输出层组成的神经网络
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;下面的图展示了一个简单的softmax输出层神经网络，中间层依然使用sigmoid。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg&#34; alt=&#34;softmax NN&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;代价函数c&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0c&#34;&gt;
+        #
+    &lt;/a&gt;
+    代价函数C
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;为了解决在学习过程中出现的速度问题使用log-likelihood代价函数，函数定义为：&lt;/p&gt;
+$$ C=-\sum_i^m y_i \ln a_i $$
+&lt;p&gt;关于实际应用这个等式需要解释一下。假设softmax输出层有4个输出，预测a值为(0.1, 0.2, 0.3, 0.4)，实际结果y为(0, 1, 0, 0)，那么这个等式为 $C = -(0\ln(0.1) + 1\ln(0.2) + 0\ln(0.3) + 0\ln(0.4))$，可以看出来因为0的存在可以让这个等式只保留实际结果为真（1）的项。这时可以把等式简化为：&lt;/p&gt;
+$$ C=-\ln a_i | y_i=1 $$
+&lt;h2 id=&#34;用反向传播进行梯度下降&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%94%a8%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%bf%9b%e8%a1%8c%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d&#34;&gt;
+        #
+    &lt;/a&gt;
+    用反向传播进行梯度下降
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;反向传播算法要求几个关键值：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$ \delta_i^L $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial C}{\partial w_{ij}^L} $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial C}{\partial b_{i}^L} $&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果输出层使用softmax时，最后一层（L层）的相应值与使用sigmoid的情况有些不同，下面对使用softmax是的这3个值进行推导。&lt;/p&gt;
+&lt;h3 id=&#34;求解-delta_il--a_il---y_i-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e8%a7%a3-delta_il--a_il---y_i-&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求解$ \delta_i^L = ({a_i^L} - y_i) $
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;过程如下：&lt;/p&gt;
+&lt;div&gt;
+$$ {\delta_i^L} = {\frac {\partial C}{\partial z_{i}^L}} = {\frac {\partial }{\partial z_{i}^L}} (-\sum_k^m y_k \ln {a_k^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(\sum_k^m y_k {1 \over {a_k^L}} {\frac {\partial {a_k^L}}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(y_i {1 \over a_i^L} \frac {\partial a_i^L}{\partial z_{i}^L} + \sum_{k \neq i}^m y_k {1 \over a_k^L} {\frac {\partial a_k^L}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i {1 \over a_i^L} {a_i^L(1-a_i^L)} + \sum_{k \neq i}^m y_k {1 \over a_k^L} (-{a_i^L}{a_k^L}) )$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i (1-a_i^L) - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {y_i a_i^L} - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {a_i^L}{\sum_{k=1}^m y_k})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = ({a_i^L} - y_i)$$
+&lt;/div&gt;
+&lt;h3 id=&#34;求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-%e7%9a%84%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial w_{ij}^L}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\delta_i^L} {a_j^{L-1}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}}$$
+&lt;/div&gt;
+&lt;h3 id=&#34;求-frac-partial-cpartial-b_il--a_il---y_i-的过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82-frac-partial-cpartial-b_il--a_il---y_i-%e7%9a%84%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial b_{i}^L}}$$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\delta_i^L} = ({a_i^L} - y_i) $$
+&lt;/div&gt;
+&lt;p&gt;以上求解过程中用了两个重要的计算等式:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial a_j} {\partial {z_i}} = -{a_i \cdot a_j} | i \neq j$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面对这两个等式进行推导：&lt;/p&gt;
+&lt;h4 id=&#34;求导情况1--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b51--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-&#34;&gt;
+        ###
+    &lt;/a&gt;
+    求导情况1: $ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-acaf14aac554ab61ff6f32845fd5128e_b.png&#34; alt=&#34;i==j&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结论：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $$
+&lt;ul&gt;
+&lt;li&gt;推导过程：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \frac {\partial a_i} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_i}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1){\frac {\partial}{\partial z_i}({e^{z_i}})} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }})^2$$
+$$ = a_i - (a_i)^2 $$
+$$ = a_i \cdot (1- a_i) $$
+&lt;/div&gt;
+&lt;h4 id=&#34;求导情况2--frac-partial-a_j-partial-z_i---a_i-cdot-a_j&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b52--frac-partial-a_j-partial-z_i---a_i-cdot-a_j&#34;&gt;
+        ###
+    &lt;/a&gt;
+    求导情况2: $ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-f09fb0c50194f6cc0828fc285eb9bc1c_b.png&#34; alt=&#34;i neq j&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结论：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$$
+&lt;ul&gt;
+&lt;li&gt;推导过程：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \frac {\partial a_j} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_j} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_j}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_j}}$$
+$$ = 0 \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1) \cdot \frac {\partial}{\partial z_i}e^{z_i} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot e^{z_i} \cdot {e^{z_j}}$$
+$$ = - {e^{z_i} \over {\sum_{k=1}^m e^{z_k}}} \cdot {{e^{z_j}} \over {\sum_{k=1}^m e^{z_k}}}$$
+$$ = -a_i \cdot a_j$$
+&lt;/div&gt;
+&lt;h2 id=&#34;sigmoid隐藏层与softmax输出层网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sigmoid%e9%9a%90%e8%97%8f%e5%b1%82%e4%b8%8esoftmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bd%91%e7%bb%9c&#34;&gt;
+        #
+    &lt;/a&gt;
+    sigmoid隐藏层与softmax输出层网络
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;按照下图的拓扑构成的网络使用sigmoid进行隐藏层计算，使用softmax进行输出层计算，那么怎么进行网络训练呢？其实方法一样都是按照前馈网络计算代价值进行评估，使用反向传播算法进行梯度下降。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg&#34; alt=&#34;softmax NN&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;前馈网络计算步骤&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%89%8d%e9%a6%88%e7%bd%91%e7%bb%9c%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    前馈网络计算步骤：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;在隐藏层的计算时使用sigmoid&lt;/li&gt;
+&lt;li&gt;在最后输出层使用softmax&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;反向传播计算步骤&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    反向传播计算步骤：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;计算输出层，计算最后一层softmax输出层的下列值：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \delta_i^L = ({a_i^L} - y_i) $$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} = \delta_i^L \cdot a_j^{L-1} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) =\delta_i^L $$
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;计算隐藏层，反向一层一层计算sigmoid隐藏层的下列值：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \delta_j^{l-1} = (\sum_{k=1}^m {\delta_k^l \cdot w_{kj}}) \cdot { a_j^{l-1} (1 - a_j^{l-1}) } $$
+$$ \frac {\partial C}{\partial w_{ij}^l} = \delta_i^{l} \cdot a_j^{l-1} $$
+$$ \frac {\partial C}{\partial b_{i}^l} = \delta_i^{l} $$
+&lt;/div&gt;
+&lt;p&gt;计算过程中可以发现只有最后一层的$ \delta_i^L$计算较为特殊，计算权重和偏置的方法与之前的sigmoid构成的网络一致。&lt;/p&gt;
+&lt;h1 id=&#34;代码实例&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e7%a0%81%e5%ae%9e%e4%be%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    代码实例
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;下面的例子实验一个输入层有4个输入，隐藏层有5个神经元并且使用sigmoid激活函数，输出层有2个神经元并使用softmax激活函数的网络，拓扑如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/experiment-softmax.jpg&#34; alt=&#34;拓扑&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# construct the network
+
+# input layer: 4 inputs
+# hidden layer: 5 neurons with sigmoid as activate function
+# * weight: 4x5 matrices
+# * bias: 1x5 matrices
+# output layer: 2 neurons with softmax as activate function
+# * weight: 5x2 matrices
+# * bias: 1x2 matrices
+
+# initialize the weight/bias of the hidden layer (2nd layer)
+w2 = np.random.rand(4, 5)
+b2 = np.random.rand(1, 5)
+
+# initialize the weight/bias of the output layer (3rd layer) 
+w3 = np.random.rand(5, 2)
+b3 = np.random.rand(1, 2)
+num_epochs = 10000
+eta = 0.1
+
+x=[]
+y=[]
+
+# training process
+for i in xrange(num_epochs):
+    # feed forward
+    z2 = np.dot(input, w2) + b2
+    a2 = sigmoid(z2)
+
+    z3 = np.dot(a2, w3) + b3
+    #z3 = np.dot(a2, w3)
+    a3 = softmax(z3)
+    
+    if i%1000 == 0:
+        print &amp;quot;Perception&amp;quot;, a3
+        print &amp;quot;W2&amp;quot;, w2
+        print &amp;quot;B2&amp;quot;, b2
+        print &amp;quot;W3&amp;quot;, w3
+        print &amp;quot;B3&amp;quot;, b3
+
+    x.append(i)
+    y.append(cost(a3, output))
+
+    delta_l3 = a3 - output
+    deriv_w3 = np.dot(a2.T, delta_l3)
+    deriv_b3 = delta_l3
+    w3 -= eta*deriv_w3
+    b3 -= eta*np.mean(deriv_b3, 0)
+    
+    delta_l2 = np.dot(delta_l3, w3.T)*(a2*(1-a2))
+    deriv_w2 = np.dot(input.T, delta_l2)
+    deriv_b2 = delta_l2
+    w2 -= eta*deriv_w2
+    b2 -= eta*np.mean(deriv_b2, 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-cost.png&#34; alt=&#34;训练代价&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/Softmax/experiment-softmax.ipynb&#34;&gt;完整代码&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://neuralnetworksanddeeplearning.com/chap3.html#softmax&#34;&gt;http://neuralnetworksanddeeplearning.com/chap3.html#softmax&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/25723112&#34;&gt;https://zhuanlan.zhihu.com/p/25723112&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://colah.github.io/posts/2015-09-Visual-Information/&#34;&gt;http://colah.github.io/posts/2015-09-Visual-Information/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

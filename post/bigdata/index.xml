@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>BigData on singleye</title>
+    <link>/post/bigdata/</link>
+    <description>singleye (BigData)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 11 Jan 2018 23:10:50 +0800</lastBuildDate>
+    
+    <atom:link href="/post/bigdata/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>

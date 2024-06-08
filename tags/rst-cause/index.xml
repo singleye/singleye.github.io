@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rst Cause on singleye</title>
+    <link>/tags/rst-cause/</link>
+    <description>singleye (Rst Cause)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 08 May 2017 00:23:11 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/rst-cause/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>esp8266启动模式 - 如何理解&#39;rst cause:2, boot mode:(3,6)&#39;</title>
+      <link>/2017/05/esp8266%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F-%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3rst-cause2-boot-mode36/</link>
+      <pubDate>Mon, 08 May 2017 00:23:11 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/05/esp8266%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F-%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3rst-cause2-boot-mode36/</guid>
+      <description>&lt;p&gt;8266模块启动或者出现问题后重启时会输出类似**&amp;lsquo;rst cause:2, boot mode:(3,6)&amp;rsquo;**的消息，这个模块的启动消息可以看出启动的原因和模式。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;rst cause:2, boot mode:(3,6)
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;rst-cause&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#rst-cause&#34;&gt;
+        ##
+    &lt;/a&gt;
+    &amp;lsquo;rst cause&amp;rsquo;
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;**&amp;lsquo;rst cause&amp;rsquo;**含义如下：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;编号&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;unknown&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;normal boot&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;reset pin&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;software reset&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;watchdog reset&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;boot-mode&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#boot-mode&#34;&gt;
+        ##
+    &lt;/a&gt;
+    &amp;lsquo;boot mode&amp;rsquo;
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;消息中内容的**&amp;lsquo;boot mode:(x,y)&amp;rsquo;&lt;strong&gt;中的&lt;/strong&gt;&amp;lsquo;x&amp;rsquo;**表示GPIO &amp;lsquo;15/0/2&amp;rsquo; 3个端口的二进制数（有电压为1，没电压为0）。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;启动模式 = ((GPIO15 &amp;lt;&amp;lt; 2) | (GPIO0 &amp;lt;&amp;lt; 1) | GPIO2);
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;由于模块启动的时候会检查0/2/15端口的状态，理解这个数字的意义需要先了解模块的启动模式。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;启动模式&lt;/th&gt;
+&lt;th&gt;GPIO15 (MTDO)&lt;/th&gt;
+&lt;th&gt;GPIO0&lt;/th&gt;
+&lt;th&gt;GPIO2&lt;/th&gt;
+&lt;th&gt;启动模式&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;无效&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;Uart bootloader&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;无效&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;SPI flash (Boot sketch)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;SDIO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;SDIO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;0V&lt;/td&gt;
+&lt;td&gt;SDIO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;3.3V&lt;/td&gt;
+&lt;td&gt;SDIO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;参考资料&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考资料
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/esp8266/Arduino/blob/master/doc/boards.md#adafruit-huzzah-esp8266-esp-12&#34;&gt;https://github.com/esp8266/Arduino/blob/master/doc/boards.md#adafruit-huzzah-esp8266-esp-12&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes&#34;&gt;https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

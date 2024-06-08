@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Web on singleye</title>
+    <link>/categories/web/</link>
+    <description>singleye (Web)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Wed, 16 Jan 2019 12:27:13 +0800</lastBuildDate>
+    
+    <atom:link href="/categories/web/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>解决flask_restful无法对Decimal类型数据进行序列化问题</title>
+      <link>/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Wed, 16 Jan 2019 12:27:13 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;在使用flask进行开发的时候发现 &lt;strong&gt;Decimal&lt;/strong&gt; 类型的数据无法在作为 JSON 通过相应消息体序列化返回，出现 &lt;strong&gt;jsonschema.exceptions.ValidationError&lt;/strong&gt; 错误：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;jsonschema.exceptions.ValidationError: &amp;#39;1000.00&amp;#39; is not of type &amp;#39;number&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在使用flask进行开发的时候发现 &lt;strong&gt;Decimal&lt;/strong&gt; 类型的数据无法在作为 JSON 通过相应消息体序列化返回，出现 &lt;strong&gt;jsonschema.exceptions.ValidationError&lt;/strong&gt; 错误：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;jsonschema.exceptions.ValidationError: &amp;#39;1000.00&amp;#39; is not of type &amp;#39;number&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;研究 &lt;strong&gt;flask_restful/representations/json.py&lt;/strong&gt; 代码发现问题出现在 **json.dump()**中&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;       7 def output_json(data, code, headers=None):
+       8     &amp;#34;&amp;#34;&amp;#34;Makes a Flask response with a JSON encoded body&amp;#34;&amp;#34;&amp;#34;
+       9
+      10     settings = current_app.config.get(&amp;#39;RESTFUL_JSON&amp;#39;, {})
+      11
+             ...
+      21     dumped = dumps(data, **settings) + &amp;#34;\n&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过下面实验也可以对问题得到验证。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; import json
+&amp;gt;&amp;gt;&amp;gt; import decimal
+&amp;gt;&amp;gt;&amp;gt; json.dumps(decimal.Decimal(&amp;#39;99.99&amp;#39;))
+Traceback (most recent call last):
+  File &amp;#34;&amp;lt;stdin&amp;gt;&amp;#34;, line 1, in &amp;lt;module&amp;gt;
+  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/__init__.py&amp;#34;, line 231, in dumps
+    return _default_encoder.encode(obj)
+  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/encoder.py&amp;#34;, line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/encoder.py&amp;#34;, line 257, in iterencode
+    return _iterencode(o, 0)
+  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/encoder.py&amp;#34;, line 180, in default
+    o.__class__.__name__)
+TypeError: Object of type &amp;#39;Decimal&amp;#39; is not JSON serializable
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查看json.dumps()的文档知道可以通过参数 &amp;lsquo;cls&amp;rsquo; 指定JSONEncoder进行序列化。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;    dumps(obj, *, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw)
+        Serialize ``obj`` to a JSON formatted ``str``.
+
+        To use a custom ``JSONEncoder`` subclass (e.g. one that overrides the
+        ``.default()`` method to serialize additional types), specify it with
+        the ``cls`` kwarg; otherwise ``JSONEncoder`` is used.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;结合flask_restful，可以自行定义从JSONEncoder继承下来的序列化类，通过在config中的&amp;rsquo;RESTFUL_JSON&amp;rsquo;进行定义。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  3 import json
+  4 import decimal
+
+    ...
+
+  9 class DecimalEncoder(json.JSONEncoder):
+ 10     def default(self, obj):
+ 11         if isinstance(obj, decimal.Decimal):
+ 12             return float(obj)
+ 13         return super(DecimalEncoder, self).default(obj)
+ 14
+ 15 class BaseConfig(object):
+ 16     RESTFUL_JSON = {&amp;#39;cls&amp;#39;:DecimalEncoder}
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用Python的Selenium驱动浏览器行为</title>
+      <link>/2018/03/%E4%BD%BF%E7%94%A8python%E7%9A%84selenium%E9%A9%B1%E5%8A%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%A1%8C%E4%B8%BA/</link>
+      <pubDate>Fri, 30 Mar 2018 11:25:39 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/03/%E4%BD%BF%E7%94%A8python%E7%9A%84selenium%E9%A9%B1%E5%8A%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%A1%8C%E4%B8%BA/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h2 id=&#34;step-1安装浏览器driver&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step-1%e5%ae%89%e8%a3%85%e6%b5%8f%e8%a7%88%e5%99%a8driver&#34;&gt;
+        #
+    &lt;/a&gt;
+    Step 1:安装浏览器driver
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;浏览器&lt;/th&gt;
+&lt;th&gt;Driver&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Chrome&lt;/td&gt;
+&lt;td&gt;chromedriver&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Firefox&lt;/td&gt;
+&lt;td&gt;geckodriver&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;step-2安装selenium&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step-2%e5%ae%89%e8%a3%85selenium&#34;&gt;
+        #
+    &lt;/a&gt;
+    Step 2:安装selenium
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ pip install selenium
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;step-3-使用selenium&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step-3-%e4%bd%bf%e7%94%a8selenium&#34;&gt;
+        #
+    &lt;/a&gt;
+    STep 3: 使用selenium
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;例子：打开两个tab，并在tab之间定期切换：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; selenium &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; webdriver
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; selenium.webdriver &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; ActionChains
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;obj &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; webdriver&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;Chrome()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;maximize_window()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;get(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;http://www.qq.com/&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;implicitly_wait(&lt;span style=&#34;color:#ff9f43&#34;&gt;15&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;e1 &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;find_element_by_xpath(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;//*[@id=&amp;#34;navBeta&amp;#34;]/div[1]/div[1]/a[1]&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ActionChains(obj)&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;click(e1)&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;perform()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;implicitly_wait(&lt;span style=&#34;color:#ff9f43&#34;&gt;15&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tabs &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;window_handles
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(tabs)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; tabs:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        obj&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;switch_to&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;window(i)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        time&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;sleep(&lt;span style=&#34;color:#ff9f43&#34;&gt;2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://splinter.readthedocs.io/en/latest/#drivers&#34;&gt;Splinter&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>Django静态文件配置</title>
+      <link>/2017/11/django%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Thu, 16 Nov 2017 16:23:13 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/django%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE/</guid>
+      <description>&lt;p&gt;配置项：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;配置项&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;th&gt;例子&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;STATIC_URL&lt;/td&gt;
+&lt;td&gt;用户通过web访问静态文件时的URL前缀部分&lt;/td&gt;
+&lt;td&gt;STATIC_URL=&amp;quot;/static/&amp;quot;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;STATIC_ROOT&lt;/td&gt;
+&lt;td&gt;manager.py collectstatic执行后静态文件会收集存放到&lt;/td&gt;
+&lt;td&gt;STATIC_ROOT = os.path.join(BASE_DIR, &amp;lsquo;collected_static&amp;rsquo;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;STATICFILES_DIRS&lt;/td&gt;
+&lt;td&gt;每个app目录中可以创建一个static目录存放对应的静态文件，也可以通过在settings文件中指定STATICFILES_DIRS来指定一个公共的位置存放静态文件&lt;/td&gt;
+&lt;td&gt;&lt;br&gt;STATICFILES_DIRS = (&lt;/br&gt;    os.path.join(BASE_DIR, &amp;ldquo;common_static&amp;rdquo;),&lt;/br&gt;    &amp;lsquo;/path/to/others/static/&amp;rsquo;,  # 指定一个目录&lt;/br&gt;)&lt;/br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;STATICFILES_FINDERS&lt;/td&gt;
+&lt;td&gt;指定静态文件查找器&lt;/td&gt;
+&lt;td&gt;STATICFILES_FINDERS = (&lt;/br&gt;    &amp;ldquo;django.contrib.staticfiles.finders.FileSystemFinder&amp;rdquo;,&lt;/br&gt;    &amp;ldquo;django.contrib.staticfiles.finders.AppDirectoriesFinder&amp;rdquo;&lt;/br&gt;)&lt;/br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DEBUG&lt;/td&gt;
+&lt;td&gt;如果指定&amp;rsquo;DEBUG=True&amp;rsquo;，那么Django通过STATICFILES_FINDERS指定的查找器寻找静态文件。如果指定&amp;rsquo;DEBUG=False&amp;rsquo;，那么Django不会负责静态文件访问服务，这时可以通过apache或者nginx提供静态文件服务，访问前一般通过&amp;rsquo;collectstatic&amp;rsquo;把项目静态文件收集好后统一部署。&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用nginx搭建hugo静态blog服务</title>
+      <link>/2017/01/%E4%BD%BF%E7%94%A8nginx%E6%90%AD%E5%BB%BAhugo%E9%9D%99%E6%80%81blog%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Tue, 10 Jan 2017 09:16:36 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/01/%E4%BD%BF%E7%94%A8nginx%E6%90%AD%E5%BB%BAhugo%E9%9D%99%E6%80%81blog%E6%9C%8D%E5%8A%A1/</guid>
+      <description>&lt;p&gt;之前使用过wordpress搭建过内容管理网站，但是运行环境搭建有些复杂而且页面内容创建需要不够方便，后来关注到静态页面网站框架，发现可以使用markdown进行内容编辑，这对于程序猿来说简直再有好不过了！&lt;/p&gt;
+&lt;p&gt;简单检索了一下静态内容管理的有很多实现，Ruby的Jekyll，Python的Sphinx doc，Go的Hugo，因为最近在学习Go所以决定搭建一个Hugo来研究下。&lt;/p&gt;
+&lt;h1 id=&#34;使用源码部署hugo&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8%e6%ba%90%e7%a0%81%e9%83%a8%e7%bd%b2hugo&#34;&gt;
+        ##
+    &lt;/a&gt;
+    使用源码部署hugo
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;部署golang&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%83%a8%e7%bd%b2golang&#34;&gt;
+        #
+    &lt;/a&gt;
+    部署golang
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+  $ yum install golang
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;下载hugo源代码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%8b%e8%bd%bdhugo%e6%ba%90%e4%bb%a3%e7%a0%81&#34;&gt;
+        #
+    &lt;/a&gt;
+    下载hugo源代码
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+  $ wget https://github.com/spf13/hugo/archive/v0.18.1.tar.gz
+  $ tar xf v0.18.1.tar.gz
+  $ cd hugo-0.18.1/
+  $ export GOPATH=/usr/local/go
+  $ go get -v github.com/spf13/hugo
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;hugo的基本使用&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#hugo%e7%9a%84%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    hugo的基本使用
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;创建项目&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae&#34;&gt;
+        #
+    &lt;/a&gt;
+    创建项目
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+  $ /usr/local/go/bin/hugo new site myblogs
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;创建post&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%88%9b%e5%bb%bapost&#34;&gt;
+        #
+    &lt;/a&gt;
+    创建post
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+  $ /usr/local/go/bin/hugo new post/first.md
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;使用themes&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8themes&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用themes
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+  $ cd themes/
+  $ git clone https://github.com/kakawait/hugo-tranquilpeak-theme.git
+  $ cp hugo-tranquilpeak-theme/exampleSite/* ..
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;构造页面&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%9e%84%e9%80%a0%e9%a1%b5%e9%9d%a2&#34;&gt;
+        #
+    &lt;/a&gt;
+    构造页面
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+  $ cd content
+  $ mkdir archives
+  $ touch archives/_index.md
+  $ mkdir categories
+  $ touch categories/_index.md
+  $ mkdir tags
+  $ touch tags/_index.md
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;执行成功后创建出下面的页面：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+  http://[Your_blog_DNS]/archives
+  http://[Your_blog_DNS]/categories
+  http://[Your_blog_DNS]/tags
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;服务部署&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%9c%8d%e5%8a%a1%e9%83%a8%e7%bd%b2&#34;&gt;
+        ##
+    &lt;/a&gt;
+    服务部署
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;第一步，使用 hugo 命令生成静态文件内容&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cd &amp;lt;hugo project home&amp;gt;
+$ hugo
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;执行完以上操作后会在项目目录中产生 public 目录，这个目录中包括了可以部署的静态文件。把 public 目录复制到 nginx 的公开目录中。&lt;/p&gt;
+&lt;p&gt;第二步，配置 nginx&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;server {
+  listen       80;
+  listen       [::]:80;
+  server_name  yourhostname;
+
+  location / {
+    root /directory/of/public;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;至此，系统的搭建基本完成，赶紧访问吧 :-)&lt;/p&gt;
+&lt;h1 id=&#34;hugo-theme开发&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#hugo-theme%e5%bc%80%e5%8f%91&#34;&gt;
+        ##
+    &lt;/a&gt;
+    hugo theme开发
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;templating
+&lt;ul&gt;
+&lt;li&gt;变量访问: {{ var }}&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;front matter&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/variables/&#34;&gt;variables&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;Site variables
+&lt;ul&gt;
+&lt;li&gt;作用：访问站点配置文件中的内容&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Page variables&lt;/li&gt;
+&lt;li&gt;File variables&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

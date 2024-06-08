@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DevOps on singleye</title>
+    <link>/tags/devops/</link>
+    <description>singleye (DevOps)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Mon, 08 Jul 2019 22:38:07 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑</title>
+      <link>/2019/07/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91/</link>
+      <pubDate>Mon, 08 Jul 2019 22:38:07 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/07/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;最近新买的服务器上安装了 ESXi v6.7.0 update 2，想把手上的一块显卡配起来在虚拟机中使用，查了官方资料发现可以使用直通（PassThrough）模式让虚拟机直接使用显卡。配置 ESXi 的过程还是基本顺利的，可是在把显卡分配给 Ubuntu 18.04 虚拟机时却碰到了意想不到的问题。&lt;/p&gt;
+&lt;h1 id=&#34;esxi-配置显卡直通passthorugh模式&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#esxi-%e9%85%8d%e7%bd%ae%e6%98%be%e5%8d%a1%e7%9b%b4%e9%80%9apassthorugh%e6%a8%a1%e5%bc%8f&#34;&gt;
+        ##
+    &lt;/a&gt;
+    ESXi 配置显卡直通（PassThorugh）模式
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;这里主要列出配置的关键点不展开说明。配置的方法过程可以参考这篇文档：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://blogs.vmware.com/apps/2018/04/how-enable-compute-accelerators-vsphere-6-5-machine-learning-hpc-workloads.html&#34;&gt;https://blogs.vmware.com/apps/2018/04/how-enable-compute-accelerators-vsphere-6-5-machine-learning-hpc-workloads.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;如果使用 vGPU 的模式进行配置时需要在 ESXi 中安装对应的驱动，如果是NVidia显卡可以从这里下载，不过多数家用级的 GPU 本身不支持这种模式，所以安装之前最好确认一下。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.nvidia.com/drivers/results/116135&#34;&gt;https://www.nvidia.com/drivers/results/116135&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;另外，服务器的 BIOS 需要进行正确设置，主要是查看 VT-D / IOMMU / SR-IOV 相关的设置&lt;/p&gt;
+&lt;h1 id=&#34;安装虚拟机&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e8%99%9a%e6%8b%9f%e6%9c%ba&#34;&gt;
+        ##
+    &lt;/a&gt;
+    安装虚拟机
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;安装完 Ubuntu 18.04 后问题就接踵而至。&lt;/p&gt;
+&lt;h2 id=&#34;第一个坑虚拟机类型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%b8%80%e4%b8%aa%e5%9d%91%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%b1%bb%e5%9e%8b&#34;&gt;
+        #
+    &lt;/a&gt;
+    第一个坑：虚拟机类型
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;原本按照默认的 ESXi 6.7 类型创建虚拟机但无论后面怎么设置都无法让驱动跟显卡正常工作，这里一定要选择 ESXi 6.7 U2 类型的机器。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-type-u2.png&#34; alt=&#34;VM type U2&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;第二个坑内存预留&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%ba%8c%e4%b8%aa%e5%9d%91%e5%86%85%e5%ad%98%e9%a2%84%e7%95%99&#34;&gt;
+        #
+    &lt;/a&gt;
+    第二个坑：内存预留
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;创建虚拟机时的默认配置不会将虚拟机的内存选项设置成“预留所有客户机内存 (全部锁定)”，但在使用 GPU PassThrough 的情况下需要把这个选项打开才行。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/07/ESXi-GPU-PassThrough/1.jpeg&#34; alt=&#34;memory reserve&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;第三个坑添加参数-hypervisorcpuidv0--false&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%b8%89%e4%b8%aa%e5%9d%91%e6%b7%bb%e5%8a%a0%e5%8f%82%e6%95%b0-hypervisorcpuidv0--false&#34;&gt;
+        #
+    &lt;/a&gt;
+    第三个坑：添加参数 hypervisor.cpuid.v0 = &amp;ldquo;FALSE&amp;rdquo;
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;一定要添加这个参数，让驱动把虚拟机当做物理机来处理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-param-hypervisor.png&#34; alt=&#34;hypervisor-cpuid&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;第四个坑ubuntu-1804-虚机升级系统后重启黑屏&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e5%9b%9b%e4%b8%aa%e5%9d%91ubuntu-1804-%e8%99%9a%e6%9c%ba%e5%8d%87%e7%ba%a7%e7%b3%bb%e7%bb%9f%e5%90%8e%e9%87%8d%e5%90%af%e9%bb%91%e5%b1%8f&#34;&gt;
+        #
+    &lt;/a&gt;
+    第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;这个问题折腾了很久才弄明白是由于升级 Intel CPU 的微代码固件（Meltdown安全漏洞）造成的，为了能够使用虚拟机只能放弃这个固件的升级：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ sudo apt-mark hold intel-microcode
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;该问题的讨论可以参考这个帖子：&lt;a href=&#34;https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system&#34;&gt;https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;第五个坑系统自带-nouveau-驱动造成-nvidia-驱动无法加载&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%ba%94%e4%b8%aa%e5%9d%91%e7%b3%bb%e7%bb%9f%e8%87%aa%e5%b8%a6-nouveau-%e9%a9%b1%e5%8a%a8%e9%80%a0%e6%88%90-nvidia-%e9%a9%b1%e5%8a%a8%e6%97%a0%e6%b3%95%e5%8a%a0%e8%bd%bd&#34;&gt;
+        #
+    &lt;/a&gt;
+    第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;在虚拟机中安装 NVidia 驱动后重启系统后，正常情况可以看到系统正常加载 nvidia 驱动。&lt;/p&gt;
+&lt;p&gt;安装 NVidia 驱动方法：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ sudo apt install gcc g++ make
+
+$ sudo apt-get install nvidia-driver-410 xserver-xorg-video-nvidia-410 libnvidia-compute-410 libnvidia-decode-410 libnvidia-encode-410 libnvidia-ifr1-410 libnvidia-fbc1-410 libnvidia-gl-410 xorg-video-abi-23
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;但重启虚拟机后会发现有时系统会正常加载 nvidia.ko 驱动，有时会加载 nouveau.ko 驱动，造成无法正常使用显卡。&lt;/p&gt;
+&lt;p&gt;驱动加载的确认方法可以用 &amp;rsquo;lsmod | grep nvidia&amp;rsquo; 或 &amp;rsquo;lsmod | grep nouveau&amp;rsquo; 命令。&lt;/p&gt;
+&lt;p&gt;可以用下面这个比较暴力的方法禁用 nouveau 驱动：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo mv /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko.disabled
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这里多说一些禁用 nouveau 驱动过程中碰到的坑：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;失败经历1：在 grub 及系统加载模块中禁用 nouveau&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;使用这个方法我发现在 Ubuntu 18.04 虚机启动后有时会正确加载 nvidia 驱动，有时却依然会加载 nouveau，确认的方法可以用 &amp;rsquo;lsmod | grep nvidia&amp;rsquo; 或 &amp;rsquo;lsmod | grep nouveau&amp;rsquo; 命令来确认。&lt;/p&gt;
+&lt;p&gt;在此把这个方法记录下来，也可能对别的虚拟机有效。&lt;/p&gt;
+&lt;p&gt;第一步：在 grub 中禁止 nouveau&lt;/p&gt;
+&lt;p&gt;先把下面的配置添加到 /etc/default/grub 文件中&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;GRUB_CMDLINE_LINUX=&amp;#34;nouveau.blacklist=1&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;然后更新 grub：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ sudo update-grub
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;第二步：禁用 modprobe&lt;/p&gt;
+&lt;p&gt;创建文件 &amp;lsquo;/etc/modprobe.d/nvidia-graphics-drivers.conf&amp;rsquo;，在其中添加下面内容：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;blacklist nouveau
+blacklist lbm-nouveau
+alias nouveau off
+alias lbm-nouveau off
+options nouveau modeset=0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Then update initrd:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ sudo update-initramfs -u
+$ sudo reboot
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;**失败经历2：在 gdm 中禁用 Wayland **&lt;/p&gt;
+&lt;p&gt;参考了这个讨论后尝试后问题依然存在
+&lt;a href=&#34;https://askubuntu.com/questions/1031511/cant-disable-nouveau-drivers-in-ubuntu-18-04&#34;&gt;https://askubuntu.com/questions/1031511/cant-disable-nouveau-drivers-in-ubuntu-18-04&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;查看 gdm 是否使用 wayland 模式的方法：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt; $ loginctl
+ SESSION     UID  USER     SEAT     TTY             
+       2    1000  velix    seat0    tty2            
+      c2    1000  velix                                             
+      c1     120  gdm      seat0    tty1
+The command loginctl show-session &amp;lt;session-n&amp;gt; -p Type show the session type:
+
+$ loginctl show-session c1 -p Type
+Type=Wayland
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在 gdm 配置文件 /etc/gdm3/custom.conf 中禁用的方法是添加下面一行配置后重启系统：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;WaylandEnable=false.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;趟过去上面几个坑之后就可以正常的在 Ubuntu 18.04 虚拟机中使用显卡直通模式了。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ nvidia-smi
+Thu Aug  8 17:31:13 2019
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 410.48                 Driver Version: 410.48                    |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 108...  Off  | 00000000:03:00.0 Off |                  N/A |
+|  0%   50C    P8    18W / 250W |   1001MiB / 11178MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|    0      4913      C   /conda/envs/cudf/bin/python                  191MiB |
+|    0     10664      C   /home/jupyter/testing-libgdf                 203MiB |
+|    0     10871      C   /conda/envs/cudf/bin/python                  191MiB |
+|    0     11730      C   /conda/envs/cudf/bin/python                  203MiB |
+|    0     11826      C   /conda/envs/cudf/bin/python                  203MiB |
++-----------------------------------------------------------------------------+
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>如何在CentOS上部署shadowsocks服务</title>
+      <link>/2017/05/%E5%A6%82%E4%BD%95%E5%9C%A8centos%E4%B8%8A%E9%83%A8%E7%BD%B2shadowsocks%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Mon, 01 May 2017 23:39:03 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/05/%E5%A6%82%E4%BD%95%E5%9C%A8centos%E4%B8%8A%E9%83%A8%E7%BD%B2shadowsocks%E6%9C%8D%E5%8A%A1/</guid>
+      <description>&lt;h1 id=&#34;shadowsocks简单介绍&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#shadowsocks%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d&#34;&gt;
+        ##
+    &lt;/a&gt;
+    shadowsocks简单介绍
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;shadowsocks是目前较流行的一种科学上网服务。他的工作原理也比较简单，shadowsocks本质上是socks5代理技术，然而架构方式上将单服务节点拆分成两个子服务：SS Local和SS Server。&lt;/p&gt;
+&lt;p&gt;工作过程如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当本地请求端需要访问时首先将请求发送至本地SS Local服务&lt;/li&gt;
+&lt;li&gt;SS Local将数据加密在网络上传输到SS Server，由于信息经过加密不会被GFW提取到特征数据，因此也就翻了墙&lt;/li&gt;
+&lt;li&gt;SS Server收到数据后解密并访问真正的远程服务资源&lt;/li&gt;
+&lt;li&gt;远程返回数据返回到SS Server&lt;/li&gt;
+&lt;li&gt;SS Server将数据加密传输给SS Local&lt;/li&gt;
+&lt;li&gt;SS Local收到返回数据解密后发给本地请求端&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/what-is-shadowsocks.png&#34; alt=&#34;What&amp;rsquo;s shadow socks&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;部署shadow-socks服务-ss-server&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%83%a8%e7%bd%b2shadow-socks%e6%9c%8d%e5%8a%a1-ss-server&#34;&gt;
+        ##
+    &lt;/a&gt;
+    部署shadow socks服务 (SS Server)
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;安装服务&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e6%9c%8d%e5%8a%a1&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装服务
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;shadowsocks服务的部署也极为简单，已经有完善的脚本帮助安装，需要稍微注意下的就是安装过程需要root权限，安装方法如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# wget --no-check-certificate -O shadowsocks.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks.sh
+
+# sh shadowsocks.sh
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;配置服务&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%85%8d%e7%bd%ae%e6%9c%8d%e5%8a%a1&#34;&gt;
+        #
+    &lt;/a&gt;
+    配置服务
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;shadowsocks的配置文件是&amp;rsquo;/etc/shadowsocks.json&amp;rsquo;，一个简单的配置文件的写法可以参考这个例子。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# cat /etc/shadowsocks.json
+{
+    &amp;#34;server&amp;#34;:&amp;#34;0.0.0.0&amp;#34;,
+    &amp;#34;port_password&amp;#34;:{
+        &amp;#34;8989&amp;#34;:&amp;#34;password1&amp;#34;,    &amp;lt;--- 第一个服务端口及访问密码
+        &amp;#34;8990&amp;#34;:&amp;#34;password2&amp;#34;     &amp;lt;--- 多个服务端口指定方法
+    },
+    &amp;#34;timeout&amp;#34;:300,
+    &amp;#34;method&amp;#34;:&amp;#34;aes-256-cfb&amp;#34;,    &amp;lt;--- 注意这个加密方式，配置SS Local需要使用
+    &amp;#34;fast_open&amp;#34;:false,
+    &amp;#34;workers&amp;#34;:2
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;多数情况下一个端口就可以满足使用了，这个例子中提供了多个访问端口的配置方法，具体用法可以根据自己的实际情况配置。&lt;/p&gt;
+&lt;h2 id=&#34;启动服务&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%90%af%e5%8a%a8%e6%9c%8d%e5%8a%a1&#34;&gt;
+        #
+    &lt;/a&gt;
+    启动服务
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;服务安装过程同时会安装一个启动脚本&amp;rsquo;/etc/init.d/shadowsocks&amp;rsquo;，启动方法也很简单。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# service shadowsocks start
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;为了确保每次系统启动后服务会自动运行最好将服务使用chkconfig进行启用，这样就不必担心系统被运营商或者管理员维护重启后无法使用了。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;chkconfig --add shadowsocks
+chkconfig --level 2345 shadowsocks on
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;客户端使用方法ss-local&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%a2%e6%88%b7%e7%ab%af%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95ss-local&#34;&gt;
+        ##
+    &lt;/a&gt;
+    客户端使用方法（SS Local）
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;本人使用的是MBP，先分享一下Mac OS上的使用方法。&lt;/p&gt;
+&lt;h2 id=&#34;下载安装ss-local&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%8b%e8%bd%bd%e5%ae%89%e8%a3%85ss-local&#34;&gt;
+        #
+    &lt;/a&gt;
+    下载安装SS Local
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;可以在这里下载&lt;a href=&#34;https://github.com/shadowsocks/ShadowsocksX-NG/releases/&#34;&gt;ShadowsocksX-NG&lt;/a&gt;这个软件，将这个软件安装到应用程序中就可以打开使用了，但首先需要一些设置。&lt;/p&gt;
+&lt;h2 id=&#34;配置ss-local&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%85%8d%e7%bd%aess-local&#34;&gt;
+        #
+    &lt;/a&gt;
+    配置SS Local
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;程序运行后可以看到一个小飞机样子的图标，点击后可以看到配置菜单。&lt;/p&gt;
+&lt;h3 id=&#34;第一步打开配置界面&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%b8%80%e6%ad%a5%e6%89%93%e5%bc%80%e9%85%8d%e7%bd%ae%e7%95%8c%e9%9d%a2&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第一步：打开配置界面
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-icon.png&#34; alt=&#34;Step1&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;第二步配置ss-local连接的ss-server服务器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e9%85%8d%e7%bd%aess-local%e8%bf%9e%e6%8e%a5%e7%9a%84ss-server%e6%9c%8d%e5%8a%a1%e5%99%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第二步：配置SS Local连接的SS Server服务器
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;点击“服务器设置”&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-server-1.png&#34; alt=&#34;Step2.1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将配置好的服务填入其中，注意的是“地址”／“端口号”／“加密方法”／“密码”信息需要与SS Server服务端的设置匹配。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-server-2.png&#34; alt=&#34;Step2.2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;配置完成后记得在服务器列表中选择刚刚配置好的那项。&lt;/p&gt;
+&lt;h3 id=&#34;第三步设置高级服务&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%b8%89%e6%ad%a5%e8%ae%be%e7%bd%ae%e9%ab%98%e7%ba%a7%e6%9c%8d%e5%8a%a1&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第三步：设置“高级服务”
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;国内用户最好指定&amp;quot;GFW LIST URL&amp;quot;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-advanced.png&#34; alt=&#34;Step3&#34;&gt;&lt;/p&gt;
+&lt;p&gt;注意，这里有一个&amp;quot;Local PAC Listen Port&amp;quot;信息，这个配置需要在下面一步使用。&lt;/p&gt;
+&lt;h3 id=&#34;第四步设置本地代理方式&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e5%9b%9b%e6%ad%a5%e8%ae%be%e7%bd%ae%e6%9c%ac%e5%9c%b0%e4%bb%a3%e7%90%86%e6%96%b9%e5%bc%8f&#34;&gt;
+        ##
+    &lt;/a&gt;
+    第四步：设置本地代理方式
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;设置本地代理方式之前最好先将GFW list更新一下&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-gfw-update.png&#34; alt=&#34;Step4.1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;打开“系统偏好设置”-&amp;gt;“网络”-&amp;gt;“高级”-&amp;gt;“代理”，勾选“自动代理配置”，在URL中输入：http://127.0.0.1:8090/proxy.pac&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-local-pac.png&#34; alt=&#34;Step4.2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;完成这个设置后就已经可以进行科学上网了，系统访问GFW屏蔽的服务时就会使用配置好的代理服务器。&lt;/p&gt;
+&lt;h1 id=&#34;使用kcptun加速&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8kcptun%e5%8a%a0%e9%80%9f&#34;&gt;
+        ##
+    &lt;/a&gt;
+    使用kcptun加速
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;有些时候shadowsocks搭建的主服务器在国外机房中的延迟较大，这样会影响访问速度，这时可以使用一些手段为访问加速，比如&amp;quot;kcptun&amp;quot;。&lt;/p&gt;
+&lt;p&gt;TBC&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

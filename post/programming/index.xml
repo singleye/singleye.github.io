@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Programming on singleye</title>
+    <link>/post/programming/</link>
+    <description>singleye (Programming)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Tue, 12 Dec 2023 23:54:00 +0800</lastBuildDate>
+    
+    <atom:link href="/post/programming/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Git Submodule使用方法</title>
+      <link>/2017/11/git-submodule%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Fri, 24 Nov 2017 15:49:02 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/git-submodule%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;p&gt;假设有两个项目project1和project2代码仓库：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ls project1/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;HEAD        branches    config      description hooks       info        objects     refs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ls project2/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;HEAD        branches    config      description hooks       info        objects     refs&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;1-从代码仓库clone开发库p1p2&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-%e4%bb%8e%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93clone%e5%bc%80%e5%8f%91%e5%ba%93p1p2&#34;&gt;
+        #
+    &lt;/a&gt;
+    1. 从代码仓库clone开发库p1/p2
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$git clone ../project1 p1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Cloning into &lt;span style=&#34;font-style:italic&#34;&gt;&amp;#39;p1&amp;#39;&lt;/span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;warning: You appear to have cloned an empty repository.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git clone ../project2 p2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Cloning into &lt;span style=&#34;font-style:italic&#34;&gt;&amp;#39;p2&amp;#39;&lt;/span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;warning: You appear to have cloned an empty repository.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;2-对p1p2做一些改动并且push到原代码仓库&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2-%e5%af%b9p1p2%e5%81%9a%e4%b8%80%e4%ba%9b%e6%94%b9%e5%8a%a8%e5%b9%b6%e4%b8%94push%e5%88%b0%e5%8e%9f%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93&#34;&gt;
+        #
+    &lt;/a&gt;
+    2. 对p1/p2做一些改动并且push到原代码仓库
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;在p1中添加新文件file1并且push到远程库project1&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ touch file1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git add file1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git commit
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[master (root-commit) 9132026] Init project 1 with file1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 1 file changed, 0 insertions(+), 0 deletions(-)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         create mode 100644 file1&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在p2中添加新文件file2并且push到远程库project2&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ touch file2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git add file2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git commit
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[master (root-commit) 0e07357] Init project2 with file2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 1 file changed, 0 insertions(+), 0 deletions(-)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         create mode 100644 file2&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;3-在开发库p1代码库中添加submodule-project2&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3-%e5%9c%a8%e5%bc%80%e5%8f%91%e5%ba%93p1%e4%bb%a3%e7%a0%81%e5%ba%93%e4%b8%ad%e6%b7%bb%e5%8a%a0submodule-project2&#34;&gt;
+        #
+    &lt;/a&gt;
+    3. 在开发库p1代码库中添加submodule &amp;lsquo;project2&amp;rsquo;
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;使用submodule add命令添加submodule到当前git代码库中，执行完成后submodule代码也会被clone到对应的目标目录。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git submodule add &amp;lt;URL to submodule remote&amp;gt; &amp;lt;submodule local dir&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git submodule add ../../project2 submodule/p2&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此时代码已经被拉到本地submodule目录下，查看一下submodule目录已经同步好project2的代码：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ls
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;file1     submodule
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ls submodule/p2/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;file2&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在project1目录中多出一个&amp;rsquo;.gitmodules&amp;rsquo;文件，该文件包含submodule信息：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat .gitmodules
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[submodule &lt;span style=&#34;font-style:italic&#34;&gt;&amp;#34;submodule/p2&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        path = submodule/p2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        url = /Users/wangq/tmp/submodule/project2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git submodule
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 0e0735740297cce3ef051c9c84d20d032d03311a submodule/p2 (heads/master)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这时候需要添加初始化一下这个submodule&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git submodule init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git submodule update&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;初始化后在主代码库目录中可以查看到submodule相关的两个改动，这两个改动可以被commit。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git status
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;On branch master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Your branch is up-to-date with &lt;span style=&#34;font-style:italic&#34;&gt;&amp;#39;origin/master&amp;#39;&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Changes to be committed:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  (use &lt;span style=&#34;font-style:italic&#34;&gt;&amp;#34;git reset HEAD &amp;lt;file&amp;gt;...&amp;#34;&lt;/span&gt; to unstage)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          new file:   .gitmodules
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;          new file:   submodule/p2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git commit
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[master 5d40507] Create submodule inside p1&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;s working repository
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 2 files changed, 4 insertions(+)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         create mode 100644 .gitmodules
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         create mode 160000 submodule/p2&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;4-此时如果project2的开发人员更新了project2的代码我们可以把最新的代码同步到submodule中&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#4-%e6%ad%a4%e6%97%b6%e5%a6%82%e6%9e%9cproject2%e7%9a%84%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98%e6%9b%b4%e6%96%b0%e4%ba%86project2%e7%9a%84%e4%bb%a3%e7%a0%81%e6%88%91%e4%bb%ac%e5%8f%af%e4%bb%a5%e6%8a%8a%e6%9c%80%e6%96%b0%e7%9a%84%e4%bb%a3%e7%a0%81%e5%90%8c%e6%ad%a5%e5%88%b0submodule%e4%b8%ad&#34;&gt;
+        #
+    &lt;/a&gt;
+    4. 此时如果project2的开发人员更新了project2的代码，我们可以把最新的代码同步到submodule中
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git pull
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;remote: Counting objects: 3, &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;remote: Compressing objects: 100% (2/2), &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;remote: Total 3 (delta 0), reused 0 (delta 0)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Unpacking objects: 100% (3/3), &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;From /Users/wangq/tmp/submodule/project2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   0e07357..db4f02b  master     -&amp;gt; origin/master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Updating 0e07357..db4f02b
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Fast-forward
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; file2 | 1 +
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 1 file changed, 1 insertion(+)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;查看一下其他人的改动内容如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat file2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;This line is change from another&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;s working reposiroty&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;5在p1中的submodule对project2进行了修改后也可以把新的修改发不到project2的远程库这样project2的开发人员可以同步到最新的代码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#5%e5%9c%a8p1%e4%b8%ad%e7%9a%84submodule%e5%af%b9project2%e8%bf%9b%e8%a1%8c%e4%ba%86%e4%bf%ae%e6%94%b9%e5%90%8e%e4%b9%9f%e5%8f%af%e4%bb%a5%e6%8a%8a%e6%96%b0%e7%9a%84%e4%bf%ae%e6%94%b9%e5%8f%91%e4%b8%8d%e5%88%b0project2%e7%9a%84%e8%bf%9c%e7%a8%8b%e5%ba%93%e8%bf%99%e6%a0%b7project2%e7%9a%84%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98%e5%8f%af%e4%bb%a5%e5%90%8c%e6%ad%a5%e5%88%b0%e6%9c%80%e6%96%b0%e7%9a%84%e4%bb%a3%e7%a0%81&#34;&gt;
+        #
+    &lt;/a&gt;
+    5.在p1中的submodule对project2进行了修改后也可以把新的修改发不到project2的远程库，这样project2的开发人员可以同步到最新的代码。
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;在p1的submodule目录中对p2进行修改并本地提交，然后把submodule的修改推到project2远程库中：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git push origin master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Counting objects: 3, &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Delta compression using up to 4 threads.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Compressing objects: 100% (2/2), &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Writing objects: 100% (3/3), 335 bytes | 111.00 KiB/s, &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Total 3 (delta 0), reused 0 (delta 0)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;To /Users/wangq/tmp/submodule/project2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   db4f02b..f600361  master -&amp;gt; master&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这是project2的其他开发人员可以在自己的代码库中同步这部分修改内容：
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git pull origin master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;remote: Counting objects: 3, &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;remote: Compressing objects: 100% (2/2), &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;remote: Total 3 (delta 0), reused 0 (delta 0)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Unpacking objects: 100% (3/3), &lt;span style=&#34;font-weight:bold&#34;&gt;done&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;From /Users/wangq/tmp/submodule/test/../project2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; * branch            master     -&amp;gt; FETCH_HEAD
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   db4f02b..f600361  master     -&amp;gt; origin/master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Updating db4f02b..f600361
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; Fast-forward
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; file2 | 1 +
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; 1 file changed, 1 insertion(+)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;p&gt;查看修改内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat file2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;This line is change from another&lt;span style=&#34;font-style:italic&#34;&gt;&amp;#39;s working reposiroty
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;font-style:italic&#34;&gt;This line is chaneg from p1&amp;#39;&lt;/span&gt;s submodule repository      &amp;lt;-- 这一行是p1开发人员增加的内容&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2 id=&#34;使用中碰到的问题&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8%e4%b8%ad%e7%a2%b0%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用中碰到的问题
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;trap-1-server-does-not-allow-request-for-unadvertised-object&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#trap-1-server-does-not-allow-request-for-unadvertised-object&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Trap 1: &amp;ldquo;Server does not allow request for unadvertised object&amp;rdquo;
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ git submodule update --checkout
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;error: Server does not allow request &lt;span style=&#34;font-weight:bold&#34;&gt;for&lt;/span&gt; unadvertised object 55e720e9c4ca96ae1d1bde84a1db3a12c90b9700
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Fetched in submodule path &lt;span style=&#34;font-style:italic&#34;&gt;&amp;#39;submodule/p2&amp;#39;&lt;/span&gt;, but it did not contain 55e720e9c4ca96ae1d1bde84a1db3a12c90b9700. Direct fetching of that commit failed.&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;原因：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;出现这个问题的原因是在submodule中进行的修改虽然已经commit到了superproject中，甚至是push到了superproject的远程库，但是当另外一个人尝试把这个superproject抓下来并同步这个submodule中的修改时，如果submodule的改动并未push到其对应的remote库，那么就会出现这个问题，因为update尝试从sudmobule的远程库pull对应的改动(55e720e9c4ca96ae1d1bde84a1db3a12c90b9700)，而这个改动并未被push到远程库，因此也就不存在。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Vim 8 Mac</title>
+      <link>/2017/11/vim-8-mac/</link>
+      <pubDate>Mon, 20 Nov 2017 00:08:15 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/vim-8-mac/</guid>
+      <description>&lt;h2 id=&#34;安装vim8&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85vim8&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装vim8
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;$ xcode-select --install
+$ ./configure --enable-luainterp=yes --enable-perlinterp=yes --enable-pythoninterp=yes --enable-tclinterp=yes --enable-rubyinterp=yes --enable-cscope --with-lua-prefix=/usr/local --enable-terminal --enable-multibyte --with-features=huge
+$ make
+$ make install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;安装插件&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e6%8f%92%e4%bb%b6&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装插件
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h2 id=&#34;安装youcompleteme&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85youcompleteme&#34;&gt;
+        #
+    &lt;/a&gt;
+    安装YouCompleteMe:
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;$ ./install.py --clang-completer --go-completer --js-completer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;vim-folding&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#vim-folding&#34;&gt;
+        #
+    &lt;/a&gt;
+    vim folding
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;za&lt;/td&gt;
+&lt;td&gt;打开/关闭当前的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zc&lt;/td&gt;
+&lt;td&gt;关闭当前打开的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zo&lt;/td&gt;
+&lt;td&gt;打开当前的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zm&lt;/td&gt;
+&lt;td&gt;关闭所有折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zM&lt;/td&gt;
+&lt;td&gt;关闭所有折叠及其嵌套的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zr&lt;/td&gt;
+&lt;td&gt;打开所有折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zR&lt;/td&gt;
+&lt;td&gt;打开所有折叠及其嵌套的折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zd&lt;/td&gt;
+&lt;td&gt;删除当前折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zE&lt;/td&gt;
+&lt;td&gt;删除所有折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zj&lt;/td&gt;
+&lt;td&gt;移动至下一个折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zk&lt;/td&gt;
+&lt;td&gt;移动至上一个折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zn&lt;/td&gt;
+&lt;td&gt;禁用折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;zN&lt;/td&gt;
+&lt;td&gt;启用折叠&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;issues&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#issues&#34;&gt;
+        #
+    &lt;/a&gt;
+    Issues
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;macos-iterm启动vim后第一行显示p字符&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#macos-iterm%e5%90%af%e5%8a%a8vim%e5%90%8e%e7%ac%ac%e4%b8%80%e8%a1%8c%e6%98%be%e7%a4%bap%e5%ad%97%e7%ac%a6&#34;&gt;
+        ##
+    &lt;/a&gt;
+    macos iTerm启动vim后第一行显示&amp;rsquo;$p&amp;rsquo;字符
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;解决方法：把终端类型从xterm或者xterm-256color改为linux&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用vim进行16进制编辑</title>
+      <link>/2017/11/%E4%BD%BF%E7%94%A8vim%E8%BF%9B%E8%A1%8C16%E8%BF%9B%E5%88%B6%E7%BC%96%E8%BE%91/</link>
+      <pubDate>Thu, 09 Nov 2017 10:27:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/%E4%BD%BF%E7%94%A8vim%E8%BF%9B%E8%A1%8C16%E8%BF%9B%E5%88%B6%E7%BC%96%E8%BE%91/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;记录一下使用vim编辑二进制文件的方法，这个方法使用了vim执行 &amp;lsquo;%!&amp;rsquo; 来打开外部程序的小技巧。&lt;/p&gt;
+&lt;p&gt;使用vim打开任意文件，并运行下面命令便进入16禁止编辑模式：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;:%!xxd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;退出时一定要记得使用下面命令，将编辑的hexdump内容还原成二进制：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;:%!xxd -r
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;使用这个技巧需要注意的是打开二进制文件编辑模式必须使用&amp;rsquo;-b&amp;rsquo;参数，否则vim会在编辑内容末尾增加0x0a字符，保存的时候也就会增加一个字节的信息。&lt;/p&gt;
+&lt;p&gt;使用&amp;rsquo;-b&amp;rsquo;参数：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;00000000: 0011 2233                                ..&amp;quot;3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;不使用&amp;rsquo;-b&amp;rsquo;参数：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;00000000: 0011 2233 0a                             ..&amp;quot;3.
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

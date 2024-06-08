@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Git Submodule使用方法 - My New Hugo Site</title>
+
+<meta name="description" content="假设有两个项目project1和project2代码仓库：
+$ ls project1/ HEAD branches config description hooks info objects refs $ ls project2/ HEAD branches config description hooks info objects refs # 1.">
+
+
+    <meta name="keywords" content="git,submodule">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">Git Submodule使用方法</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-24">2017-11-24</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/programming/git-submodule/">/post/programming/git-submodule/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+                    
+                    <li><a href="/categories/git/">Git</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/git/">#Git</a></li>
+                
+                    
+                    <li><a href="/tags/submodule/">#Submodule</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-从代码仓库clone开发库p1p2">1. 从代码仓库clone开发库p1/p2</a></li>
+    <li><a href="#2-对p1p2做一些改动并且push到原代码仓库">2. 对p1/p2做一些改动并且push到原代码仓库</a></li>
+    <li><a href="#3-在开发库p1代码库中添加submodule-project2">3. 在开发库p1代码库中添加submodule &lsquo;project2&rsquo;</a></li>
+    <li><a href="#4-此时如果project2的开发人员更新了project2的代码我们可以把最新的代码同步到submodule中">4. 此时如果project2的开发人员更新了project2的代码，我们可以把最新的代码同步到submodule中</a></li>
+    <li><a href="#5在p1中的submodule对project2进行了修改后也可以把新的修改发不到project2的远程库这样project2的开发人员可以同步到最新的代码">5.在p1中的submodule对project2进行了修改后也可以把新的修改发不到project2的远程库，这样project2的开发人员可以同步到最新的代码。</a></li>
+    <li><a href="#使用中碰到的问题">使用中碰到的问题</a>
+      <ul>
+        <li><a href="#trap-1-server-does-not-allow-request-for-unadvertised-object">Trap 1: &ldquo;Server does not allow request for unadvertised object&rdquo;</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <p>假设有两个项目project1和project2代码仓库：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ls project1/
+</span></span><span style="display:flex;"><span>HEAD        branches    config      description hooks       info        objects     refs
+</span></span><span style="display:flex;"><span>$ ls project2/
+</span></span><span style="display:flex;"><span>HEAD        branches    config      description hooks       info        objects     refs</span></span></code></pre></div>
+<h2 id="1-从代码仓库clone开发库p1p2" >
+<div>
+    <a href="#1-%e4%bb%8e%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93clone%e5%bc%80%e5%8f%91%e5%ba%93p1p2">
+        #
+    </a>
+    1. 从代码仓库clone开发库p1/p2
+</div>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$git clone ../project1 p1
+</span></span><span style="display:flex;"><span>Cloning into <span style="font-style:italic">&#39;p1&#39;</span>...
+</span></span><span style="display:flex;"><span>warning: You appear to have cloned an empty repository.
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">done</span>.</span></span></code></pre></div>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git clone ../project2 p2
+</span></span><span style="display:flex;"><span>Cloning into <span style="font-style:italic">&#39;p2&#39;</span>...
+</span></span><span style="display:flex;"><span>warning: You appear to have cloned an empty repository.
+</span></span><span style="display:flex;"><span><span style="font-weight:bold">done</span>.</span></span></code></pre></div>
+<h2 id="2-对p1p2做一些改动并且push到原代码仓库" >
+<div>
+    <a href="#2-%e5%af%b9p1p2%e5%81%9a%e4%b8%80%e4%ba%9b%e6%94%b9%e5%8a%a8%e5%b9%b6%e4%b8%94push%e5%88%b0%e5%8e%9f%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93">
+        #
+    </a>
+    2. 对p1/p2做一些改动并且push到原代码仓库
+</div>
+</h2>
+<p>在p1中添加新文件file1并且push到远程库project1</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ touch file1
+</span></span><span style="display:flex;"><span>$ git add file1
+</span></span><span style="display:flex;"><span>$ git commit
+</span></span><span style="display:flex;"><span>[master (root-commit) 9132026] Init project 1 with file1
+</span></span><span style="display:flex;"><span> 1 file changed, 0 insertions(+), 0 deletions(-)
+</span></span><span style="display:flex;"><span>         create mode 100644 file1</span></span></code></pre></div>
+<p>在p2中添加新文件file2并且push到远程库project2</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ touch file2
+</span></span><span style="display:flex;"><span>$ git add file2
+</span></span><span style="display:flex;"><span>$ git commit
+</span></span><span style="display:flex;"><span>[master (root-commit) 0e07357] Init project2 with file2
+</span></span><span style="display:flex;"><span> 1 file changed, 0 insertions(+), 0 deletions(-)
+</span></span><span style="display:flex;"><span>         create mode 100644 file2</span></span></code></pre></div>
+<h2 id="3-在开发库p1代码库中添加submodule-project2" >
+<div>
+    <a href="#3-%e5%9c%a8%e5%bc%80%e5%8f%91%e5%ba%93p1%e4%bb%a3%e7%a0%81%e5%ba%93%e4%b8%ad%e6%b7%bb%e5%8a%a0submodule-project2">
+        #
+    </a>
+    3. 在开发库p1代码库中添加submodule &lsquo;project2&rsquo;
+</div>
+</h2>
+<p>使用submodule add命令添加submodule到当前git代码库中，执行完成后submodule代码也会被clone到对应的目标目录。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git submodule add &lt;URL to submodule remote&gt; &lt;submodule local dir&gt;</span></span></code></pre></div>
+<p>例如：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git submodule add ../../project2 submodule/p2</span></span></code></pre></div>
+<p>此时代码已经被拉到本地submodule目录下，查看一下submodule目录已经同步好project2的代码：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ ls
+</span></span><span style="display:flex;"><span>file1     submodule
+</span></span><span style="display:flex;"><span>$ ls submodule/p2/
+</span></span><span style="display:flex;"><span>file2</span></span></code></pre></div>
+<p>在project1目录中多出一个&rsquo;.gitmodules&rsquo;文件，该文件包含submodule信息：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat .gitmodules
+</span></span><span style="display:flex;"><span>[submodule <span style="font-style:italic">&#34;submodule/p2&#34;</span>]
+</span></span><span style="display:flex;"><span>        path = submodule/p2
+</span></span><span style="display:flex;"><span>        url = /Users/wangq/tmp/submodule/project2
+</span></span><span style="display:flex;"><span>$ git submodule
+</span></span><span style="display:flex;"><span> 0e0735740297cce3ef051c9c84d20d032d03311a submodule/p2 (heads/master)</span></span></code></pre></div>
+<p>这时候需要添加初始化一下这个submodule</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>git submodule init
+</span></span><span style="display:flex;"><span>git submodule update</span></span></code></pre></div>
+<p>初始化后在主代码库目录中可以查看到submodule相关的两个改动，这两个改动可以被commit。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git status
+</span></span><span style="display:flex;"><span>On branch master
+</span></span><span style="display:flex;"><span>Your branch is up-to-date with <span style="font-style:italic">&#39;origin/master&#39;</span>.
+</span></span><span style="display:flex;"><span>Changes to be committed:
+</span></span><span style="display:flex;"><span>  (use <span style="font-style:italic">&#34;git reset HEAD &lt;file&gt;...&#34;</span> to unstage)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>          new file:   .gitmodules
+</span></span><span style="display:flex;"><span>          new file:   submodule/p2
+</span></span><span style="display:flex;"><span>$ git commit
+</span></span><span style="display:flex;"><span>[master 5d40507] Create submodule inside p1<span style="">&#39;</span>s working repository
+</span></span><span style="display:flex;"><span> 2 files changed, 4 insertions(+)
+</span></span><span style="display:flex;"><span>         create mode 100644 .gitmodules
+</span></span><span style="display:flex;"><span>         create mode 160000 submodule/p2</span></span></code></pre></div>
+<h2 id="4-此时如果project2的开发人员更新了project2的代码我们可以把最新的代码同步到submodule中" >
+<div>
+    <a href="#4-%e6%ad%a4%e6%97%b6%e5%a6%82%e6%9e%9cproject2%e7%9a%84%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98%e6%9b%b4%e6%96%b0%e4%ba%86project2%e7%9a%84%e4%bb%a3%e7%a0%81%e6%88%91%e4%bb%ac%e5%8f%af%e4%bb%a5%e6%8a%8a%e6%9c%80%e6%96%b0%e7%9a%84%e4%bb%a3%e7%a0%81%e5%90%8c%e6%ad%a5%e5%88%b0submodule%e4%b8%ad">
+        #
+    </a>
+    4. 此时如果project2的开发人员更新了project2的代码，我们可以把最新的代码同步到submodule中
+</div>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git pull
+</span></span><span style="display:flex;"><span>remote: Counting objects: 3, <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>remote: Compressing objects: 100% (2/2), <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>remote: Total 3 (delta 0), reused 0 (delta 0)
+</span></span><span style="display:flex;"><span>Unpacking objects: 100% (3/3), <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>From /Users/wangq/tmp/submodule/project2
+</span></span><span style="display:flex;"><span>   0e07357..db4f02b  master     -&gt; origin/master
+</span></span><span style="display:flex;"><span>Updating 0e07357..db4f02b
+</span></span><span style="display:flex;"><span>Fast-forward
+</span></span><span style="display:flex;"><span> file2 | 1 +
+</span></span><span style="display:flex;"><span> 1 file changed, 1 insertion(+)</span></span></code></pre></div>
+<p>查看一下其他人的改动内容如下：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat file2
+</span></span><span style="display:flex;"><span>This line is change from another<span style="">&#39;</span>s working reposiroty</span></span></code></pre></div>
+<h2 id="5在p1中的submodule对project2进行了修改后也可以把新的修改发不到project2的远程库这样project2的开发人员可以同步到最新的代码" >
+<div>
+    <a href="#5%e5%9c%a8p1%e4%b8%ad%e7%9a%84submodule%e5%af%b9project2%e8%bf%9b%e8%a1%8c%e4%ba%86%e4%bf%ae%e6%94%b9%e5%90%8e%e4%b9%9f%e5%8f%af%e4%bb%a5%e6%8a%8a%e6%96%b0%e7%9a%84%e4%bf%ae%e6%94%b9%e5%8f%91%e4%b8%8d%e5%88%b0project2%e7%9a%84%e8%bf%9c%e7%a8%8b%e5%ba%93%e8%bf%99%e6%a0%b7project2%e7%9a%84%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98%e5%8f%af%e4%bb%a5%e5%90%8c%e6%ad%a5%e5%88%b0%e6%9c%80%e6%96%b0%e7%9a%84%e4%bb%a3%e7%a0%81">
+        #
+    </a>
+    5.在p1中的submodule对project2进行了修改后也可以把新的修改发不到project2的远程库，这样project2的开发人员可以同步到最新的代码。
+</div>
+</h2>
+<p>在p1的submodule目录中对p2进行修改并本地提交，然后把submodule的修改推到project2远程库中：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git push origin master
+</span></span><span style="display:flex;"><span>Counting objects: 3, <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>Delta compression using up to 4 threads.
+</span></span><span style="display:flex;"><span>Compressing objects: 100% (2/2), <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>Writing objects: 100% (3/3), 335 bytes | 111.00 KiB/s, <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>Total 3 (delta 0), reused 0 (delta 0)
+</span></span><span style="display:flex;"><span>To /Users/wangq/tmp/submodule/project2
+</span></span><span style="display:flex;"><span>   db4f02b..f600361  master -&gt; master</span></span></code></pre></div>
+<p>这是project2的其他开发人员可以在自己的代码库中同步这部分修改内容：
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git pull origin master
+</span></span><span style="display:flex;"><span>remote: Counting objects: 3, <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>remote: Compressing objects: 100% (2/2), <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>remote: Total 3 (delta 0), reused 0 (delta 0)
+</span></span><span style="display:flex;"><span>Unpacking objects: 100% (3/3), <span style="font-weight:bold">done</span>.
+</span></span><span style="display:flex;"><span>From /Users/wangq/tmp/submodule/test/../project2
+</span></span><span style="display:flex;"><span> * branch            master     -&gt; FETCH_HEAD
+</span></span><span style="display:flex;"><span>   db4f02b..f600361  master     -&gt; origin/master
+</span></span><span style="display:flex;"><span>Updating db4f02b..f600361
+</span></span><span style="display:flex;"><span> Fast-forward
+</span></span><span style="display:flex;"><span> file2 | 1 +
+</span></span><span style="display:flex;"><span> 1 file changed, 1 insertion(+)</span></span></code></pre></div></p>
+<p>查看修改内容：</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ cat file2
+</span></span><span style="display:flex;"><span>This line is change from another<span style="font-style:italic">&#39;s working reposiroty
+</span></span></span><span style="display:flex;"><span><span style="font-style:italic">This line is chaneg from p1&#39;</span>s submodule repository      &lt;-- 这一行是p1开发人员增加的内容</span></span></code></pre></div>
+<h2 id="使用中碰到的问题" >
+<div>
+    <a href="#%e4%bd%bf%e7%94%a8%e4%b8%ad%e7%a2%b0%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98">
+        #
+    </a>
+    使用中碰到的问题
+</div>
+</h2>
+<h3 id="trap-1-server-does-not-allow-request-for-unadvertised-object" >
+<div>
+    <a href="#trap-1-server-does-not-allow-request-for-unadvertised-object">
+        ##
+    </a>
+    Trap 1: &ldquo;Server does not allow request for unadvertised object&rdquo;
+</div>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ git submodule update --checkout
+</span></span><span style="display:flex;"><span>error: Server does not allow request <span style="font-weight:bold">for</span> unadvertised object 55e720e9c4ca96ae1d1bde84a1db3a12c90b9700
+</span></span><span style="display:flex;"><span>Fetched in submodule path <span style="font-style:italic">&#39;submodule/p2&#39;</span>, but it did not contain 55e720e9c4ca96ae1d1bde84a1db3a12c90b9700. Direct fetching of that commit failed.</span></span></code></pre></div>
+<ul>
+<li>原因：</li>
+</ul>
+<p>出现这个问题的原因是在submodule中进行的修改虽然已经commit到了superproject中，甚至是push到了superproject的远程库，但是当另外一个人尝试把这个superproject抓下来并同步这个submodule中的修改时，如果submodule的改动并未push到其对应的remote库，那么就会出现这个问题，因为update尝试从sudmobule的远程库pull对应的改动(55e720e9c4ca96ae1d1bde84a1db3a12c90b9700)，而这个改动并未被push到远程库，因此也就不存在。</p>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

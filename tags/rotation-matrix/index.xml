@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rotation Matrix on singleye</title>
+    <link>/tags/rotation-matrix/</link>
+    <description>singleye (Rotation Matrix)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 07 Jan 2021 11:40:47 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/rotation-matrix/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>旋转矩阵</title>
+      <link>/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/</link>
+      <pubDate>Thu, 07 Jan 2021 11:40:47 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;计算机图形学中的仿射变换包括平移、缩放、旋转等，在机器人位置描述的时候也需要使用到平移、旋转。这里主要介绍旋转的处理方法。&lt;/p&gt;
+&lt;h1 id=&#34;先举个简单例子&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%85%88%e4%b8%be%e4%b8%aa%e7%ae%80%e5%8d%95%e4%be%8b%e5%ad%90&#34;&gt;
+        ##
+    &lt;/a&gt;
+    先举个简单例子
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2021/01/rotation.png&#34; alt=&#34;rotation&#34;&gt;&lt;/p&gt;
+&lt;p&gt;设想一个二维平面空间里的“一个点”状机器人的简单情况，最初机器人位于平面直角坐标系中的 (1, 0) 点，先让机器人围绕着原点旋转角度 $\phi$ ，那么机器人的新的位置坐标可以很容易的用以下方式来表示:&lt;/p&gt;
+$$ (cos(\phi), sin(\phi)) $$
+&lt;p&gt;让机器人再从刚才的位置继续旋转 $\theta$ 角，那么机器人的新的位置坐标也很直观的用下面式子表示：&lt;/p&gt;
+$$ (cos(\phi+\theta), sin(\phi+\theta)) $$
+&lt;h1 id=&#34;复杂一点的例子&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%a4%8d%e6%9d%82%e4%b8%80%e7%82%b9%e7%9a%84%e4%be%8b%e5%ad%90&#34;&gt;
+        ##
+    &lt;/a&gt;
+    复杂一点的例子
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;在平面直角坐标系下，如果机器人不再是一个简单的点而是一个平面，那么机器人躯干中的任意一个点 (x, y) 经过旋转后在原平面直角坐标系下的新坐标是什么？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2021/01/example-1.png&#34; alt=&#34;rotation&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;旋转矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    旋转矩阵
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;二维平面直角坐标系旋转矩阵推导&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%ba%8c%e7%bb%b4%e5%b9%b3%e9%9d%a2%e7%9b%b4%e8%a7%92%e5%9d%90%e6%a0%87%e7%b3%bb%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5%e6%8e%a8%e5%af%bc&#34;&gt;
+        #
+    &lt;/a&gt;
+    二维平面直角坐标系旋转矩阵推导
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2021/01/rotation.png&#34; alt=&#34;rotation&#34;&gt;&lt;/p&gt;
+&lt;p&gt;机器人躯干上的任意点 (x, y) 对应向量 v，旋转 $\theta$ 后的位置计作 (x&amp;rsquo;, y&amp;rsquo;)对应新的向量 v&amp;rsquo;。&lt;/p&gt;
+&lt;p&gt;那么：&lt;/p&gt;
+&lt;div&gt;
+$$
+\left( 
+	\begin{matrix}
+		x \\
+		y
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		r*cos(\phi) \\
+		r*sin(\phi)
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;div&gt;
+$$
+\left( 
+	\begin{matrix}
+		x&#39; \\
+		y&#39;
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		r*cos(\phi+\theta) \\
+		r*sin(\phi+\theta)
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;三角和差化积公式:&lt;/p&gt;
+$$ cos(\phi+\theta) = cos(\phi)*cos(\theta) - sin(\phi)*sin(\theta) $$
+$$ sin(\phi+\theta) = sin(\phi)*cos(\theta) + cos(\phi)*sin(\theta) $$
+&lt;p&gt;带入和差化积公式后：&lt;/p&gt;
+&lt;div&gt;
+$$
+\left( 
+	\begin{matrix}
+		x&#39; \\
+		y&#39;
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		r*cos(\phi)*cos(\theta) - r*sin(\phi)*sin(\theta) \\
+		r*sin(\phi)*cos(\theta) + r*cos(\phi)*sin(\theta)
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		x*cos(\theta) - y*sin(\theta) \\
+		y*cos(\theta) + x*sin(\theta)
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;用矩阵的方法书写上面的公式：&lt;/p&gt;
+&lt;div&gt;
+$$
+\left( 
+	\begin{matrix}
+		x&#39; \\
+		y&#39;
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) \\
+		sin(\theta) &amp; cos(\theta)
+	\end{matrix}
+\right)*
+\left( 
+	\begin{matrix}
+		x \\
+		y
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;旋转矩阵 &amp;lsquo;R&amp;rsquo;：&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;div&gt;
+$$
+R=
+\left( 
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) \\
+		sin(\theta) &amp; cos(\theta)
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;h2 id=&#34;二维平面之交坐标系旋绕任一点旋转&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%ba%8c%e7%bb%b4%e5%b9%b3%e9%9d%a2%e4%b9%8b%e4%ba%a4%e5%9d%90%e6%a0%87%e7%b3%bb%e6%97%8b%e7%bb%95%e4%bb%bb%e4%b8%80%e7%82%b9%e6%97%8b%e8%bd%ac&#34;&gt;
+        #
+    &lt;/a&gt;
+    二维平面之交坐标系旋绕任一点旋转
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2021/01/example-2.png&#34; alt=&#34;rotation&#34;&gt;&lt;/p&gt;
+&lt;p&gt;思路如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;步骤 (a)：找到旋转点在原坐标系中的坐标 (x, y)&lt;/li&gt;
+&lt;li&gt;步骤 (b)：把坐标系平移到(x,y)后重新计算新的坐标&lt;/li&gt;
+&lt;li&gt;步骤 (c)：对新的坐标进行旋转&lt;/li&gt;
+&lt;li&gt;步骤 (d)：把结果进行反向平移&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;思考：平移是否可以用矩阵进行计算呢，如果可以的话会有什么好处呢？&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;平移矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%b9%b3%e7%a7%bb%e7%9f%a9%e9%98%b5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    平移矩阵
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;平移： 把任意点 (x, y) 平移 (tx, ty) 的到新的点 (x&amp;rsquo;, y&amp;rsquo;)&lt;/li&gt;
+&lt;/ul&gt;
+$$ x&#39; = x + tx $$
+$$ y&#39; = y + ty $$
+&lt;p&gt;使用齐次坐标进行矩阵表达：&lt;/p&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		x&#39; \\
+		y&#39; \\
+		1
+	\end{matrix}
+\right) =
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; tx \\
+		0 &amp; 1 &amp; ty \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right) *
+\left(
+	\begin{matrix}
+		x \\
+		y \\
+		1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;所以，平移可以通过平移矩阵来表示。&lt;/p&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; tx \\
+		0 &amp; 1 &amp; ty \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;&lt;strong&gt;如何用矩阵的形式表示绕任意点旋转呢？&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一步：把平面上的点平移(-tx, -ty)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; -tx \\
+		0 &amp; 1 &amp; -ty \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;第二步：使用旋转矩阵进行旋转。注意，这里需要使用齐次矩阵&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+R=
+\left( 
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) &amp; 0 \\
+		sin(\theta) &amp; cos(\theta) &amp; 0 \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;第三步：把平面上的点平移 (tx, ty)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; tx \\
+		0 &amp; 1 &amp; ty \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;整体如下：&lt;/p&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; tx \\
+		0 &amp; 1 &amp; ty \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right) *
+\left( 
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) &amp; 0 \\
+		sin(\theta) &amp; cos(\theta) &amp; 0 \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right) *
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; -tx \\
+		0 &amp; 1 &amp; -ty \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)=
+\left(
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) &amp; (1-cos(\theta))*tx + sin(\theta)*ty \\
+		sin(\theta) &amp; cos(\theta) &amp; (1-cos(\theta))*ty - sin(\theta)*tx \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;利用上面的旋转平移矩阵可以很方便的计算出 x&amp;rsquo; 和 y&#39;&lt;/p&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		x&#39; \\
+		y&#39; \\
+		1
+	\end{matrix}
+\right) =
+\left(
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) &amp; (1-cos(\theta))*tx + sin(\theta)*ty \\
+		sin(\theta) &amp; cos(\theta) &amp; (1-cos(\theta))*ty - sin(\theta)*tx \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right) *
+\left(
+	\begin{matrix}
+		x \\
+		y \\
+		1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;div&gt;
+$$
+\left(
+	\begin{matrix}
+		x&#39; \\
+		y&#39; \\
+		1
+	\end{matrix}
+\right) =
+\left(
+	\begin{matrix}
+		x*cos(\theta) - y*sin(\theta) + (1-cos(\theta))*tx + sin(\theta)*ty \\
+		x*sin(\theta) + y*cos(\theta) + (1-cos(\theta))*ty - sin(\theta)*tx \\
+		1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;h2 id=&#34;三维旋转矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%89%e7%bb%b4%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5&#34;&gt;
+        #
+    &lt;/a&gt;
+    三维旋转矩阵
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2021/01/example-3.png&#34; alt=&#34;rotation&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;绕-x-轴转-theta-的旋转矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bb%95-x-%e8%bd%b4%e8%bd%ac-theta-%e7%9a%84%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    绕 X 轴转 $\theta$ 的旋转矩阵：
+&lt;/div&gt;
+&lt;/h3&gt;
+$$ x&#39; = x $$
+&lt;div&gt;
+$$
+\left( 
+	\begin{matrix}
+		y&#39; \\
+		z&#39;
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) \\
+		sin(\theta) &amp; cos(\theta)
+	\end{matrix}
+\right)*
+\left( 
+	\begin{matrix}
+		y \\
+		z
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;div&gt;
+$$
+\left( 
+	\begin{matrix}
+		x&#39; \\
+		y&#39; \\
+		z&#39;
+	\end{matrix}
+\right)=
+\left( 
+	\begin{matrix}
+		1 &amp; 0 &amp; 0 \\
+		0 &amp; cos(\theta) &amp; -sin(\theta) \\
+		0 &amp; sin(\theta) &amp; cos(\theta)
+	\end{matrix}
+\right)*
+\left( 
+	\begin{matrix}
+		x \\
+		y \\
+		z
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;p&gt;因此：&lt;/p&gt;
+&lt;div&gt;
+$$
+R=
+\left(
+	\begin{matrix}
+		1 &amp; 0 &amp; 0 \\
+		0 &amp; cos(\theta) &amp; -sin(\theta) \\
+		0 &amp; sin(\theta) &amp; cos(\theta)
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;h3 id=&#34;绕-y-轴转-theta-的旋转矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bb%95-y-%e8%bd%b4%e8%bd%ac-theta-%e7%9a%84%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    绕 Y 轴转 $\theta$ 的旋转矩阵：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$
+R=
+\left(
+	\begin{matrix}
+		cos(\theta) &amp; 0 &amp; sin(\theta) \\
+		0 &amp; 1 &amp; 0 \\
+		-sin(\theta) &amp; 0 &amp; cos(\theta)
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;h3 id=&#34;绕-z-轴转-theta-的旋转矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bb%95-z-%e8%bd%b4%e8%bd%ac-theta-%e7%9a%84%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    绕 Z 轴转 $\theta$ 的旋转矩阵：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$
+R=
+\left(
+	\begin{matrix}
+		cos(\theta) &amp; -sin(\theta) &amp; 0 \\
+		sin(\theta) &amp; cos(\theta) &amp; 0 \\
+		0 &amp; 0 &amp; 1
+	\end{matrix}
+\right)
+$$
+&lt;/div&gt;
+&lt;h1 id=&#34;代码实验&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e7%a0%81%e5%ae%9e%e9%aa%8c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    代码实验
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2021/01/code.png&#34; alt=&#34;rotation&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

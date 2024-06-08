@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>多媒体格式标准、H264 编码与 MP4 格式简要介绍 - singleye</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="MPEG-4,MP4,RTP,H.264">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2023-08-09">2023-08-09</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/multimedia/">Multimedia</a></li>
+                
+                    
+                    <li><a href="/categories/video/">Video</a></li>
+                
+                    
+                    <li><a href="/categories/mpeg/">MPEG</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/mpeg-4/">#MPEG-4</a></li>
+                
+                    
+                    <li><a href="/tags/mp4/">#MP4</a></li>
+                
+                    
+                    <li><a href="/tags/rtp/">#RTP</a></li>
+                
+                    
+                    <li><a href="/tags/h.264/">#H.264</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#11mpeg-1">1.1.MPEG-1</a></li>
+    <li><a href="#12mpeg-2">1.2.MPEG-2</a></li>
+    <li><a href="#13mpeg-3">1.3.MPEG-3</a>
+      <ul>
+        <li><a href="#mp3-vs-mpeg-3">MP3 vs MPEG-3</a></li>
+      </ul>
+    </li>
+    <li><a href="#14-mpeg-4">1.4. MPEG-4</a>
+      <ul>
+        <li><a href="#141mp4-vs-mpeg-4">1.4.1.MP4 vs MPEG-4</a></li>
+      </ul>
+    </li>
+    <li><a href="#15视频编码标准的演变">1.5.视频编码标准的演变</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#21架构">2.1.架构</a></li>
+    <li><a href="#22-nal">2.2. NAL</a></li>
+    <li><a href="#23-vcl">2.3. VCL</a>
+      <ul>
+        <li><a href="#231图像表示方法概念">2.3.1.图像表示方法概念</a></li>
+        <li><a href="#232帧内预测-intra-frame-prediction">2.3.2.帧内预测 (Intra-frame Prediction)</a></li>
+        <li><a href="#233inter-prediction-in-p-slices">2.3.3.Inter-Prediction in P slices</a></li>
+        <li><a href="#234multiframe-inter-prediction-in-b-slices">2.3.4.Multiframe Inter-Prediction in B slices</a></li>
+      </ul>
+    </li>
+    <li><a href="#24码流结构">2.4.码流结构</a></li>
+    <li><a href="#25profiles-and-applications">2.5.Profiles and Applications</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#31-rtp">3.1. RTP</a>
+      <ul>
+        <li><a href="#311-rtp-传输-h264">3.1.1. RTP 传输 H.264</a></li>
+      </ul>
+    </li>
+    <li><a href="#32sdp-isoiec-14496-1">3.2.SDP (ISO/IEC 14496-1)</a></li>
+    <li><a href="#33mime-type">3.3.MIME type</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#51mpeg-7">5.1.MPEG-7</a></li>
+    <li><a href="#52mpeg-21">5.2.MPEG-21</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <h1 id="1标准概括" >
+<div>
+    <a href="#1%e6%a0%87%e5%87%86%e6%a6%82%e6%8b%ac">
+        ##
+    </a>
+    1.标准概括
+</div>
+</h1>
+<h2 id="11mpeg-1" >
+<div>
+    <a href="#11mpeg-1">
+        #
+    </a>
+    1.1.MPEG-1
+</div>
+</h2>
+<p>主要用于 CD / VCD 光盘时代的音视频压缩。</p>
+<p>MPEG-1可以按照分层的概念来理解，一个MPEG-1视频编码序列分为三个层次，从顶层到最底层依次是：</p>
+<ul>
+<li>图像组层（GOP: Group of Picture）</li>
+<li>帧层（frame），每个 GOP 可以包含多个 frame</li>
+<li>像条层（slice），每个 frame 可以包含多个 slice</li>
+</ul>
+<p>MPEG-1 定义的帧种类：</p>
+<ul>
+<li>I-图像／帧（节点编码图像，intra coded picture）参考图像，相当于一个固定影像，且独立于其它的图像类型。每个图像组群由此类型的图像开始。编码时独立编码，仅适用帧内编码技术，因而解码时不参考其他帧，类似JPEG编码。</li>
+<li>P-图像／帧（预测编码图像，predictive coded picture）包含来自先前的I或P-画格的差异信息。编码时使用运动补偿和运动估计，采用前向估计，参考之前的I-帧或者P-帧去预测该P格。</li>
+<li>B-图像／帧（前后预测编码图像，bidirectionally predictive coded pictures）包含来自先前和／或之后的I或 P-画格的差异信息。编码也使用运动补偿和运动估计，预估采用前向估计、后向估计或是双向估计，主要参考前面的或者后面的I格或者P格。</li>
+<li>D-图像／帧（指示编码图像，DC direct coded picture）用于快速进带。仅由DC直流分量构造的图像，可在低比特率的时候做浏览用。实际编码中很少使用。</li>
+</ul>
+<h2 id="12mpeg-2" >
+<div>
+    <a href="#12mpeg-2">
+        #
+    </a>
+    1.2.MPEG-2
+</div>
+</h2>
+<p>MPEG-2 是 DVD 和数字电视广播时代产生的音视频编码标准，但也被应用于后来的高清电视（HDTV）和蓝光光盘。</p>
+<p>MPEG-2 的编码码流分为六个层次，从顶层到最底层依次是：</p>
+<ul>
+<li>视频序列层（Sequence）</li>
+<li>图像组层（GOP: Group of Picture）</li>
+<li>图像层（Picture）</li>
+<li>像条层（Slice）</li>
+<li>宏块层（Macro Block）</li>
+<li>像块层（Block）</li>
+</ul>
+<h2 id="13mpeg-3" >
+<div>
+    <a href="#13mpeg-3">
+        #
+    </a>
+    1.3.MPEG-3
+</div>
+</h2>
+<p>MPEG-3是MPEG组织制定的视频和音频压缩标准。本来的目标是为HDTV提供20-40Mbps视频压缩技术。在标准制定的过程中，委员会很快发现MPEG-2技术足以获取类似的效果，因此将其合并到MPEG-2，成为MPEG-2的延伸。</p>
+<h3 id="mp3-vs-mpeg-3" >
+<div>
+    <a href="#mp3-vs-mpeg-3">
+        ##
+    </a>
+    MP3 vs MPEG-3
+</div>
+</h3>
+<p>MP3 是 MPEG-1 音频 Layer-3 部分，MPEG-1 的音频格式有 3 代，MP3 是第三代。</p>
+<p>MPEG-3 是音视频标准，目前已经属于 MPEG-2 的一部分。</p>
+<h2 id="14-mpeg-4" >
+<div>
+    <a href="#14-mpeg-4">
+        #
+    </a>
+    1.4. MPEG-4
+</div>
+</h2>
+<p>MPEG-4 是由一系列标准组成</p>
+<blockquote>
+<p>第一部分（ISO/IEC 14496-1）：系统：描述视频和音频数据流的控制、同步以及混合方式（即混流Multiplexing，简写为MUX）。</p>
+<p>第二部分（ISO/IEC 14496-2）：视频：定义一个对各种视觉信息（包括自然视频、静止纹理、计算机合成图形等等）的编解码器。（例如XviD编码就属于MPEG-4 Part 2）</p>
+<p>第三部分（ISO/IEC 14496-3）：音频：定义一个对各种音频信号进行编码的编解码器的集合。包括高级音频编码（Advanced Audio Coding，缩写为AAC）的若干变形和其他一些音频/语音编码工具(如Audio Lossless Coding,缩写为ALS)。</p>
+<p>第四部分（ISO/IEC 14496-4）：一致性：定义对本标准其他的部分进行一致性测试的程序。</p>
+<p>第五部分（ISO/IEC 14496-5）：参考软件：提供用于演示功能和说明本标准其他部分功能的软件。</p>
+<p>第六部分（ISO/IEC 14496-6）：多媒体传输集成框架（DMIF for Delivery Multimedia Integration Framework）</p>
+<p>第七部分（ISO/IEC 14496-7）：优化的参考软件：提供对实现进行优化的例子（这里的实现指的是第五部分）。</p>
+<p>第八部分（ISO/IEC 14496-8）：在IP网络上传输：定义在IP网络上传输MPEG-4内容的方式。</p>
+<p>第九部分（ISO/IEC 14496-9）：参考硬件：提供用于演示怎样在硬件上实现本标准其他部分功能的硬件设计方案。</p>
+<p>第十部分（ISO/IEC 14496-10）：高级视频编码或称高级视频编码（Advanced Video Coding，缩写为AVC）：定义一个视频编解码器（codec）。AVC和XviD都属于MPEG-4编码，但由于AVC属于MPEG-4 Part 10，在技术特性上比属于MPEG-4 Part2的XviD要先进。另外，它和ITU-T H.264标准是一致的，故又称为H.264。</p>
+<p>第十二部分（ISO/IEC 14496-12）：基于ISO的媒体文件格式：定义一个存储媒体内容的文件格式。</p>
+<p>第十三部分（ISO/IEC 14496-13）：知识产权管理和保护（IPMP for Intellectual Property Management and Protection）拓展。</p>
+<p>第十四部分（ISO/IEC 14496-14）：MPEG-4（即MP4）文件格式：定义基于第十二部分的用于存储MPEG-4内容的视频文档格式。</p>
+<p>第十五部分（ISO/IEC 14496-15）：AVC文件格式：定义基于第十二部分的用于存储第十部分的视频内容的文件格式。</p>
+<p>第十六部分（ISO/IEC 14496-16）：动画框架扩展（AFX : Animation Framework eXtension）。</p>
+<p>第十七部分（ISO/IEC 14496-17）：同步文本字幕格式。</p>
+<p>第十八部分（ISO/IEC 14496-18）：字体压缩和流式传输（针对开放字体格式Open Font Format）。</p>
+<p>第十九部分（ISO/IEC 14496-19）：合成材质流（Synthesized Texture Stream）。</p>
+<p>第二十部分（ISO/IEC 14496-20）：简单场景表示（LASeR for Lightweight Scene Representation。</p>
+<p>第二十一部分（ISO/IEC 14496-21）：用于描绘（Rendering）的MPEG-J拓展。</p>
+<p>第二十二部分（ISO/IEC 14496-22）：开放字体格式（Open Font Format）。</p>
+<p>第二十三部分（ISO/IEC 14496-23）：符号化音乐表示（Symbolic Music Representation）。</p>
+<p>第二十四部分（ISO/IEC 14496-24）：音频与系统交互作用（Audio and systems interaction）。</p>
+<p>第二十五部分（ISO/IEC 14496-25）：3D图形压缩模型（3D Graphics Compression Model）。</p>
+<p>第二十六部分（ISO/IEC 14496-26）：音频一致性检查：定义测试音频数据与ISO/IEC 14496-3是否一致的方法（Audio conformance）。</p>
+<p>第二十七部分（ISO/IEC 14496-27）：3D图形一致性检查：定义测试3D图形数据与ISO/IEC 14496-11:2005, ISO/IEC 14496-16:2006, ISO/IEC 14</p>
+</blockquote>
+<p>几个重点：</p>
+<ul>
+<li>音视频编码：第二部分（ISO/IEC 14496-2）/第三部分（ISO/IEC 14496-3）（MPEG4 编码）、第十部分（ISO/IEC 14496-10）(H.264)</li>
+<li>网络传输：第八部分（ISO/IEC 14496-8）</li>
+<li>MP4文件格式：第十四部分（ISO/IEC 14496-14）</li>
+</ul>
+<h3 id="141mp4-vs-mpeg-4" >
+<div>
+    <a href="#141mp4-vs-mpeg-4">
+        ##
+    </a>
+    1.4.1.MP4 vs MPEG-4
+</div>
+</h3>
+<p>MP4或称MPEG-4第14部分（英语：MPEG-4 Part 14）是一种标准的数字多媒体容器格式。MPEG-4第14部分的扩展名为.mp4，以存储数字音频及数字视频为主，但也可以存储字幕和静止图像。因其可容纳支持比特流的视频流（如高级视频编码），为流媒体。</p>
+<p>MPEG-4 是一系列用来定义音频、视频的标准集</p>
+<h2 id="15视频编码标准的演变" >
+<div>
+    <a href="#15%e8%a7%86%e9%a2%91%e7%bc%96%e7%a0%81%e6%a0%87%e5%87%86%e7%9a%84%e6%bc%94%e5%8f%98">
+        #
+    </a>
+    1.5.视频编码标准的演变
+</div>
+</h2>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/evolution-of-video-compression-standards.png" alt="Evolution"></p>
+<ul>
+<li>H.261: 视频电话</li>
+<li>MPEG-1: VCD</li>
+<li>H.262: 数字电视 / DVD</li>
+<li>H.263/H.263+/H.263++：通讯类应用，如视频会议，支持多种网络（PSTN, mobile, LAN/Internet），对丢包/出错场景的兼容性更高</li>
+<li>MPEG-4：基于目标编码，形状编码</li>
+<li>H.264 / AVC Coding：多种使用场景，有线/无线广播、DVD/蓝光存储、视频会议、流式多媒体、多媒体消息（MMS）。因此支持各种读取方式支持顺序/随机，高/低比特率，高/低网络延迟，高/低丢包等情景。</li>
+</ul>
+<h1 id="2h264第十部分isoiec-14496-10" >
+<div>
+    <a href="#2h264%e7%ac%ac%e5%8d%81%e9%83%a8%e5%88%86isoiec-14496-10">
+        ##
+    </a>
+    2.H.264.第十部分（ISO/IEC 14496-10）
+</div>
+</h1>
+<h2 id="21架构" >
+<div>
+    <a href="#21%e6%9e%b6%e6%9e%84">
+        #
+    </a>
+    2.1.架构
+</div>
+</h2>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/structure-of-h264.png" alt="structure"></p>
+<p><strong>分层设计:</strong></p>
+<ul>
+<li>Network Abstraction Layer (NAL)：视频和 metadata 格式化进行各种网络适配</li>
+<li>Video Coding Layer (VCL)：视频编码层</li>
+</ul>
+<p><strong>主要步骤：</strong></p>
+<ol>
+<li>压缩：预测（帧内预测/帧间预测），DCT转换和量化，比特流编码，结果是编码的 Macroblock</li>
+<li>切分数据：分片，切分</li>
+<li>封装：包装 NAL</li>
+</ol>
+<h2 id="22-nal" >
+<div>
+    <a href="#22-nal">
+        #
+    </a>
+    2.2. NAL
+</div>
+</h2>
+<p>主要目标定义如何把视频数据在不同的网络上进行传输</p>
+<ul>
+<li>RTP/IP：互联网广播</li>
+<li>MPEG-2：广播服务流</li>
+<li>ISO 文件：存储应用（光盘）</li>
+</ul>
+<p><strong>NALU 按内容进行分类：</strong></p>
+<ul>
+<li>VCL unit：视频图像
+<ul>
+<li>头信息块（A类）：包括宏块类型，量化参数，运动矢量</li>
+<li>帧内编码信息块（B类）：包含帧内编码宏块类型，帧内编码系数</li>
+<li>帧间编码信息块（C类）：包含帧间编码宏块类型，帧间编码系数</li>
+</ul>
+</li>
+<li>Non-VCL unit：metadata 等信息
+<ul>
+<li>Parameter sets：被 VCL NAL units 共享的数据头信息
+<ul>
+<li>picture parameter set (PPS): 图像参数集，PPS对如熵编码类型、有效参考图像的数目、初始化量化参数、去方块滤波系数等解码参数进行标志记录。一个 VCL 包含一个自己的 picture parameter set 指向对应 PPS Non-VCL unit 的指针。</li>
+<li>sequence parameter set (SPS): 序列参数集，SPS对如标识符、帧数以及参考帧数目、解码图像尺寸和帧场模式等解码参数进行标识记录。每个 picture parameter set 指向 sequence parameter set</li>
+</ul>
+</li>
+<li>Supplemental Enhancement Info (SEI)：用于提高播放质量（rate-distortion等），非必需的，扩展性强（应用程序可扩展）</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/PPS-SPS.png" alt="SPS-PPS"></p>
+<p><strong>NALU 传输分类：</strong></p>
+<ul>
+<li>基于流（stream-oriented）：需要使用 Start Code prefix (00 00 00 01 或 00 00 01)</li>
+<li>基于包（packet-oriented）：不需要使用 Start Code prefix</li>
+</ul>
+<p><strong>编码：</strong>
+H.264 NALU 单元常由[Start Code] [NALU Header] [NALU Payload] 三部分组成</p>
+<ul>
+<li>Start Code: 表示 NALU 开始，必须是 00 00 00 01 或 00 00 01</li>
+<li>NALU Header：1 个字节</li>
+<li>NALU Payload：内容</li>
+</ul>
+<p><strong>访问（Access Units）：</strong></p>
+<p>一组可以解码成图像的 NALU 被称为 Access Units</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/access-units.png" alt="access units"></p>
+<ul>
+<li>Delimiter: 定位</li>
+<li>SEI：时间和其他信息</li>
+<li>Primary coded picture: VCL</li>
+<li>Redundant coded picture：主码解码错误后进行错误修复</li>
+</ul>
+<h2 id="23-vcl" >
+<div>
+    <a href="#23-vcl">
+        #
+    </a>
+    2.3. VCL
+</div>
+</h2>
+<h3 id="231图像表示方法概念" >
+<div>
+    <a href="#231%e5%9b%be%e5%83%8f%e8%a1%a8%e7%a4%ba%e6%96%b9%e6%b3%95%e6%a6%82%e5%bf%b5">
+        ##
+    </a>
+    2.3.1.图像表示方法概念
+</div>
+</h3>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/VCL-hierarchy.png" alt="VCL hierarchy"></p>
+<p><strong>宏块 Macroblock(MB):</strong></p>
+<ul>
+<li>亮度宏块（luma）：大小 16x16，1个</li>
+<li>色差宏块（chroma）：大小 8x8，2个，与 primary colors 的色差分量 Cb, Cr。</li>
+</ul>
+<p><strong>片（slice）：</strong></p>
+<p>slice是 一组 MB 构成的集合，一个 slice 可以不需要别的 slice 参与进行独立解码，可以分为以下几类：</p>
+<ul>
+<li>I-slice: 帧内预测 (I-MB)</li>
+<li>P-slice: 帧间预测 (I- and P-MBs)</li>
+<li>B-slice: 双向帧间预测 (I- and B-MBs)</li>
+<li>SP-slice: 在不同码流间切换</li>
+<li>SI-slice: 与 SP-slice 一起在不同码流间切换</li>
+</ul>
+<p><strong>灵活的宏块顺序 (Flexible Macroblock Order - FMO)：</strong></p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/flexible-macroblock-ordering.png" alt="FMO"></p>
+<ul>
+<li>在 slice 内部 macroblock 按照栅格顺序排列</li>
+<li>slice group：包含一个或多个 slice</li>
+</ul>
+<p><strong>图像（Picture）:</strong></p>
+<p>一个图像通常对应一帧(Frame)或两场(Field)</p>
+<p><strong>帧（Frame）:</strong></p>
+<p>一个帧包含 1 个亮度分量和 2 个色差分量</p>
+<p>分类：</p>
+<ul>
+<li>I帧(Intra coded frame/关键帧)
+<ul>
+<li>普通 I 帧：所有 MB 采用帧内预测方式，仅用 I 帧就可以解码出完整图像
+<ul>
+<li>作为P帧/B帧的参考帧</li>
+<li>可以作为快进/快退的参考点</li>
+</ul>
+</li>
+<li>IDR 帧：立即刷新图像缓冲区，从 IDR 可以重新开始一个序列（Sequence），IDR 之后的 P帧/B帧都不能参考之前的帧
+<ul>
+<li>主要用于随机播放</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>P帧：前向预测帧间编码帧，参考前面靠近的 I 帧和 P 帧
+<ul>
+<li>P 帧可以作为后续 P 帧的参考帧（如果中间出现错误会传递扩大）</li>
+</ul>
+</li>
+<li>B帧：双向预测帧间编码帧，参考前面靠近的 I 帧和 P 帧和后面的 P 帧
+<ul>
+<li>在更早的标准中（如 MPEG-2）不作为参考帧</li>
+<li>在 H.264 中可以作为参考帧</li>
+</ul>
+</li>
+<li>SI帧：用于不同编码流之间的切换</li>
+<li>SP帧：用于不同编码流之间的切换</li>
+</ul>
+<p>“帧”与“片”与“宏块”</p>
+<table>
+<thead>
+<tr>
+<th>帧/片类型</th>
+<th>宏块</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I frames/slices (Intra)</td>
+<td>I宏块</td>
+</tr>
+<tr>
+<td>P frames/slices (Predicted)</td>
+<td>I宏块、P宏块</td>
+</tr>
+<tr>
+<td>B frames/slices (Bi-Predicted)</td>
+<td>I宏块、B宏块</td>
+</tr>
+<tr>
+<td>SI-frames/slices (switching I)</td>
+<td>SI宏块（一种特殊的帧内编码宏块），用于不同编码流之间的切换</td>
+</tr>
+<tr>
+<td>SP-frames/slices (switching P)</td>
+<td>I宏块、P宏块，用于不同编码流之间的切换</td>
+</tr>
+</tbody>
+</table>
+<p><strong>场/帧场（Field）:</strong></p>
+<p>帧内交替行（奇偶行）的集合，一个帧由顶场(Top Field)/底场(Bottom Field)组成，每个场可以在不同的时间拍摄（Interlaced）</p>
+<pre tabindex="0"><code> Top field					Top field
+ 			Bottom field					Bottom field
+^                     ^
+|       frame         |
+
+          ^                        ^
+ 			|         frame          |
+</code></pre><p>Field 编码成 Frame 有几种方式：</p>
+<ul>
+<li>frame mode: 只用单个 frame</li>
+<li>field mode: 2 个 field 组成一个 frame</li>
+<li>mixed mode (adaptive): 自适应的决定使用 frame mode 或 field mode</li>
+</ul>
+<p>自适应 (adaptive mode) 可以分两种：</p>
+<ul>
+<li>PAFF (Picture-Adaptive frame/field)
+<ul>
+<li>在 frame 级别进行判定使用 frame / field mode</li>
+<li>比使用 frame mode 提高 16-20% 压缩率</li>
+</ul>
+</li>
+<li>MBAFF (Macroblock-adaptive frame/field)
+<ul>
+<li>在 MB 级别进行判定使用 frame / field mode</li>
+<li>比 PAFF 进一步提高 14-16% 压缩率</li>
+</ul>
+</li>
+</ul>
+<p>**题外话：**过去的阴极射线电视机在帧率接近电影的帧率时图像会过快消失，所以采用隔行扫描形式组成 1 帧，同时可以降低数据带宽。</p>
+<h3 id="232帧内预测-intra-frame-prediction" >
+<div>
+    <a href="#232%e5%b8%a7%e5%86%85%e9%a2%84%e6%b5%8b-intra-frame-prediction">
+        ##
+    </a>
+    2.3.2.帧内预测 (Intra-frame Prediction)
+</div>
+</h3>
+<p>使用一个 MB 左边及上边的 MB 进行预测。</p>
+<p>预测类型：</p>
+<ul>
+<li>Intra_4x4: detailed luma blocks</li>
+<li>Intra_16x16: smoothed luma blocks</li>
+<li>Chroma_8x8: 色差比较平滑</li>
+<li>I_PCM: 忽略 prediction/transform，适用于不规则的图像、或者无损的图像、或者需要进行确定性 bit-rate 的场景</li>
+</ul>
+<h4 id="2321intra_4x4" >
+<div>
+    <a href="#2321intra_4x4">
+        ###
+    </a>
+    2.3.2.1.Intra_4x4
+</div>
+</h4>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/intra-4x4.png" alt="Intra_4x4"></p>
+<p><strong>预测模式：</strong></p>
+<ul>
+<li>1 个 DC 模式</li>
+<li>8 个方向模式</li>
+</ul>
+<h4 id="2322intra_16x16" >
+<div>
+    <a href="#2322intra_16x16">
+        ###
+    </a>
+    2.3.2.2.Intra_16x16
+</div>
+</h4>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/intra-16x16.png" alt="Intra_16x16"></p>
+<p><strong>预测模式：</strong></p>
+<ul>
+<li>Vertical</li>
+<li>Horizontal</li>
+<li>DC</li>
+<li>Planar (Diagonal)</li>
+</ul>
+<h3 id="233inter-prediction-in-p-slices" >
+<div>
+    <a href="#233inter-prediction-in-p-slices">
+        ##
+    </a>
+    2.3.3.Inter-Prediction in P slices
+</div>
+</h3>
+<h4 id="2331切分-mb" >
+<div>
+    <a href="#2331%e5%88%87%e5%88%86-mb">
+        ###
+    </a>
+    2.3.3.1.切分 MB
+</div>
+</h4>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/inter-prediction-P-slice.png" alt="segmentation"></p>
+<p>按照亮度和色差切分</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/segmentation-example.png" alt="segmentation example"></p>
+<h3 id="234multiframe-inter-prediction-in-b-slices" >
+<div>
+    <a href="#234multiframe-inter-prediction-in-b-slices">
+        ##
+    </a>
+    2.3.4.Multiframe Inter-Prediction in B slices
+</div>
+</h3>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/inter-prediction-B-slice.png" alt="B slices"></p>
+<h2 id="24码流结构" >
+<div>
+    <a href="#24%e7%a0%81%e6%b5%81%e7%bb%93%e6%9e%84">
+        #
+    </a>
+    2.4.码流结构
+</div>
+</h2>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/nal-structure.png" alt="structure"></p>
+<p>经过 VCL 编码后生成的 NALU 原始数据会被分包，因为 NALU 的 Start Code 是 00 00 00 01 或 00 00 01，因此在 NALU 数据中也可能存在冲突，解决办法是引入 EBSP</p>
+<p>几个概念：</p>
+<ul>
+<li>SODB：String of Data Bits，原始数据比特流，是最原始的编码压缩后的数据</li>
+<li>RBSP：Raw Byte Sequence Payload，原始字节序列载荷，对 SODB 进行 8 位补齐
+<ul>
+<li>RBSP = SODB + RBSP Trailing Bits</li>
+</ul>
+</li>
+<li>EBSP：Encapsulated Byte Sequence Payload，扩展字节序列载荷，在 RBSP 中引入防竞争字节（0x03），在 RBSP 中如果出现了连续两个 00 字节，就在后面添加一个防竞争字节（0x03）</li>
+</ul>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/payload-encoding.png" alt="payload encoding"></p>
+<h2 id="25profiles-and-applications" >
+<div>
+    <a href="#25profiles-and-applications">
+        #
+    </a>
+    2.5.Profiles and Applications
+</div>
+</h2>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/profiles-applications.png" alt="profiles &amp; applications"></p>
+<p>主要目的是定义编码工具和算法</p>
+<p>3 个 Profile:</p>
+<ul>
+<li>Baseline: 主要用于视频会议</li>
+<li>Main: 广播、媒体存储、数字影院</li>
+<li>Extended: IP 网络流媒体</li>
+</ul>
+<h1 id="3网络传输-第八部分isoiec-14496-8" >
+<div>
+    <a href="#3%e7%bd%91%e7%bb%9c%e4%bc%a0%e8%be%93-%e7%ac%ac%e5%85%ab%e9%83%a8%e5%88%86isoiec-14496-8">
+        ##
+    </a>
+    3.网络传输: 第八部分（ISO/IEC 14496-8）
+</div>
+</h1>
+<p>这个标准定义了以下内容：</p>
+<ul>
+<li>在 IP 网络上传输 ISO/IEC 14496 内容的框架</li>
+<li>在 RTP 中分片/组装负载的指导方法</li>
+<li>使用 SDP (Session description protocol) 传输 ISO/IEC 14496-1 内容</li>
+<li>ISO/IEC14496 相关的 MIME type</li>
+<li>RTP 安全和多播</li>
+</ul>
+<h2 id="31-rtp" >
+<div>
+    <a href="#31-rtp">
+        #
+    </a>
+    3.1. RTP
+</div>
+</h2>
+<p>RTP 负载分片/组装规则</p>
+<h3 id="311-rtp-传输-h264" >
+<div>
+    <a href="#311-rtp-%e4%bc%a0%e8%be%93-h264">
+        ##
+    </a>
+    3.1.1. RTP 传输 H.264
+</div>
+</h3>
+<h4 id="h264-nalu" >
+<div>
+    <a href="#h264-nalu">
+        ###
+    </a>
+    H.264 NALU
+</div>
+</h4>
+<p>H.264 NALU 单元常由[Start Code] [NALU Header] [NALU Payload] 三部分组成</p>
+<ul>
+<li>Start Code: 表示 NALU 开始，必须是 00 00 00 01 或 00 00 01</li>
+<li>NALU Header：1 个字节</li>
+<li>NALU Payload：内容</li>
+</ul>
+<h5 id="nalu-header--payload" >
+<div>
+    <a href="#nalu-header--payload">
+        ####
+    </a>
+    NALU (Header + Payload)
+</div>
+</h5>
+<p>一个 NALU 的封装形式如下，包含了 NALU Header 及 NALU Payload</p>
+<pre tabindex="0"><code>   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |F|NRI|  type   |                                               |
+  +-+-+-+-+-+-+-+-+                                               |
+  |                                                               |
+  |               Bytes 2..n of a Single NAL unit                 |
+  |                                                               |
+  |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                               :...OPTIONAL RTP padding        |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><h5 id="nalu-header" >
+<div>
+    <a href="#nalu-header">
+        ####
+    </a>
+    NALU Header：
+</div>
+</h5>
+<pre tabindex="0"><code>+---------------+
+|0|1|2|3|4|5|6|7|
++-+-+-+-+-+-+-+-+
+|F|NRI|  Type   |
++---------------+
+</code></pre><ul>
+<li>F: 1 bit</li>
+</ul>
+<p>forbidden_zero_bit，h264语法规定值为0。rtp封包中，当检测到值为1时，则表示该nalu中已出现错误。</p>
+<ul>
+<li>
+<p>NRI: 2 bits
+nal_ref_idc, 参考级别，当值为00时，表示后面的负载可以丢弃，并不会影响正常解码，当大于00时后面的该包丢弃会影响解码，不可丢弃。rtp封包中，该值也表示该数据包的重要性，11为重要性最高。</p>
+</li>
+<li>
+<p>Type: 5 bits</p>
+</li>
+</ul>
+<p>nal_unit_type，nalu的类型，h264文档中定义为</p>
+<table>
+<thead>
+<tr>
+<th>nal_unit_type</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>未定义</td>
+</tr>
+<tr>
+<td>1</td>
+<td>非IDR图像中不采用数据划分的片段</td>
+</tr>
+<tr>
+<td>2</td>
+<td>非IDR图像中A类数据划分片段</td>
+</tr>
+<tr>
+<td>3</td>
+<td>非IDR图像中B类数据划分片段</td>
+</tr>
+<tr>
+<td>4</td>
+<td>非IDR图像中C类数据划分片段</td>
+</tr>
+<tr>
+<td>5</td>
+<td>IDR图像的片段</td>
+</tr>
+<tr>
+<td>6</td>
+<td>补充增强信息 (SEI)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>序列参数集/SPS</td>
+</tr>
+<tr>
+<td>8</td>
+<td>图像参数集/PPS</td>
+</tr>
+<tr>
+<td>9</td>
+<td>分割符</td>
+</tr>
+<tr>
+<td>10</td>
+<td>序列结束符</td>
+</tr>
+<tr>
+<td>11</td>
+<td>流结束符</td>
+</tr>
+<tr>
+<td>12</td>
+<td>填充数据</td>
+</tr>
+<tr>
+<td>13 – 23</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>24 – 31</td>
+<td>未定义</td>
+</tr>
+</tbody>
+</table>
+<p>1-23 是 H.264 的标准定义，24 以后 RTP 进行了专有扩展</p>
+<pre tabindex="0"><code>      Type   Packet    Single NAL    Non-Interleaved    Interleaved
+                       Unit Mode           Mode             Mode
+      -------------------------------------------------------------
+
+      0      undefined     ig               ig               ig
+      1-23   NAL unit     yes              yes               no
+      24     STAP-A        no              yes               no
+      25     STAP-B        no               no              yes
+      26     MTAP16        no               no              yes
+      27     MTAP24        no               no              yes
+      28     FU-A          no              yes              yes
+      29     FU-B          no               no              yes
+      30-31  undefined     ig               ig               ig
+</code></pre><p>1-23 单一时间数据包 (Single NAL unit packet)，一个rtp包中只包含一个nalu。</p>
+<p>24-25 单一时间组合包(Aggregation packet)，一个rtp包含多个同一时间nalu。</p>
+<p>26-27 多时间组合包(Aggregation packet)，一个rtp包含多个时间片的多个nalu。</p>
+<p>28-29 分片组合(Fragmentation unit)，多个rtp包才能组合成一个完整的nalu。</p>
+<p>#####打包封装:</p>
+<p>使用 RTP 打包时会用 RTP 头替换掉 NALU 中开始的 Start Code (00 00 00 01 或 00 00 01)</p>
+<p>打包举例，对于如下 NALU</p>
+<pre tabindex="0"><code>[00 00 00 01 67 42 A0 1E 23 56 0E 2F … ]
+</code></pre><p>使用 RTP 打包成下面的内容：</p>
+<pre tabindex="0"><code>[RTP Header] [67 42 A0 1E 23 56 0E 2F … ]
+</code></pre><p>几种情况：</p>
+<ul>
+<li>Single NAL unit packet：可以在一个网络包中传输整个 NALU</li>
+<li>Aggregation packet：可以在一个网络包中传输多个 NALU，又可以分为“单一时间组合包”和“多时间组合包”</li>
+<li>Fragmentation unit：无法在一个网络包中传输整个 NALU，可以理解成一个 NALU 长度超过 MTU 减去各种协议头（UDP/TCP/IP/RTP）的长度，需要把一个 NALU 拆分成多个 NAL</li>
+</ul>
+<p><strong>单一时间数据包：</strong></p>
+<p>当nalu较小，一个rtp包即可传输时，可在单个rtp包中只包含一个nalu，进行发送。</p>
+<p>一个rtp中只包含一个nalu，rtp的负载如下</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |F|NRI|  type   |                                               |
+      +-+-+-+-+-+-+-+-+                                               |
+      |                                                               |
+      |               Bytes 2..n of a Single NAL unit                 |
+      |                                                               |
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p><strong>单一时间组合包：</strong></p>
+<p>nalu较小的情况下，在同一时刻生成了多个nalu，可以使用该打包方式，将多个nalu封装在一个包中。webrtc中sps和pps通常打包在同一个rtp中。</p>
+<p>STAP-A 封装格式</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |STAP-A NAL HDR |         NALU 1 Size           | NALU 1 HDR    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                         NALU 1 Data                           |
+      :                                                               :
+      +               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               | NALU 2 Size                   | NALU 2 HDR    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                         NALU 2 Data                           |
+      :                                                               :
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>STAP-A NAL HDR 中 nalu type取值为24。</p>
+<p>相对于单一数据包中，多了一个 NALU Size 字段，表示每个nalu的长度。</p>
+<p>STAP-B 封装格式</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |STAP-B NAL HDR | DON                           | NALU 1 Size   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | NALU 1 Size   | NALU 1 HDR    | NALU 1 Data                   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               +
+      :                                                               :
+      +               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               | NALU 2 Size                   | NALU 2 HDR    |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                       NALU 2 Data                             |
+      :                                                               :
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>STAP-B NAL HDR 中 nalu type取值为25。</p>
+<p>相对于STAP-A多了一个DON (decoding order number)字段，既解码顺序，而后续的每个nalu的解码顺序为DON累加1，既nalu 1 解码顺序为DON,而NALU2 为DON+1,NALU3 为(DON +1)+1，以此类推。</p>
+<p><strong>多时间组合包：</strong></p>
+<p>nalu较小的情况下，在一个rtp包中封装多个不同时间戳的nalu。</p>
+<p>MTAP16</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |MTAP16 NAL HDR |  decoding order number base   | NALU 1 Size   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  NALU 1 Size  |  NALU 1 DOND  |       NALU 1 TS offset        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  NALU 1 HDR   |  NALU 1 DATA                                  |
+      +-+-+-+-+-+-+-+-+                                               +
+      :                                                               :
+      +               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               | NALU 2 SIZE                   |  NALU 2 DOND  |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       NALU 2 TS offset        |  NALU 2 HDR   |  NALU 2 DATA  |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+               |
+      :                                                               :
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>MTAP16 NAL HDR 中 nalu type取值为26。</p>
+<p>DONB(decoding order number base)表示解码顺序的基数值，DOND 表示与DONB的偏移值。</p>
+<p>NALU TS offset ，为nalu原始时间戳与 rtp包头中的timestap的偏移值。</p>
+<p>MTAP24</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |MTAP24 NAL HDR |  decoding order number base   | NALU 1 Size   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  NALU 1 Size  |  NALU 1 DOND  |       NALU 1 TS offs          |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |NALU 1 TS offs |  NALU 1 HDR   |  NALU 1 DATA                  |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               +
+      :                                                               :
+      +               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |               | NALU 2 SIZE                   |  NALU 2 DOND  |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |       NALU 2 TS offset                        |  NALU 2 HDR   |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |  NALU 2 DATA                                                  |
+      :                                                               :
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>MTAP24 NAL HDR 中 nalu type取值为27。</p>
+<p>MATP16与 MTAP24 的区别在于NALU TS offset 值存放空间不同，前者为16bit，而后者为24bit。</p>
+<p><strong>分片组合：</strong></p>
+<p>当使用udp传输rtp包时，由于一个udp的荷载最大为1480个字节，当一个nalu大于1480时，就需要将一个nalu分割为多个rtp包进行传输，具体的分割方式有以下两种。</p>
+<p>FU-A</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | FU indicator  |   FU header   |                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                               |
+      |                                                               |
+      |                         FU payload                            |
+      |                                                               |
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>FU-B</p>
+<pre tabindex="0"><code>       0                   1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                          RTP Header                           |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      | FU indicator  |   FU header   |               DON             |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-|
+      |                                                               |
+      |                         FU payload                            |
+      |                                                               |
+      |                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                               :...OPTIONAL RTP padding        |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>其中 FU indicator</p>
+<pre tabindex="0"><code>      +---------------+
+      |0|1|2|3|4|5|6|7|
+      +-+-+-+-+-+-+-+-+
+      |F|NRI|  Type   |
+      +---------------+
+</code></pre><ul>
+<li>F: 1 bit</li>
+</ul>
+<p>forbidden_zero_bit，h264语法规定值为0。rtp封包中，当检测到值为1时，则表示该nalu中已出现错误。</p>
+<ul>
+<li>NRI: 2 bits</li>
+</ul>
+<p>nal_ref_idc, 当值为00时，表示后面的负载可以丢弃，并不会影响正常解码，当大于00时后面的该包丢弃会影响解码，不可丢弃。rtp封包中，该值也表示该数据包的重要性，11为重要性最高。</p>
+<ul>
+<li>Type: 5bit</li>
+</ul>
+<p>rtp包中nalu type，可取值为28(FU-A)，29(FU-B)。</p>
+<ul>
+<li>FU header</li>
+</ul>
+<pre tabindex="0"><code>      +---------------+
+      |0|1|2|3|4|5|6|7|
+      +-+-+-+-+-+-+-+-+
+      |S|E|R|  Type   |
+      +---------------+
+</code></pre><ul>
+<li>S: 1 bit</li>
+</ul>
+<p>值为1表示该rtp包为nalu的开始。</p>
+<ul>
+<li>E: 1 bit</li>
+</ul>
+<p>值为1表示该rtp包为nalu的结束。</p>
+<ul>
+<li>R: 1 bit</li>
+</ul>
+<p>保留字段。</p>
+<ul>
+<li>Type: 5bit</li>
+</ul>
+<p>表示h264中的nalu type 可取值1-23。</p>
+<p>从分片恢复 NALU header:</p>
+<pre tabindex="0"><code>nal_unit_type = (fu_indicator &amp; 0xe0) | (fu_header &amp; 0x1f)
+</code></pre><p><strong>一个全局的 NAL RTP 打包结构图如下：</strong></p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/NAL-RTP.png" alt="NAL-RTP"></p>
+<ul>
+<li>NALU：主体数据打包进 RTP</li>
+<li>Slice Header: 包含分片类型、分片中的宏块类型、分片帧的数量以及对应的帧的设置和参数等信息</li>
+<li>Slice Data: 宏块信息</li>
+<li>宏块：宏块类型、预测类型、Coded Block Pattern、Quantization Parameter、像素的亮度和色度数据集等等信息</li>
+</ul>
+<h2 id="32sdp-isoiec-14496-1" >
+<div>
+    <a href="#32sdp-isoiec-14496-1">
+        #
+    </a>
+    3.2.SDP (ISO/IEC 14496-1)
+</div>
+</h2>
+<p>使用 SDP 传输 ISO/IEC 14496-1 定义的内容</p>
+<h2 id="33mime-type" >
+<div>
+    <a href="#33mime-type">
+        #
+    </a>
+    3.3.MIME type
+</div>
+</h2>
+<p>互联网媒体类型 (Internet media type，也称为 MIME type），给互联网上传输的内容进行分类。</p>
+<p>MIME type 格式为：&lt;类型&gt;/&lt;子类型&gt;; [可选参数]</p>
+<p>例如：</p>
+<pre tabindex="0"><code>text/html; charset = UTF-8
+
+video/mp4
+</code></pre><p>以下是常用的视频类 MIME type：</p>
+<blockquote>
+<p>video/mpeg：MPEG-1视频文件</p>
+<p>video/mp4：MP4视频文件</p>
+<p>video/ogg：Ogg视频文件</p>
+<p>video/quicktime：QuickTime视频文件</p>
+<p>video/webm：WebM视频文件（基于Matroska基础）</p>
+<p>video/x-matroska：Matroska（多媒体封装格式）</p>
+<p>video/x-ms-wmv：Windows Media Video视频文件</p>
+<p>video/x-flv：Flash Video（FLV档）</p>
+</blockquote>
+<h1 id="4mp4-第十四部分isoiec-14496-14" >
+<div>
+    <a href="#4mp4-%e7%ac%ac%e5%8d%81%e5%9b%9b%e9%83%a8%e5%88%86isoiec-14496-14">
+        ##
+    </a>
+    4.MP4: 第十四部分（ISO/IEC 14496-14）
+</div>
+</h1>
+<p>MP4 文件由可以嵌套的 box 组成，每个 box 有 header 和 data，header 定义 box 的类型和大小，data 包含数据或者子 box。</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/mp4-box.png" alt="mp4 box"></p>
+<p>一个典型的视频文件格式如下：</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/CV/video-media-container/mp4-file-format.png" alt="mp4 file format"></p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+<th>7</th>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ftyp</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>描述文件类型、版本等信息</td>
+</tr>
+<tr>
+<td>mdat</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>Media Data 媒体数据</td>
+</tr>
+<tr>
+<td>moov</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>嵌套 box</td>
+<td>Movie box，用来存放每个媒体轨道的描述信息</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>mvhd</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>Movie Header box，记录整个媒体文件信息，如创建时间、修改时间、时间度量标尺、时长等</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>udta</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>嵌套 box</td>
+<td>User Data box，用户自定义信息</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>嵌套 box</td>
+<td>Track box，记录每个轨道的信息</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>tkhd</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>Track Header box，轨道的头信息，如创建/修改时间、时长、画面宽度/高度等</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>嵌套 box</td>
+<td>Media box，媒体信息</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>mdhd</td>
+<td></td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>Media Header box，记录创建时间、时长等信息，</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>hdlr</td>
+<td></td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>Handler Reference box，媒体播放过程信息</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td></td>
+<td></td>
+<td></td>
+<td>嵌套 box</td>
+<td>Media Information box</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>vmhd</td>
+<td></td>
+<td></td>
+<td>数据 box</td>
+<td>视频媒体头信息，smhd：针对音频</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td></td>
+<td></td>
+<td>嵌套 box</td>
+<td>Sample Table box，媒体数据的索引信息，找到视频的帧数据可以从这里获取</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>stsd</td>
+<td></td>
+<td>嵌套 box</td>
+<td>sample description, 给出视频、音频的编码、宽高、音量等信息，以及每个sample中包含多少个frame</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>stco</td>
+<td></td>
+<td>数据 box</td>
+<td>chunk offset, chunk（一个chunk 包含多个 sample，一个 sample 对应一帧） 在文件中的偏移</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>stsc</td>
+<td></td>
+<td>数据 box</td>
+<td>sample-to-chunk, chunk 中包含 sample 的数量</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>stsz</td>
+<td></td>
+<td>数据 box</td>
+<td>sample size, 每个 sample 的 size 信息</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>stts</td>
+<td></td>
+<td>数据 box</td>
+<td>time-to-sample，时间戳到 sample 的映射，每个 sample 的时长</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>stss</td>
+<td></td>
+<td>数据 box</td>
+<td>sync sampel table, 可以随机访问的 sample 列表（记录哪些 sample 是关键帧）</td>
+</tr>
+<tr>
+<td>moov</td>
+<td>trak</td>
+<td>mdia</td>
+<td>minf</td>
+<td>stbl</td>
+<td>ctts</td>
+<td></td>
+<td>数据 box</td>
+<td>帧解码到渲染的时间差，针对 B 帧</td>
+</tr>
+</tbody>
+</table>
+<h1 id="5其他" >
+<div>
+    <a href="#5%e5%85%b6%e4%bb%96">
+        ##
+    </a>
+    5.其他
+</div>
+</h1>
+<h2 id="51mpeg-7" >
+<div>
+    <a href="#51mpeg-7">
+        #
+    </a>
+    5.1.MPEG-7
+</div>
+</h2>
+<p>来自 wikipedia:</p>
+<blockquote>
+<p>MPEG-7并不是一个视频压缩标准，它是一个多媒体内容的描述标准。</p>
+</blockquote>
+<p>来自 mpeg.org:</p>
+<blockquote>
+<p>ISO/IEC 15938
+Multimedia content description interface</p>
+<p>A suite of standards for description and search of audio, visual and multimedia content</p>
+</blockquote>
+<h2 id="52mpeg-21" >
+<div>
+    <a href="#52mpeg-21">
+        #
+    </a>
+    5.2.MPEG-21
+</div>
+</h2>
+<p>来自 wikipedia:</p>
+<blockquote>
+<p>MPEG-21标准的正式名称为“多媒体框架”,它致力于为多媒体传输和使用定义一个标准化的、可互操作的和高度自动化的开放框架，这个框架考虑到了对象化的多媒体接入以及使用不同的网络和终端进行传输等问题。 MPEG-21标准将各种不同协议、标准和技术融合在一起，透过这种统一环境对全球媒体资源进行统一和管理，进而完整著作权保护、用户隐私权保护、终端和网络资源撷取及事件报告等功能。</p>
+</blockquote>
+<p>来自 mpeg.org:</p>
+<blockquote>
+<p>ISO/IEC 21000
+Multimedia framework</p>
+<p>A suite of standard that define a normative open framework for end-to-end multimedia creation, delivery and consumption that provides content creators, producers, distributors and service providers with equal opportunities in the MPEG-21 enabled open market, and also be to the benefit of the content consumers providing them access to a large variety of content in an interoperable manner.</p>
+</blockquote>
+<h1 id="6参考资料" >
+<div>
+    <a href="#6%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">
+        ##
+    </a>
+    6.参考资料
+</div>
+</h1>
+<ul>
+<li><a href="https://zh.wikipedia.org/wiki/MPEG-1">https://zh.wikipedia.org/wiki/MPEG-1</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/MPEG-2">https://zh.wikipedia.org/wiki/MPEG-2</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/MPEG-3">https://zh.wikipedia.org/wiki/MPEG-3</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/MPEG-4">https://zh.wikipedia.org/wiki/MPEG-4</a></li>
+<li><a href="https://www.mpeg.org/standards/MPEG-7/">https://www.mpeg.org/standards/MPEG-7/</a></li>
+<li><a href="https://www.mpeg.org/standards/MPEG-21/">https://www.mpeg.org/standards/MPEG-21/</a></li>
+<li><a href="https://zh.wikipedia.org/wiki/%E4%BA%92%E8%81%94%E7%BD%91%E5%AA%92%E4%BD%93%E7%B1%BB%E5%9E%8B">https://zh.wikipedia.org/wiki/%E4%BA%92%E8%81%94%E7%BD%91%E5%AA%92%E4%BD%93%E7%B1%BB%E5%9E%8B</a></li>
+<li><a href="https://juejin.cn/post/6844904083904528392#heading-1">https://juejin.cn/post/6844904083904528392#heading-1</a></li>
+<li><a href="https://slideplayer.com/slide/2409533/">https://slideplayer.com/slide/2409533/</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/402346767">https://zhuanlan.zhihu.com/p/402346767</a></li>
+<li><a href="https://www.cnblogs.com/yinxiangpei/articles/2821954.html">https://www.cnblogs.com/yinxiangpei/articles/2821954.html</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/355803589">https://zhuanlan.zhihu.com/p/355803589</a></li>
+</ul>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

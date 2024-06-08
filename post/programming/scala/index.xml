@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Scala on singleye</title>
+    <link>/post/programming/scala/</link>
+    <description>singleye (Scala)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Fri, 12 Jan 2018 00:42:50 +0800</lastBuildDate>
+    
+    <atom:link href="/post/programming/scala/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>

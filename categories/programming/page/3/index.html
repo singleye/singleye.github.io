@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Programming - singleye</title>
+
+<meta name="description" content="www.singleye.net">
+
+
+
+
+
+<link rel="alternate" type="application/rss+xml" href="/categories/programming/index.xml" title="singleye" />
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    <h1>Category: Programming</h1>
+    <div class="post-info">
+        <a href="/categories/">To all categories</a>
+    </div>
+    
+    
+        <article class="post-list h-feed post-card">
+    <div class="post-header">
+        <header>
+            <h1 class="p-name post-title"><a class="u-url" href="/2017/11/vim-8-mac/">Vim 8 Mac</a></h1>
+        </header>
+        
+
+    </div>
+
+    
+        <div class="content post-summary p-summary">
+            # 安装vim8 $ xcode-select --install $ ./configure --enable-luainterp=yes --enable-perlinterp=yes --enable-pythoninterp=yes --enable-tclinterp=yes --enable-rubyinterp=yes --enable-cscope --with-lua-prefix=/usr/local --enable-terminal --enable-multibyte --with-features=huge $ make $ make install # 安装插件 # 安装YouCompleteMe: $ .
+        </div>
+    
+    
+
+    
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-20">2017-11-20</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/11/vim-8-mac/">/2017/11/vim-8-mac/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/vim8/">#Vim8</a></li>
+                
+                    
+                    <li><a href="/tags/mac/">#Mac</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+</article>
+
+    
+        <article class="post-list h-feed post-card">
+    <div class="post-header">
+        <header>
+            <h1 class="p-name post-title"><a class="u-url" href="/2017/11/go%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B%E9%99%B7%E9%98%B1/">Go语言编程陷阱</a></h1>
+        </header>
+        
+
+    </div>
+
+    
+        <div class="content post-summary p-summary">
+            # 陷阱1: &ldquo;is pointer to interface, not interface&rdquo; 执行下面代码会出现&quot;type *net.Conn is pointer to interface, not interface)&ldquo;错误，原因是因为&quot;net.Conn&quot;是interface而不是struct，不能用指针方式传递。
+1 2 3 4 5 6 7 8 9 func connHandler(client *net.
+        </div>
+    
+    
+
+    
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-14">2017-11-14</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/11/go%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B%E9%99%B7%E9%98%B1/">/2017/11/go%E8%AF%AD%E8%A8%80%E7%BC%96%E7%A8%8B%E9%99%B7%E9%98%B1/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+                    
+                    <li><a href="/categories/go/">Go</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/golang/">#Golang</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+</article>
+
+    
+        <article class="post-list h-feed post-card">
+    <div class="post-header">
+        <header>
+            <h1 class="p-name post-title"><a class="u-url" href="/2017/11/go%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/">GO开发技巧</a></h1>
+        </header>
+        
+
+    </div>
+
+    
+        <div class="content post-summary p-summary">
+            # 1. 设置GO语言vim开发环境 在vim中开发GO最好安装相关的插件，比如vim-go这个插件。这个插件除了提供格式化、语法高亮、语法检测等功能以外还有很多方便的功能。
+编译命令，对应go build：
+:GoBuild 安装，对应go install：
+:GoInstall 测试，对应go test：
+:GoTest 运行一个单独测试：
+:GoTestFunc 覆盖率：
+:GoCoverage 运行当前程序，对应go run:
+        </div>
+    
+    
+
+    
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-10">2017-11-10</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/11/go%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/">/2017/11/go%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+                    
+                    <li><a href="/categories/go/">Go</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/go/">#Go</a></li>
+                
+                    
+                    <li><a href="/tags/vim/">#Vim</a></li>
+                
+                    
+                    <li><a href="/tags/delve/">#Delve</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+</article>
+
+    
+        <article class="post-list h-feed post-card">
+    <div class="post-header">
+        <header>
+            <h1 class="p-name post-title"><a class="u-url" href="/2017/11/%E4%BD%BF%E7%94%A8vim%E8%BF%9B%E8%A1%8C16%E8%BF%9B%E5%88%B6%E7%BC%96%E8%BE%91/">使用vim进行16进制编辑</a></h1>
+        </header>
+        
+
+    </div>
+
+    
+        <div class="content post-summary p-summary">
+            记录一下使用vim编辑二进制文件的方法，这个方法使用了vim执行 &lsquo;%!&rsquo; 来打开外部程序的小技巧。
+使用vim打开任意文件，并运行下面命令便进入16禁止编辑模式：
+:%!xxd 退出时一定要记得使用下面命令，将编辑的hexdump内容还原成二进制：
+:%!xxd -r 使用这个技巧需要注意的是打开二进制文件编辑模式必须使用&rsquo;-b&rsquo;参数，否则vim会在编辑内容末尾增加0x0a字符，保存的时候也就会增加一个字节的信息。
+使用&rsquo;-b&rsquo;参数：
+00000000: 0011 2233 ..&quot;3 不使用&rsquo;-b&rsquo;参数：
+00000000: 0011 2233 0a .
+        </div>
+    
+    
+
+    
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-09">2017-11-09</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/11/%E4%BD%BF%E7%94%A8vim%E8%BF%9B%E8%A1%8C16%E8%BF%9B%E5%88%B6%E7%BC%96%E8%BE%91/">/2017/11/%E4%BD%BF%E7%94%A8vim%E8%BF%9B%E8%A1%8C16%E8%BF%9B%E5%88%B6%E7%BC%96%E8%BE%91/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/vim/">#Vim</a></li>
+                
+                    
+                    <li><a href="/tags/hex/">#Hex</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+</article>
+
+    
+    
+    
+    
+    <div class="pagination noselect">
+        <div class="left pagination-item ">
+            
+                <a href="/categories/programming/page/2/">to new posts</a>
+            
+        </div>
+        <div class="right pagination-item ">
+            
+                <a href="/categories/programming/page/4/">to old posts</a>
+            
+        </div>
+    </div>
+
+
+
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

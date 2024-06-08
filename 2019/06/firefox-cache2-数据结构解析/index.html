@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Firefox cache2 数据结构解析 - singleye</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="cache2">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">Firefox cache2 数据结构解析</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2019-06-30">2019-06-30</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2019/06/firefox-cache2-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/">/2019/06/firefox-cache2-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/network/">Network</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/firefox/">#Firefox</a></li>
+                
+                    
+                    <li><a href="/tags/cache2/">#Cache2</a></li>
+                
+                    
+                    <li><a href="">#缓存</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!--toc-->
+<p>开始研究firefox磁盘保存的文件格式源于最近使用selenium做爬虫抓数据时需要下载爬取时的图片碰到的一些问题。</p>
+<p>先简单说一下最开始使用selenium下载图片时摸索出的几个办法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>使用requests包直接访问图片资源并保存成文件</td>
+<td>可以直接下载原始图片文件</td>
+<td>增大网络流量及耗时</td>
+</tr>
+<tr>
+<td>使用webdriver找到图片元素，调用snapshot()保存图片</td>
+<td>操作简单</td>
+<td>chromedriver工作正常，但firefox的geckodriver下载图片位置存在偏差。图片保存格式为png，并且尺寸有偏差。</td>
+</tr>
+<tr>
+<td>用webdriver在新页面中打开图片，再用snapshot()方法进行保存</td>
+<td>可以解决上面firefox保存图片的问题</td>
+<td>图片格式为png，操作费时</td>
+</tr>
+<tr>
+<td>找到图片在页面上的具体位置，使用snapshot()针对坐标位置进行截图</td>
+<td>可以解决上面firefox保存图片偏差的问题</td>
+<td>保存格式为png，并且难以控制图片尺寸</td>
+</tr>
+</tbody>
+</table>
+<p>上面几个方法虽然可以靠时间和后续处理解决问题，但是都不是很好的方法。之后想到了浏览器对图片应该使用缓存进行处理，于是就想是否可以通过查看磁盘上保存的浏览器缓存数据找到需要保存的图片资源。经过一番研究后基本搞明白了firefox的
+cache2缓存文件的格式，下面对缓存文件格式做个分析。</p>
+<h1 id="firefox-cache2-文件目录结构" >
+<div>
+    <a href="#firefox-cache2-%e6%96%87%e4%bb%b6%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84">
+        ##
+    </a>
+    Firefox cache2 文件目录结构
+</div>
+</h1>
+<p>Firefox在用户的profile目录中保存缓存文件结构，可以通过在firefox地址输入框中输入&rsquo;about:profiles&rsquo;查看当前用户的profile目录。</p>
+<p>在profile中找到&rsquo;cache2&rsquo;目录，该目录保存了浏览器的缓存数据。其中主要内容有两个：</p>
+<ol>
+<li>&lsquo;index&rsquo;文件：该文件是缓存的索引文件，记录了每一个被缓存在本地磁盘上的缓存文件的基本元信息，比如缓存记录的使用频率、过期时间、文件大小等&hellip;</li>
+<li>&rsquo;entries&rsquo;目录：目录中的每一个文件对应一个被浏览器缓存的数据文件，并且文件使用特定的数据格式存储了相应的元信息，比较重要的信息有URL</li>
+</ol>
+<pre tabindex="0"><code>$ ls
+AlternateServices.txt        cache2                       extensions.json              pkcs11.txt                   startupCache
+OfflineCache                 cert9.db                     favicons.sqlite              places.sqlite                storage
+SecurityPreloadState.txt     compatibility.ini            formhistory.sqlite           pluginreg.dat                storage-sync.sqlite
+SiteSecurityServiceState.txt containers.json              gmp                          prefs.js                     storage.sqlite
+TRRBlacklist.txt             content-prefs.sqlite         gmp-gmpopenh264              safebrowsing                 thumbnails
+addonStartup.json.lz4        cookies.sqlite               gmp-widevinecdm              saved-telemetry-pings        times.json
+addons.json                  crashes                      handlers.json                search.json.mozlz4           weave
+blocklist.xml                datareporting                key4.db                      sessionCheckpoints.json      webappsstore.sqlite
+bookmarkbackups              extension-preferences.json   minidumps                    sessionstore-backups         webappsstore.sqlite-shm
+broadcast-listeners.json     extensions                   permissions.sqlite           sessionstore.jsonlz4         xulstore.json
+
+
+$ ls cache2/
+doomed    entries   index     index.log
+
+$ ls cache2/entries/
+017239BD353C39FEF561AD4878BC169D5B89D5FA 5D032C390BFDCC43406BE001CADB00C017762B77 B25D0FBB9AD160F3CA160ED3E26BFF9F0E274929
+026860131AC8837A36968B435E640BDD30992E73 5D2DC9AE83B62B8763A0C14BDB89C4C45EFA111D B2BB561C0A27E72044D3AEE5425F4E5A8F0348E2
+04465FB4C96F61466B9A67422B84ECC5F3EDEBC6 5E4954707B44E5A4B4ACF5F22B52219A1DCA477F B35B9720DB46BE7509AD4A253DDA32F12CEFFBC8
+04978A7A83CF7B8511841F4A26598987807DBC89 5F34A74D1380D10E61240C4B94321E6D5B7812DB B412652745622FCEAC058F3F08A728999A3B4664
+04D7BC87034DE29F67E22BAA58D84F3D1C64E15A 5FE950976304D0FC774A22F674AF6B00E8528C88 B4160F7B008034AC71D5F250245DFE39FBEEC360
+06B62E73358EF1CBB9F8B4068FB133EE20D83FBF 601487B53548B7563ABB522C9452E066D0E8F82B B428F0BFE97CCBEF8F796B282FAF44664A4B0328
+07D9B3A9557270C7517C771711663C8F78019C12 6059AD83AC6E3CFF4FEE798D7BD32709ED3F51DE B45040B5F7F65C61AF516477B393B2C3129BEA9A
+0843F8C54EDE9BDFABABDB50655BB7CD89945828 609B40F6174E219E48CD0A82ECF3ADE83FFE90B6 B4E19E0CA4676E3E873F580DB210101AB849FBA6
+...
+</code></pre><h1 id="缓存index文件格式" >
+<div>
+    <a href="#%e7%bc%93%e5%ad%98index%e6%96%87%e4%bb%b6%e6%a0%bc%e5%bc%8f">
+        ##
+    </a>
+    缓存index文件格式
+</div>
+</h1>
+<p>文件使用Big-endian字节序，文件由1个文件头及后续多个描述缓存文件的数据块构成，每一块描述一个对应的缓存文件。</p>
+<table>
+<thead>
+<tr>
+<th>偏移</th>
+<th>Size</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0</td>
+<td>12 Bytes</td>
+<td>文件头</td>
+</tr>
+<tr>
+<td>0xC</td>
+<td>36 Bytes</td>
+<td>第一个缓存文件描述块</td>
+</tr>
+<tr>
+<td>0x30</td>
+<td>36 Bytes</td>
+<td>第二个缓存文件描述块</td>
+</tr>
+<tr>
+<td>&hellip;</td>
+<td>&hellip;</td>
+<td>&hellip;</td>
+</tr>
+<tr>
+<td>0xC+N*0x24</td>
+<td>36 Bytes</td>
+<td>第N个缓存文件描述块</td>
+</tr>
+</tbody>
+</table>
+<p>文件头具体结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>偏移</th>
+<th>size</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0</td>
+<td>4 Bytes</td>
+<td>版本号</td>
+</tr>
+<tr>
+<td>0x4</td>
+<td>4 Bytes</td>
+<td>最后一次更新时间戳</td>
+</tr>
+<tr>
+<td>0x8</td>
+<td>4 Bytes</td>
+<td>脏数据标记</td>
+</tr>
+</tbody>
+</table>
+<p>每一个缓存描述块内部结构如下：</p>
+<table>
+<thead>
+<tr>
+<th>内部偏移</th>
+<th>size</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0</td>
+<td>20 Bytes</td>
+<td>缓存文件key（&rsquo;:&rsquo;+URL）的sha1</td>
+</tr>
+<tr>
+<td>0x14</td>
+<td>4 Bytes</td>
+<td>使用频率</td>
+</tr>
+<tr>
+<td>0x18</td>
+<td>4 Bytes</td>
+<td>过期时间</td>
+</tr>
+<tr>
+<td>0x1C</td>
+<td>4 Bytes</td>
+<td>app ID</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td>1 Bytes</td>
+<td>缓存文件flag</td>
+</tr>
+<tr>
+<td>0x21</td>
+<td>3 Bytes</td>
+<td>缓存文件大小</td>
+</tr>
+</tbody>
+</table>
+<h1 id="缓存文件格式" >
+<div>
+    <a href="#%e7%bc%93%e5%ad%98%e6%96%87%e4%bb%b6%e6%a0%bc%e5%bc%8f">
+        ##
+    </a>
+    缓存文件格式
+</div>
+</h1>
+<p>&lsquo;cache2/entries&rsquo;目录中的每个文件用来记录一个被缓存的文件，文件内容也是Big-endian，文件格式如下：</p>
+<table>
+<thead>
+<tr>
+<th>偏移</th>
+<th>size</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0</td>
+<td>缓存文件大小</td>
+<td>被缓存文件内容</td>
+</tr>
+<tr>
+<td>紧接着缓存数据</td>
+<td>4+n_chunk*2</td>
+<td>暂时还不清楚其中具体内容，不过文件URL信息不在其中</td>
+</tr>
+<tr>
+<td>紧接着上面的位置</td>
+<td>可变长度</td>
+<td>被缓存文件元信息</td>
+</tr>
+<tr>
+<td>文件最后</td>
+<td>4 Bytes</td>
+<td>被缓存文件内容的尺寸</td>
+</tr>
+</tbody>
+</table>
+<p>n_chunk的计算方法是“(被缓存文件尺寸+256k-1)/256k”。</p>
+<p>从上面的结构看，解析缓存文件第一步就是从最后4个字节找到缓存文件尺寸，从而找到对应的元信息。元信息中包含了最重要的缓存文件的key ID信息，key ID包含了缓存数据的URL。</p>
+<p>元信息格式：</p>
+<table>
+<thead>
+<tr>
+<th>内部偏移</th>
+<th>尺寸</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0</td>
+<td>4 Bytes</td>
+<td>版本信息</td>
+</tr>
+<tr>
+<td>0x4</td>
+<td>4 Bytes</td>
+<td>被获取数量</td>
+</tr>
+<tr>
+<td>0x8</td>
+<td>4 Bytes</td>
+<td>上次获取时间戳</td>
+</tr>
+<tr>
+<td>0xC</td>
+<td>4 Bytes</td>
+<td>上次修改时间戳</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>4 Bytes</td>
+<td>超时时间戳</td>
+</tr>
+<tr>
+<td>0x14</td>
+<td>4 Bytes</td>
+<td>key的字节长度</td>
+</tr>
+<tr>
+<td>0x18</td>
+<td>4 Bytes</td>
+<td>标志位信息</td>
+</tr>
+<tr>
+<td>0x1C</td>
+<td>0x14中的key尺寸</td>
+<td>key信息</td>
+</tr>
+<tr>
+<td>&hellip;</td>
+<td>&hellip;</td>
+<td>&hellip;</td>
+</tr>
+<tr>
+<td>&hellip;</td>
+<td>&hellip;</td>
+<td>请求信息</td>
+</tr>
+</tbody>
+</table>
+<h1 id="解析代码" >
+<div>
+    <a href="#%e8%a7%a3%e6%9e%90%e4%bb%a3%e7%a0%81">
+        ##
+    </a>
+    解析代码
+</div>
+</h1>
+<p>做了个简单的cache2缓存文件解析程序：</p>
+<p><a href="https://github.com/singleye/FirefoxCache2">https://github.com/singleye/FirefoxCache2</a></p>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

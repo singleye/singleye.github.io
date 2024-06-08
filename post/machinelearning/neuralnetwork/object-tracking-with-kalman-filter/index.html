@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>基于 Kalman filter 的目标跟踪 - My New Hugo Site</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="KalmanFilter,卡尔曼滤波,ObjectTracking,目标跟踪">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">基于 Kalman filter 的目标跟踪</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2024-06-06">2024-06-06</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/machinelearning/neuralnetwork/object-tracking-with-kalman-filter/">/post/machinelearning/neuralnetwork/object-tracking-with-kalman-filter/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/object_tracking/">Object_tracking</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/kalmanfilter/">#KalmanFilter</a></li>
+                
+                    
+                    <li><a href="/tags/objecttracking/">#ObjectTracking</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#使用卡尔曼滤波进行目标跟踪的数学原理">使用卡尔曼滤波进行目标跟踪的数学原理</a>
+      <ul>
+        <li><a href="#1-卡尔曼滤波的基本概念">1. 卡尔曼滤波的基本概念</a></li>
+        <li><a href="#2-卡尔曼滤波的数学模型">2. 卡尔曼滤波的数学模型</a></li>
+        <li><a href="#3-卡尔曼滤波器在目标跟踪中的应用">3. 卡尔曼滤波器在目标跟踪中的应用</a></li>
+        <li><a href="#4-实例分析">4. 实例分析</a></li>
+        <li><a href="#5-结论">5. 结论</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- raw HTML omitted -->
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/MachineLearning/object_tracking_kalman_filter/demo.gif" alt="demo"></p>
+<h2 id="使用卡尔曼滤波进行目标跟踪的数学原理" >
+<div>
+    <a href="#%e4%bd%bf%e7%94%a8%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e8%bf%9b%e8%a1%8c%e7%9b%ae%e6%a0%87%e8%b7%9f%e8%b8%aa%e7%9a%84%e6%95%b0%e5%ad%a6%e5%8e%9f%e7%90%86">
+        #
+    </a>
+    使用卡尔曼滤波进行目标跟踪的数学原理
+</div>
+</h2>
+<p>卡尔曼滤波器（Kalman Filter）是一种递归估计方法，广泛应用于目标跟踪中。其核心思想是在动态系统中利用先验信息、测量数据和系统模型来估计目标状态。卡尔曼滤波器特别适用于线性系统和高斯噪声环境。</p>
+<h3 id="1-卡尔曼滤波的基本概念" >
+<div>
+    <a href="#1-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5">
+        ##
+    </a>
+    1. 卡尔曼滤波的基本概念
+</div>
+</h3>
+<p>卡尔曼滤波器的工作过程可以分为两个阶段：预测（Prediction）和更新（Update）。在预测阶段，基于系统模型对下一个时刻的状态进行预测。在更新阶段，利用新的测量数据对预测结果进行修正。下面将详细介绍卡尔曼滤波器的数学原理。</p>
+<h3 id="2-卡尔曼滤波的数学模型" >
+<div>
+    <a href="#2-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e7%9a%84%e6%95%b0%e5%ad%a6%e6%a8%a1%e5%9e%8b">
+        ##
+    </a>
+    2. 卡尔曼滤波的数学模型
+</div>
+</h3>
+<h4 id="21-状态方程和测量方程" >
+<div>
+    <a href="#21-%e7%8a%b6%e6%80%81%e6%96%b9%e7%a8%8b%e5%92%8c%e6%b5%8b%e9%87%8f%e6%96%b9%e7%a8%8b">
+        ###
+    </a>
+    2.1 状态方程和测量方程
+</div>
+</h4>
+<p>卡尔曼滤波器假设系统的状态可以用以下线性差分方程来描述：</p>
+$$
+\[ 
+x_k = A x_{k-1} + B u_{k-1} + w_{k-1} 
+\]
+$$
+<p>其中：</p>
+<ul>
+<li>\( $x_k$ \) 是系统在时刻 \( $k$ \) 的状态向量。</li>
+<li>\( $A$ \) 是状态转移矩阵，描述了系统从时刻 \( $k-1$ \) 到时刻 \( $k$ \) 的状态转移关系。</li>
+<li>\( $B$ \) 是控制输入矩阵，描述了控制输入 \( $u_{k-1}$ \) 对系统的影响。</li>
+<li>\( $w_{k-1}$ \) 是过程噪声，假设其满足高斯分布，均值为零，协方差为 \( $Q$ \)。</li>
+</ul>
+<p>测量方程描述了测量值与系统状态之间的关系：</p>
+$$
+\[ 
+z_k = H x_k + v_k 
+\]
+$$
+<p>其中：</p>
+<ul>
+<li>\( $z_k$ \) 是时刻 \( $k$ \) 的测量向量。</li>
+<li>\( $H$ \) 是测量矩阵，描述了系统状态到测量值的映射关系。</li>
+<li>\( $v_k$ \) 是测量噪声，假设其满足高斯分布，均值为零，协方差为 \( $R$ \)。</li>
+</ul>
+<h4 id="22-卡尔曼滤波器的递归过程" >
+<div>
+    <a href="#22-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e5%99%a8%e7%9a%84%e9%80%92%e5%bd%92%e8%bf%87%e7%a8%8b">
+        ###
+    </a>
+    2.2 卡尔曼滤波器的递归过程
+</div>
+</h4>
+<p>卡尔曼滤波器的递归过程包括预测和更新两个阶段。</p>
+<h5 id="预测阶段" >
+<div>
+    <a href="#%e9%a2%84%e6%b5%8b%e9%98%b6%e6%ae%b5">
+        ####
+    </a>
+    预测阶段
+</div>
+</h5>
+<p>在预测阶段，根据当前状态估计和控制输入，对下一时刻的状态进行预测：</p>
+$$ x‘_{k|k-1} = A x‘_{k-1|k-1} + B u_{k-1} $$
+<p>同时，预测状态协方差：</p>
+$$
+\[ 
+P_{k|k-1} = A P_{k-1|k-1} A^T + Q 
+\]
+$$
+<h5 id="更新阶段" >
+<div>
+    <a href="#%e6%9b%b4%e6%96%b0%e9%98%b6%e6%ae%b5">
+        ####
+    </a>
+    更新阶段
+</div>
+</h5>
+<p>在更新阶段，利用新的测量数据对预测状态进行修正。首先计算卡尔曼增益：</p>
+$$
+\[ 
+K_k = P_{k|k-1} H^T (H P_{k|k-1} H^T + R)^{-1} 
+\]
+$$
+<p>然后更新状态估计：</p>
+$$
+\[ 
+\hat{x}_{k|k} = \hat{x}_{k|k-1} + K_k (z_k - H \hat{x}_{k|k-1}) 
+\]
+$$
+<p>最后更新状态协方差：</p>
+$$
+\[ 
+P_{k|k} = (I - K_k H) P_{k|k-1} 
+\]
+$$
+<h3 id="3-卡尔曼滤波器在目标跟踪中的应用" >
+<div>
+    <a href="#3-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e5%99%a8%e5%9c%a8%e7%9b%ae%e6%a0%87%e8%b7%9f%e8%b8%aa%e4%b8%ad%e7%9a%84%e5%ba%94%e7%94%a8">
+        ##
+    </a>
+    3. 卡尔曼滤波器在目标跟踪中的应用
+</div>
+</h3>
+<p>在目标跟踪中，卡尔曼滤波器可以用来估计目标的位置信息（例如位置、速度）。假设目标在二维平面上运动，我们可以定义状态向量为：</p>
+$$
+\[ 
+x_k = \begin{bmatrix} x \\ y \\ a \\ h \\ v_x \\ v_y \\ v_a \\ v_h \end{bmatrix} 
+\]
+$$
+<p>其中 \( x \) 和 \( y \) 是目标的框的位置，\( a \) 和 \( h \) 是目标的大小比例（如宽高比），\( $v_x$ \) 和 \( $v_y$ \) 是目标框的运动速度，\( $v_a$ \) 和 \( $v_h$ \) 是目标框的大小比例变化速度。状态转移矩阵 \( A \) 和测量矩阵 \( H \) 可以定义为：</p>
+<h4 id="状态转移矩阵--a-" >
+<div>
+    <a href="#%e7%8a%b6%e6%80%81%e8%bd%ac%e7%a7%bb%e7%9f%a9%e9%98%b5--a-">
+        ###
+    </a>
+    状态转移矩阵 \( A \)：
+</div>
+</h4>
+$$
+\[ 
+A = \begin{matrix} 
+1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\\ 
+0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 \\\ 
+0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 \\\ 
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 \\\ 
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 
+\end{matrix} 
+\]
+$$
+<h4 id="测量矩阵--h-" >
+<div>
+    <a href="#%e6%b5%8b%e9%87%8f%e7%9f%a9%e9%98%b5--h-">
+        ###
+    </a>
+    测量矩阵 \( H \)：
+</div>
+</h4>
+$$
+\[ 
+H = \begin{bmatrix} 
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\\ 
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\\ 
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 
+\end{bmatrix} 
+\]
+$$
+<h4 id="过程噪声协方差矩阵--q-" >
+<div>
+    <a href="#%e8%bf%87%e7%a8%8b%e5%99%aa%e5%a3%b0%e5%8d%8f%e6%96%b9%e5%b7%ae%e7%9f%a9%e9%98%b5--q-">
+        ###
+    </a>
+    过程噪声协方差矩阵 \( Q \):
+</div>
+</h4>
+$$
+\[ 
+Q = \text{np.eye}(8) * 0.1 
+\]
+$$
+<h4 id="预测协方差矩阵" >
+<div>
+    <a href="#%e9%a2%84%e6%b5%8b%e5%8d%8f%e6%96%b9%e5%b7%ae%e7%9f%a9%e9%98%b5">
+        ###
+    </a>
+    预测协方差矩阵：
+</div>
+</h4>
+$$
+\[ 
+P = A P_{k-1|k-1} A^T + Q 
+\]
+$$
+<h3 id="4-实例分析" >
+<div>
+    <a href="#4-%e5%ae%9e%e4%be%8b%e5%88%86%e6%9e%90">
+        ##
+    </a>
+    4. 实例分析
+</div>
+</h3>
+<p>假设我们在每个时刻测量到目标的位置 \( ($x_k$, $y_k$) \)，利用上述卡尔曼滤波算法可以对目标的位置和速度进行估计和跟踪。</p>
+<h4 id="41-初始化" >
+<div>
+    <a href="#41-%e5%88%9d%e5%a7%8b%e5%8c%96">
+        ###
+    </a>
+    4.1 初始化
+</div>
+</h4>
+<p>初始状态估计：</p>
+$$
+\[ 
+\hat{x}_0 = \begin{bmatrix} x_0 \\\ y_0 \\\ a_0 \\\ h_0 \\\ v_{x0} \\\ v_{y0} \\\ v_{a0} \\\ v_{h0} \end{bmatrix} 
+\]
+$$
+<p>初始状态协方差：</p>
+$$
+\[ 
+P_0 = \begin{bmatrix} 
+\sigma_x^2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\\ 
+0 & \sigma_y^2 & 0 & 0 & 0 & 0 & 0 & 0 \\\ 
+0 & 0 & \sigma_a^2 & 0 & 0 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & \sigma_h^2 & 0 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & \sigma_{vx}^2 & 0 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & \sigma_{vy}^2 & 0 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 0 & \sigma_{va}^2 & 0 \\\ 
+0 & 0 & 0 & 0 & 0 & 0 & 0 & \sigma_{vh}^2 
+\end{bmatrix} 
+\]
+$$
+<h4 id="42-迭代过程" >
+<div>
+    <a href="#42-%e8%bf%ad%e4%bb%a3%e8%bf%87%e7%a8%8b">
+        ###
+    </a>
+    4.2 迭代过程
+</div>
+</h4>
+<p>在每个时间步，通过上述预测和更新步骤迭代计算得到目标的状态估计和协方差。</p>
+<h3 id="5-结论" >
+<div>
+    <a href="#5-%e7%bb%93%e8%ae%ba">
+        ##
+    </a>
+    5. 结论
+</div>
+</h3>
+<p>卡尔曼滤波器在目标跟踪中的应用非常广泛，特别是在噪声环境中具有良好的鲁棒性。通过结合系统模型和测量数据，卡尔曼滤波器能够有效地估计和跟踪目标的状态。理解其数学原理和实现细节，对于实际工程应用具有重要意义。</p>
+<p>代码： <a href="https://github.com/singleye/object_tracking_kalman_filter">https://github.com/singleye/object_tracking_kalman_filter</a></p>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

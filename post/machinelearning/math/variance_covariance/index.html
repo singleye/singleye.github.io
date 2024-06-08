@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+
+
+<html lang="en-us" data-theme="">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>数学期望、方差、标准差、协方差 - My New Hugo Site</title>
+
+<meta name="description" content="最近在学习机器学习的过程中发现了许多上学时在概率论和统计学课上学过的知识点，可是年代久远已经都忘记了，重新学起来还是费了不少力气，不过因为带着目的学习所以也有了一些新的认识。">
+
+
+    <meta name="keywords" content="tech">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://localhost:1313/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://localhost:1313/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.03df79c682b91915c7cd261ecd1a6ec4d0fe668c98fa46310d0fbade319b11bd.css" integrity="sha256-A995xoK5GRXHzSYezRpuxND&#43;ZoyY&#43;kYxDQ&#43;63jGbEb0=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.9c1888ebff42c0224ce04dac10cb2c401f1b77f54f78e8d87d73c3bed781c263.css" integrity="sha256-nBiI6/9CwCJM4E2sEMssQB8bd/VPeOjYfXPDvteBwmM=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.acd606c0fce58853afe0248d37bb41acbbcdd8b1aca2412b6c0fa760da0137f3.css" integrity="sha256-rNYGwPzliFOv4CSNN7tBrLvN2LGsokErbA&#43;nYNoBN/M=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        <script src="/js/script.672e2309c296e07c18bcd08b28d797a56222ff941d65f308fba3158c44885b14.js" type="text/javascript" charset="utf-8" integrity="sha256-Zy4jCcKW4HwYvNCLKNeXpWIi/5QdZfMI&#43;6MVjESIWxQ="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">My New Hugo Site</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://localhost:1313/" title="">Home</a>
+        
+        <a class="" href="http://localhost:1313/posts/" title="">Posts</a>
+        
+        <a class="" href="http://localhost:1313/project/" title="">Project</a>
+        
+        <a class="" href="http://localhost:1313/about/" title="">About</a>
+        
+        <a class="" href="http://localhost:1313/journey/" title="">Journey</a>
+        
+        <a class="" href="http://localhost:1313/contact/" title="">Contact</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">数学期望、方差、标准差、协方差</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-09-06">2017-09-06</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/post/machinelearning/math/variance_covariance/">/post/machinelearning/math/variance_covariance/</a>
+    <a href="http://localhost:1313/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/math/">Math</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="">#数学期望</a></li>
+                
+                    
+                    <li><a href="">#方差</a></li>
+                
+                    
+                    <li><a href="">#标准差</a></li>
+                
+                    
+                    <li><a href="">#协方差</a></li>
+                
+                    
+                    <li><a href="">#协方差矩阵</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#数学期望mean">数学期望（mean）</a>
+      <ul>
+        <li><a href="#离散型随机量的数学期望">离散型随机量的数学期望</a></li>
+        <li><a href="#连续型随机量的数学期望">连续型随机量的数学期望</a></li>
+        <li><a href="#数学期望的性质">数学期望的性质</a></li>
+        <li><a href="#数学期望的意义">数学期望的意义</a></li>
+      </ul>
+    </li>
+    <li><a href="#均值">均值</a></li>
+    <li><a href="#方差variance">方差(Variance)</a>
+      <ul>
+        <li><a href="#统计学方差">统计学方差</a></li>
+        <li><a href="#概率论方差">概率论方差</a></li>
+        <li><a href="#方差的意义">方差的意义</a></li>
+      </ul>
+    </li>
+    <li><a href="#标准差standard-deviation">标准差（Standard Deviation）</a>
+      <ul>
+        <li><a href="#样本标准差">样本标准差</a></li>
+        <li><a href="#意义">意义</a></li>
+      </ul>
+    </li>
+    <li><a href="#协方差covariance">协方差（Covariance）</a>
+      <ul>
+        <li><a href="#概率论协方差">概率论协方差</a></li>
+        <li><a href="#统计学样本协方差">统计学样本协方差</a></li>
+        <li><a href="#协方差性质">协方差性质</a></li>
+      </ul>
+    </li>
+    <li><a href="#相关系数-correlation">相关系数 (Correlation）</a>
+      <ul>
+        <li><a href="#相关关系">相关关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#协方差矩阵">协方差矩阵</a>
+      <ul>
+        <li><a href="#正相关">正相关：</a></li>
+        <li><a href="#分散正相关">分散正相关</a></li>
+        <li><a href="#分散负相关">分散负相关：</a></li>
+        <li><a href="#分散不相关">分散不相关：</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- raw HTML omitted -->
+<p>最近在学习机器学习的过程中发现了许多上学时在概率论和统计学课上学过的知识点，可是年代久远已经都忘记了，重新学起来还是费了不少力气，不过因为带着目的学习所以也有了一些新的认识。</p>
+<h2 id="数学期望mean" >
+<div>
+    <a href="#%e6%95%b0%e5%ad%a6%e6%9c%9f%e6%9c%9bmean">
+        #
+    </a>
+    数学期望（mean）
+</div>
+</h2>
+<p>概率论中描述一个随机事件中的随机变量的平均值的大小可以使用“数学期望”（mean）这个概念。</p>
+<p>数学期望的定义是实验中每次可能的结果的概率乘以其结果的总和。</p>
+<h3 id="离散型随机量的数学期望" >
+<div>
+    <a href="#%e7%a6%bb%e6%95%a3%e5%9e%8b%e9%9a%8f%e6%9c%ba%e9%87%8f%e7%9a%84%e6%95%b0%e5%ad%a6%e6%9c%9f%e6%9c%9b">
+        ##
+    </a>
+    离散型随机量的数学期望
+</div>
+</h3>
+<ul>
+<li>
+<p>定义：离散型随机变量的所有可能取值 $ x_i $  与其对应的概率 $ P( x_i ) $ 乘积的和为该离散型随机量的数学期望，记为 $ E(X) $。</p>
+</li>
+<li>
+<p>公式：</p>
+$$ E(X) = \sum_{i=1}^n x_i P_i$$
+</li>
+</ul>
+<h3 id="连续型随机量的数学期望" >
+<div>
+    <a href="#%e8%bf%9e%e7%bb%ad%e5%9e%8b%e9%9a%8f%e6%9c%ba%e9%87%8f%e7%9a%84%e6%95%b0%e5%ad%a6%e6%9c%9f%e6%9c%9b">
+        ##
+    </a>
+    连续型随机量的数学期望
+</div>
+</h3>
+<ul>
+<li>
+<p>定义：假设连续型随机变量 $ X $ 的概率密度函数为 $ f(x) $ ，如果积分 $ \int_{-\infty}^{+\infty} xf(x) ,{\rm d}x $ 绝对收敛，则称这个积分的值为连续型随机量的数学期望，记为 $ E(X) $。</p>
+</li>
+<li>
+<p>公式：</p>
+$$ E(X) = \int_{-\infty}^{+\infty} xf(x) \,{\rm d}x $$
+</li>
+</ul>
+<h3 id="数学期望的性质" >
+<div>
+    <a href="#%e6%95%b0%e5%ad%a6%e6%9c%9f%e6%9c%9b%e7%9a%84%e6%80%a7%e8%b4%a8">
+        ##
+    </a>
+    数学期望的性质
+</div>
+</h3>
+<ol>
+<li>设C为常数： $ E(C) = C $</li>
+<li>设C为常数： $ E(CX) = CE(X) $</li>
+<li>加法：$ E(X+Y) = E(X) + E(Y) $</li>
+<li>当X和Y相互独立时，$ E(XY) = E(X)E(Y) $ （主意，X和Y的相互独立性可以通过下面的“协方差”描述）</li>
+</ol>
+<h3 id="数学期望的意义" >
+<div>
+    <a href="#%e6%95%b0%e5%ad%a6%e6%9c%9f%e6%9c%9b%e7%9a%84%e6%84%8f%e4%b9%89">
+        ##
+    </a>
+    数学期望的意义
+</div>
+</h3>
+<p>根据根据“大数定律”的描述，这个数字的意义是指随着重复次数接近无穷大时，数值的算术平均值几乎肯定收敛于数学期望值，也就是说数学期望值可以用于预测一个随机事件的平均预期情况。</p>
+<h2 id="均值" >
+<div>
+    <a href="#%e5%9d%87%e5%80%bc">
+        #
+    </a>
+    均值
+</div>
+</h2>
+<p>在往下面的内容走之前说一个简单的概念“均值”，就是平均数。</p>
+<ul>
+<li>
+<p>定义： 给定一个包含n个样本的集合 X={X1, &hellip;Xn}，均值就是这个集合中所有元素和的平均值。</p>
+</li>
+<li>
+<p>公式： $ \overline X = {{\sum_{i=1}^n X_i } \over {n}} $</p>
+</li>
+</ul>
+<h2 id="方差variance" >
+<div>
+    <a href="#%e6%96%b9%e5%b7%aevariance">
+        #
+    </a>
+    方差(Variance)
+</div>
+</h2>
+<p>方差是在概率论和统计方差衡量随机变量或一组数据时离散程度的度量，换句话说如果想知道一组数据之间的分散程度的话就可以使用“方差”来表示了。</p>
+<p>方差有两个定义，一个是统计学的定义，一个是概率论的定义。</p>
+<h3 id="统计学方差" >
+<div>
+    <a href="#%e7%bb%9f%e8%ae%a1%e5%ad%a6%e6%96%b9%e5%b7%ae">
+        ##
+    </a>
+    统计学方差
+</div>
+</h3>
+<ul>
+<li>
+<p>定义：在统计描述中，方差用来计算每一个变量（观察值）与总体均数之间的差异。为避免出现离均差总和为零，离均差平方和受样本含量的影响，统计学采用平均离均差平方和来描述变量的变异程度。</p>
+</li>
+<li>
+<p>公式：</p>
+</li>
+</ul>
+$$ \sigma^2 = {\sum_{i=1}^N(X-\mu)^2 \over N} $$
+<p>其中 $ \sigma^2 $ 为总体方差，X为变量，$ \mu $ 为整体均值， N为总体例数。</p>
+<h4 id="样本方差" >
+<div>
+    <a href="#%e6%a0%b7%e6%9c%ac%e6%96%b9%e5%b7%ae">
+        ###
+    </a>
+    样本方差
+</div>
+</h4>
+<p>由于在实际环境里是没有办法穷举所有例子，所以只能找出部分的样本数据，基于这部分样本进行测算。那么可以把公式转换成：</p>
+$$ S^2 = {{\sum_{i=1}^n(X_i - \overline X)}^2 \over (n - 1)} $$
+<p>其中 $ S^2 $ 为样本方差， $ \overline X $ 是采集样本的均值，$ n $ 为样本的个数。</p>
+<h3 id="概率论方差" >
+<div>
+    <a href="#%e6%a6%82%e7%8e%87%e8%ae%ba%e6%96%b9%e5%b7%ae">
+        ##
+    </a>
+    概率论方差
+</div>
+</h3>
+<p>在概率分布中，设X是一个离散型随机变量</p>
+<ul>
+<li>
+<p>定义：在概率分布中，设X是一个离散型随机变量，若 $ E((X-E(X))^2) $ 存在，则称 $ E((X-E(X))^2) $ 为X的方差，记为 $ D(X) $ , $ Var(X) $ 或 $ DX $，其中 $ E(X) $ 是X的期望值，X是变量值，公式中的 $ E $ 是期望值expected value的缩写，意为“变量值与其期望值之差的平方和”的期望值。</p>
+</li>
+<li>
+<p>离散型随机变量方差计算公式：</p>
+</li>
+</ul>
+$$ D(X) = E((X-E(X))^2) = E(X^2) - (E(X))^2 $$
+<ul>
+<li>连续性变量X，若其定义域为 $ (a,b) $，概率密度函数为 $ f(x) $，连续型随机变量X方差计算公式：</li>
+</ul>
+$$ D(X) = \int_a^b (x - \mu)^2f(x) \,{\rm d}x $$
+<h3 id="方差的意义" >
+<div>
+    <a href="#%e6%96%b9%e5%b7%ae%e7%9a%84%e6%84%8f%e4%b9%89">
+        ##
+    </a>
+    方差的意义
+</div>
+</h3>
+<p>那么什么是分散程度呢？举个例子，比如说两个人在游乐场里玩射击游戏时打出了n发子弹，这些子弹有写离靶心近一些，有的远一些，但统计下来这两个人的得分可能相同，这时候如何区分这两个人的水平高低呢？比较直观的一个想法就是看谁的射击弹着点比较集中啦。</p>
+<h2 id="标准差standard-deviation" >
+<div>
+    <a href="#%e6%a0%87%e5%87%86%e5%b7%aestandard-deviation">
+        #
+    </a>
+    标准差（Standard Deviation）
+</div>
+</h2>
+<ul>
+<li>
+<p>定义：又叫均方差，是离均差平方的算术平均数的平方根，用$ \sigma $ 表示。标准差是&quot;方差&quot;的算术平方根。标准差能反映一个数据集的离散程度。平均数相同的两组数据，标准差未必相同。</p>
+</li>
+<li>
+<p>公式：</p>
+</li>
+</ul>
+$$ \sigma = \sqrt 方差 = \sqrt {\sum_{i=1}^N(X-\mu)^2 \over N} $$
+<h3 id="样本标准差" >
+<div>
+    <a href="#%e6%a0%b7%e6%9c%ac%e6%a0%87%e5%87%86%e5%b7%ae">
+        ##
+    </a>
+    样本标准差
+</div>
+</h3>
+<p>类似样本方差，在实际情况中很难知道所有的情况只能靠抽样来估算实际的标准差。</p>
+$$ S = \sqrt 样本方差 = \sqrt {{{\sum_{i=1}^n(X_i - \overline X)}^2 \over (n - 1)}} $$
+<h3 id="意义" >
+<div>
+    <a href="#%e6%84%8f%e4%b9%89">
+        ##
+    </a>
+    意义
+</div>
+</h3>
+<p>标准差和方差一样都是用于衡量样本的离散程度的量，那么为什么要有标准差呢？因为方差和样本的“量纲”不一样，换句话说不在一个层次。怎么理解这个层次呢，从公式看方差是样本与均值的差的平方和的平均，这里有一个平方运算，这是导致量纲不在同一个层次的原因。</p>
+<p>比如两个集合 $ [0，8，12，20] $ 和 $ [8，9，11，12] $ ，两个集合的均值都是10，两个集合的方差分别是：69.33和3.33；计算两者的标准差分别是：8.3和1.8。数字越大代表越离散，从数值上看方差和标准差的量纲差别就很明显了，而标准差更好的在量纲上与样本集合保持同步。这就是“标准”的意义了。</p>
+<h2 id="协方差covariance" >
+<div>
+    <a href="#%e5%8d%8f%e6%96%b9%e5%b7%aecovariance">
+        #
+    </a>
+    协方差（Covariance）
+</div>
+</h2>
+<p>前面的方差／标准差描述的是一维数据集合的离散程度，但世界上的现象普遍是多维度数据描述的。那么很自然就会想知道现象和数据的相关程度，以及各维度数据间的相关程度。</p>
+<p>比如，一个产品卖的好不好可能有很多因素构成，比如产品质量、价格等。那么是否质量和价格之间有相关性呢？这个问题就可以用协方差来解决。</p>
+<h3 id="概率论协方差" >
+<div>
+    <a href="#%e6%a6%82%e7%8e%87%e8%ae%ba%e5%8d%8f%e6%96%b9%e5%b7%ae">
+        ##
+    </a>
+    概率论协方差
+</div>
+</h3>
+<ul>
+<li>公式：期望值分别为 $ E(X) $ 和 $ E(Y) $ 的两个变量X和Y的协方差为：</li>
+</ul>
+$$ Cov(X,Y) = E[(X-E(X))(Y-E(Y))] $$
+$$ = E(XY)- 2E(X)E(Y) + E(X)E(Y) $$
+$$ = E(XY)- E(X)E(Y) $$
+<p>协方差表示的是两个变量的总体的误差，这与只表示一个变量误差的方差不同。如果两个变量的变化趋势一致，也就是说如果其中一个大于自身的期望值，另外一个也大于自身的期望值，那么两个变量之间的协方差就是正值。 如果两个变量的变化趋势相反，即其中一个大于自身的期望值，另外一个却小于自身的期望值，那么两个变量之间的协方差就是负值。</p>
+<p>如果X 与Y 是统计独立的，那么二者之间的协方差就是0，则：</p>
+<p>$ E(XY) = E(X)E(Y) $</p>
+<h3 id="统计学样本协方差" >
+<div>
+    <a href="#%e7%bb%9f%e8%ae%a1%e5%ad%a6%e6%a0%b7%e6%9c%ac%e5%8d%8f%e6%96%b9%e5%b7%ae">
+        ##
+    </a>
+    统计学样本协方差
+</div>
+</h3>
+<p>对于包含两个随机变量关系的统计量，我们可以仿照方差的定义：</p>
+<ul>
+<li>公式：</li>
+</ul>
+$$ cov(X,Y) = {{\sum_{i=1}^n (X_i - \overline X)(Y_i - \overline Y)} \over (n-1)} $$
+<p>注：从协方差公式可以看出“方差”是协方差在 $ Y=X $ 时的特殊情况。</p>
+<h3 id="协方差性质" >
+<div>
+    <a href="#%e5%8d%8f%e6%96%b9%e5%b7%ae%e6%80%a7%e8%b4%a8">
+        ##
+    </a>
+    协方差性质
+</div>
+</h3>
+<ol>
+<li>同一个变量的协方差等于其方差：$ Cov(X, X) = Var(X) $</li>
+<li>$ Cov(aX, bY) = ab Cov(X, Y) $ (a, b为常量)</li>
+<li>$ Cov(X_1 + X_2, Y) = Cov(X_1, Y) + Cov(X_2, Y) $</li>
+</ol>
+<h2 id="相关系数-correlation" >
+<div>
+    <a href="#%e7%9b%b8%e5%85%b3%e7%b3%bb%e6%95%b0-correlation">
+        #
+    </a>
+    相关系数 (Correlation）
+</div>
+</h2>
+<p>协方差作为描述X和Y相关程度的量，在同一物理量纲之下有一定的作用，但同样的两个量采用不同的量纲使它们的协方差在数值上表现出很大的差异。为此引入如下概念：</p>
+$$ \eta = Corr(X, Y) = {Cov(X, Y) \over \sqrt {Var(X) \cdot Var(Y)} }$$
+<h3 id="相关关系" >
+<div>
+    <a href="#%e7%9b%b8%e5%85%b3%e5%85%b3%e7%b3%bb">
+        ##
+    </a>
+    相关关系
+</div>
+</h3>
+<p>相关性是一个衡量线性独立的无量纲数，其取值在 $ [-1,+1] $ 之间。</p>
+<ul>
+<li>相关性 η = 1时称为“完全线性相关”，此时将 $ Y_i $ 对 $ X_i $作Y-X 散点图，将得到一组精确置換在直线上的点；相关性数值介于－1到1之间时，其绝对值越接近1表明线性相关性越好，作散点图得到的点的排布越接近一条直线。</li>
+<li>相关性 η = －1时称为“完全线性负相关”，作图与 η = －1类似也在一条直线上，但方向不同。</li>
+<li>相关性 η = 0时两个随机变量又被称为是不相关，“线性无关”、“线性不相关”，这仅仅表明X 与Y 两随机变量之间没有线性相关性，并非表示它们之间一定没有任何内在的（非线性）函数关系</li>
+</ul>
+<h2 id="协方差矩阵" >
+<div>
+    <a href="#%e5%8d%8f%e6%96%b9%e5%b7%ae%e7%9f%a9%e9%98%b5">
+        #
+    </a>
+    协方差矩阵
+</div>
+</h2>
+<!-- raw HTML omitted -->
+<p>假设数据集有{x, y, z}三个维度，那么其协方差矩阵为：</p>
+<!-- raw HTML omitted -->
+<p>其中:</p>
+$$ Cov(X,X) = Var(X) $$
+$$ Cov(Y,Y) = Var(Y) $$
+$$ Cov(Z,Z) = Var(Z) $$
+<p>可以看出来协方差矩阵有几个特点：</p>
+<ol>
+<li>对角线上每个元素的值为方差</li>
+<li>协方差矩阵是对称矩阵</li>
+</ol>
+<p>怎么理解协方差矩阵的意义呢？假设我们在做一项数据分析，每一项数据包含若干指标，那么协方差矩阵的对角线上的每一项可以告诉我们收集数据的分散程度，其它项综合起来可以用前面的相关性方程 $ \eta = Corr(X, Y) = {Cov(X, Y) \over \sqrt {Var(X) \cdot Var(Y)} }$ 计算出指标间的相互影响关系。</p>
+<h3 id="正相关" >
+<div>
+    <a href="#%e6%ad%a3%e7%9b%b8%e5%85%b3">
+        ##
+    </a>
+    正相关：
+</div>
+</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+x, y = np.random.multivariate_normal([0, 0], [[1, 0.9], [0.9, 1]], 1000).T
+plt.plot(x, y, 'x')
+plt.axis('equal')
+plt.show()
+</code></pre>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/covariance/correlated_positive.png" alt="正相关"></p>
+<p>从图中可以看出来x和y之间的关系是一个变大的同时另一个也变大，这说明x和y是正相关，$ \eta = Corr(X, Y) = {Cov(X, Y) \over \sqrt {Var(X) \cdot Var(Y)} } = { 0.9 \over \sqrt {1*1}} = 0.9 &gt; 0 $ 也说明了这一点。</p>
+<p>指标x的方差$ Cov(x,x) = 1 $和y的方差 $ Cov(y,y) = 1 $说明数据分散不太严重，这一点可以从数据点分散的坐标范围看出来。</p>
+<h3 id="分散正相关" >
+<div>
+    <a href="#%e5%88%86%e6%95%a3%e6%ad%a3%e7%9b%b8%e5%85%b3">
+        ##
+    </a>
+    分散正相关
+</div>
+</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+x, y = np.random.multivariate_normal([0, 0], [[5, 4.9], [4.9, 5]], 1000).T
+plt.plot(x, y, 'x')
+plt.axis('equal')
+plt.show()
+</code></pre>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/covariance/correlated_positive_sparse.png" alt="稀疏正相关"></p>
+<p>从图中可以看出来x和y之间正相关，并且$ \eta = Corr(X, Y) = {Cov(X, Y) \over \sqrt {Var(X) \cdot Var(Y)} } = { 4.9 \over \sqrt {5*5}} = 0.98 &gt; 0 $ 也说明了这一点。</p>
+<p>指标x的方差$ Cov(x,x) = 5 $和y的方差 $ Cov(y,y) = 5 $说明数据分散性比前面的例子大了，数据点分散的坐标范围比前面的大了。</p>
+<h3 id="分散负相关" >
+<div>
+    <a href="#%e5%88%86%e6%95%a3%e8%b4%9f%e7%9b%b8%e5%85%b3">
+        ##
+    </a>
+    分散负相关：
+</div>
+</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+x, y = np.random.multivariate_normal([0, 0], [[5, -4.9], [-4.9, 5]], 1000).T
+plt.plot(x, y, 'x')
+plt.axis('equal')
+plt.show()
+</code></pre>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/covariance/correlated_negative_sparse.png" alt="悉数负相关"></p>
+<p>从图中可以看出来x和y之间负相关，并且$ \eta = Corr(X, Y) = {Cov(X, Y) \over \sqrt {Var(X) \cdot Var(Y)} } = { -4.9 \over \sqrt {5*5}} = -0.98 &lt; 0 $ 也说明了这一点。</p>
+<p>指标x的方差$ Cov(x,x) = 5 $和y的方差 $ Cov(y,y) = 5 $说明数据分散性比前面的例子大了，数据点分散的坐标范围比前面的大了。</p>
+<h3 id="分散不相关" >
+<div>
+    <a href="#%e5%88%86%e6%95%a3%e4%b8%8d%e7%9b%b8%e5%85%b3">
+        ##
+    </a>
+    分散不相关：
+</div>
+</h3>
+<pre><code>import numpy as np
+import matplotlib.pyplot as plt
+
+x, y = np.random.multivariate_normal([0, 0], [[5, 0.1], [0.1, 5]], 1000).T
+plt.plot(x, y, 'x')
+plt.axis('equal')
+plt.show()
+</code></pre>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/covariance/correlated_none_sparse.png" alt="分散不相关"></p>
+<p>从图中可以看出来每个点都比较分散而且点与点之间没有明显的关系，并且$ \eta = Corr(X, Y) = {Cov(X, Y) \over \sqrt {Var(X) \cdot Var(Y)} } = { 0.1 \over \sqrt {5*5}} = 0.02 \approx 0 $ 也说明了这一点。</p>
+<p>指标x的方差$ Cov(x,x) = 5 $和y的方差 $ Cov(y,y) = 5 $说明数据分散性比前面的例子大了，数据点分散的坐标范围比前面的大了。</p>
+<h1 id="参考" >
+<div>
+    <a href="#%e5%8f%82%e8%80%83">
+        ##
+    </a>
+    参考
+</div>
+</h1>
+<p><a href="https://baike.baidu.com/item/%E6%95%B0%E5%AD%A6%E6%9C%9F%E6%9C%9B">https://baike.baidu.com/item/数学期望</a></p>
+<p><a href="https://baike.baidu.com/item/%E6%96%B9%E5%B7%AE">https://baike.baidu.com/item/方差</a></p>
+<p><a href="http://blog.sina.com.cn/s/blog_672c5a470100miqq.html">http://blog.sina.com.cn/s/blog_672c5a470100miqq.html</a></p>
+<p><a href="https://zh.wikipedia.org/wiki/%E5%8D%8F%E6%96%B9%E5%B7%AE">https://zh.wikipedia.org/wiki/协方差</a></p>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://localhost:1313/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

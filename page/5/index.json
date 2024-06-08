@@ -1,0 +1,58 @@
+
+{
+    
+    
+    
+    
+    
+    
+    
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+    "articles": [{"date":"2017-11-30","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/go/go-beego/","summary":"安装 安装beego： $ go get github.com/astaxie/beego 安装bee开发工具： $ go get github.com/beego/bee $ bee Bee is a Fast and Flexible tool for managing your Beego Web Application. USAGE bee command [arguments] AVAILABLE COMMANDS version Prints the current Bee version migrate Runs database migrations api Creates a Beego API application bale Transforms non-Go files to Go source files fix Fixes your application by making it compatible with newer versions of Beego dlv Start a debugging session using Delve dockerize Generates a Dockerfile for your Beego application generate Source code generator hprose Creates an RPC application based on Hprose and Beego frameworks new Creates a Beego application pack Compresses a Beego application into a single file rs Run customized scripts run Run the application by starting a local development server server serving static content over HTTP on port Use bee help [command] for more information about a command.","tags":["Beego","Go"],"title":"Beego开发入门"},{"date":"2017-11-24","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/git-submodule/","summary":"假设有两个项目project1和project2代码仓库：\n$ ls project1/ HEAD branches config description hooks info objects refs $ ls project2/ HEAD branches config description hooks info objects refs 1. 从代码仓库clone开发库p1/p2 $git clone ../project1 p1 Cloning into \u0026#39;p1\u0026#39;... warning: You appear to have cloned an empty repository. done. $ git clone ../project2 p2 Cloning into \u0026#39;p2\u0026#39;... warning: You appear to have cloned an empty repository. done. 2. 对p1/p2做一些改动并且push到原代码仓库 在p1中添加新文件file1并且push到远程库project1\n$ touch file1 $ git add file1 $ git commit [master (root-commit) 9132026] Init project 1 with file1 1 file changed, 0 insertions(+), 0 deletions(-) create mode 100644 file1 在p2中添加新文件file2并且push到远程库project2","tags":["git","submodule"],"title":"Git Submodule使用方法"},{"date":"2017-11-20","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/vim-8-mac/","summary":"安装vim8 $ xcode-select --install $ ./configure --enable-luainterp=yes --enable-perlinterp=yes --enable-pythoninterp=yes --enable-tclinterp=yes --enable-rubyinterp=yes --enable-cscope --with-lua-prefix=/usr/local --enable-terminal --enable-multibyte --with-features=huge $ make $ make install 安装插件 安装YouCompleteMe: $ ./install.py --clang-completer --go-completer --js-completer vim folding 命令 功能 za 打开/关闭当前的折叠 zc 关闭当前打开的折叠 zo 打开当前的折叠 zm 关闭所有折叠 zM 关闭所有折叠及其嵌套的折叠 zr 打开所有折叠 zR 打开所有折叠及其嵌套的折叠 zd 删除当前折叠 zE 删除所有折叠 zj 移动至下一个折叠 zk 移动至上一个折叠 zn 禁用折叠 zN 启用折叠 Issues macos iTerm启动vim后第一行显示\u0026rsquo;$p\u0026rsquo;字符 解决方法：把终端类型从xterm或者xterm-256color改为linux","tags":["mac","vim8"],"title":"Vim 8 Mac"},{"date":"2017-11-16","image":"","imageAlt":"","link":"http://localhost:1313/post/technology/blockchain/hyperledger-intro/","summary":"Hyperledger项目：\nHyperledger Fabric Hyperledger Sawtooth Hyperledger Composer 模型：\nAssets(资产) 一般定义方式：\n/** * A vehicle asset. */ asset Vehicle identified by vin { o String vin } 继承方式：\n/** * A car asset. A car is related to a list of parts */ asset Car extends Vehicle { o String model --\u0026gt; Part[] Parts } 抽象方式：\n/** * An abstract Vehicle asset. */ abstract asset Vehicle identified by vin { o String vin } Participants(参与者)","tags":["Blockchain","Hyperledger"],"title":"Hyperledger Intro"},{"date":"2017-11-16","image":"","imageAlt":"","link":"http://localhost:1313/post/network/web/django-static/","summary":"配置项：\n配置项 说明 例子 STATIC_URL 用户通过web访问静态文件时的URL前缀部分 STATIC_URL=\u0026quot;/static/\u0026quot; STATIC_ROOT manager.py collectstatic执行后静态文件会收集存放到 STATIC_ROOT = os.path.join(BASE_DIR, \u0026lsquo;collected_static\u0026rsquo;) STATICFILES_DIRS 每个app目录中可以创建一个static目录存放对应的静态文件，也可以通过在settings文件中指定STATICFILES_DIRS来指定一个公共的位置存放静态文件 STATICFILES_DIRS = ( os.path.join(BASE_DIR, \u0026ldquo;common_static\u0026rdquo;), \u0026lsquo;/path/to/others/static/\u0026rsquo;, # 指定一个目录) STATICFILES_FINDERS 指定静态文件查找器 STATICFILES_FINDERS = ( \u0026ldquo;django.contrib.staticfiles.finders.FileSystemFinder\u0026rdquo;, \u0026ldquo;django.contrib.staticfiles.finders.AppDirectoriesFinder\u0026rdquo;) DEBUG 如果指定\u0026rsquo;DEBUG=True\u0026rsquo;，那么Django通过STATICFILES_FINDERS指定的查找器寻找静态文件。如果指定\u0026rsquo;DEBUG=False\u0026rsquo;，那么Django不会负责静态文件访问服务，这时可以通过apache或者nginx提供静态文件服务，访问前一般通过\u0026rsquo;collectstatic\u0026rsquo;把项目静态文件收集好后统一部署。 ","tags":["Django","static file"],"title":"Django静态文件配置"},{"date":"2017-11-14","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/go/go-lang-traps/","summary":"陷阱1: \u0026ldquo;is pointer to interface, not interface\u0026rdquo; 执行下面代码会出现\u0026quot;type *net.Conn is pointer to interface, not interface)\u0026ldquo;错误，原因是因为\u0026quot;net.Conn\u0026quot;是interface而不是struct，不能用指针方式传递。\n1 2 3 4 5 6 7 8 9 func connHandler(client *net.Conn) { // do something } func somefunc() { // ... client, _ := listener.Accept() connHandler(\u0026amp;client) } GO语言中interface是一种特殊的数据结构，包含两部分内容：\n一个指向方法表的指针 一个指向实际数据的指针 因为这种特殊的数据结构所以interface的指针指向的结构既没有实际数据也没有对应方法，那么就无法直接访问所需的内容，鉴于此原因我推测GO语言的开发者直接屏蔽掉了指向interface指针的用法。这种情况的正确如下：\n1 2 3 4 5 6 7 8 9 func connHandler(client net.Conn) { // do something } func somefunc() { // ... client, _ := listener.","tags":["golang"],"title":"Go语言编程陷阱"},{"date":"2017-11-10","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/go/go-utils/","summary":"1. 设置GO语言vim开发环境 在vim中开发GO最好安装相关的插件，比如vim-go这个插件。这个插件除了提供格式化、语法高亮、语法检测等功能以外还有很多方便的功能。\n编译命令，对应go build：\n:GoBuild 安装，对应go install：\n:GoInstall 测试，对应go test：\n:GoTest 运行一个单独测试：\n:GoTestFunc 覆盖率：\n:GoCoverage 运行当前程序，对应go run:\n:GoRun goto符号定义：\n:GoDef 文档查询：\n:GoDoc :GoDocBrowser 添加／删除包引用：\n:GoImport :GoDrop 设置GOPATH：\n:GoPath 在结构体增加／删除tag：\n:GoAddTags :GoRemoveTags 静态语法检查：\n:GoMetaLinter\t// 调用gometalinter :GoLint\t// 调用golint 高级代码分析：\n:GoImplements :GoCallees :GoReferrers 重命名：\n:GoRename 在vim中查询vim-go的帮助文档： :help vim-go 安装完成后打开vim，运行\u0026quot;:GoInstallBinaries\u0026quot;安装依赖的工具。\n再安装其它依赖工具：\n// gocode is used by many editors to provide intellisense go get github.com/nsf/gocode // goimports is something you should run when saving code to fill in import paths go get golang.","tags":["delve","Go","vim"],"title":"GO开发技巧"},{"date":"2017-11-10","image":"","imageAlt":"","link":"http://localhost:1313/post/hardware/temp-sensor-comparasion/","summary":"DS18B20 PT100\nDS18B20 PT100 器件稳定性 温度测量范围 -55～125℃ -200～850℃ 测温时延 精度偏差 +-0.5℃ B级别可达0.5%，精度较高，但需要校准 年漂移量 工作电压 3-5.5V 体积 稍大，探头直径6mm 较小，探头直径5mm 引线长度 最长30米 信号接口数量 3 2 成本 寿命 开发难度 容易，直接数字信号输出 相对复杂，需要校准 特点 具有体积小、硬件开销低、抗干扰能力强、精度高的特点 ","tags":["DS18B20","PT100"],"title":"Temp Sensor Comparasion"},{"date":"2017-11-09","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/vim-hex-editing/","summary":" 记录一下使用vim编辑二进制文件的方法，这个方法使用了vim执行 \u0026lsquo;%!\u0026rsquo; 来打开外部程序的小技巧。\n使用vim打开任意文件，并运行下面命令便进入16禁止编辑模式：\n:%!xxd 退出时一定要记得使用下面命令，将编辑的hexdump内容还原成二进制：\n:%!xxd -r 使用这个技巧需要注意的是打开二进制文件编辑模式必须使用\u0026rsquo;-b\u0026rsquo;参数，否则vim会在编辑内容末尾增加0x0a字符，保存的时候也就会增加一个字节的信息。\n使用\u0026rsquo;-b\u0026rsquo;参数：\n00000000: 0011 2233 ..\u0026quot;3 不使用\u0026rsquo;-b\u0026rsquo;参数：\n00000000: 0011 2233 0a ..\u0026quot;3. ","tags":["hex","vim"],"title":"使用vim进行16进制编辑"},{"date":"2017-11-08","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/go/go-new-make/","summary":"go语言new()与make()的区别对于初入golang的开发者来说是个容易混淆的点，这里尝试对这两个的区别做一些总结。\n官方文档 首先查找官方文档中的描述，首先是关于\u0026rsquo;new()\u0026lsquo;的：\n1 2 3 4 // The new built-in function allocates memory. The first argument is a type, // not a value, and the value returned is a pointer to a newly // allocated zero value of that type. func new(Type) *Type 关于\u0026rsquo;make()\u0026rsquo;:\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 // The make built-in function allocates and initializes an object of type // slice, map, or chan (only).","tags":["Go","make","new"],"title":"Go语言中new与make的比较"}],
+    "test": "基于 Kalman filter 的目标跟踪   在 Apple silicon (M3 Max) 上对 Llama2 进行微调   tmux AI 助手   使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题   django-rest-framework 和 simplejwt 的类关系   PCL 点云数据过滤处理   Python 内存管理   Wechat_development   左乘/右乘旋转   多媒体格式标准、H264 编码与 MP4 格式简要介绍   摄像机模型及实现   旋转矩阵   NLP 资源整理   ssh代理方法   机器学习笔记 - 贝叶斯分类法推导   VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑   Firefox cache2 数据结构解析   哈希计算图片相似性   机器学习 - 决策树   模型评估指标   机器学习资料收集   阿里ECS服务器使用腾讯企业邮箱发送SMTP邮件的问题   解决flask_restful无法对Decimal类型数据进行序列化问题   Build Tensorflow v1.7 on NVIDIA Jetson tx2   说一说反弹shell   使用Python的Selenium驱动浏览器行为   自动饮水机   使用Nvidia Jetson TX2挖以太币   python2 和 python3 的一些区别   Mysql charset/collation字符编码设置   在区块链上存储信息   Spark开发   Hive Intro   Hcatalog简介   Yarn Config   Sqoop介绍及使用   Nginx Static   Horwonworks HDP 2.6安装过程   golang UDP中Read()/ReadFromUDP()/Write()/WriteToUDP()的使用   GO语言依赖管理那些事儿   Beego开发入门   Git Submodule使用方法   Vim 8 Mac   Hyperledger Intro   Django静态文件配置   Go语言编程陷阱   GO开发技巧   Temp Sensor Comparasion   使用vim进行16进制编辑   Go语言中new与make的比较   GO语言中array与slice的比较   Docker   Macbook Air换电池记   softmax输出层公式推导及代码实验   神经网络之反向传播算法   在 Nvidia Jetson TX2 上编译安装tensorflow   数学期望、方差、标准差、协方差   The Current State of Machine Intelligence (from Shivon Zilis)   用scrapy爬取京东商品信息   神经网络实践：自动驾驶   图像卷积实践   python中__main__的作用域及变量使用   nmap NSE脚本中host/port的内容   esp8266_sprint_float   esp8266启动模式 - 如何理解'rst cause:2, boot mode:(3,6)'   在ESP 8266 nodeMCU上运行MQTT   如何在CentOS上部署shadowsocks服务   使用Arduino IDE进行nodeMCU开发   在Mac OS上设置ESP 8266开发环境   numpy学习笔记[1]   postgres数据库使用指南   tensorflow playground   玩转阿波罗11号飞船导航计算机模拟器   阿里云ECS EIP服务进行IPv6改造的方法   一行代码让你的字符终端下起雪来！   搭建SoftEther VPN 服务   使用nginx搭建hugo静态blog服务         Manifest   Search   SearchEngine   ",
+    "page": "5",
+    "next": 
+        "http://localhost:1313/page/6/index.json"
+    
+}
+

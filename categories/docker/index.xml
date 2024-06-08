@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on singleye</title>
+    <link>/categories/docker/</link>
+    <description>singleye (Docker)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Tue, 31 Oct 2017 23:59:00 +0000</lastBuildDate>
+    
+    <atom:link href="/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Docker</title>
+      <link>/2017/10/docker/</link>
+      <pubDate>Tue, 31 Oct 2017 23:59:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/10/docker/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;h1 id=&#34;1-配置docker-repository&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-%e9%85%8d%e7%bd%aedocker-repository&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1. 配置docker repository
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/10/docker/preference-repository.png&#34; alt=&#34;preference&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;2-docker-image&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2-docker-image&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2. Docker image
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;image（镜像）保存docker中的可运行系统的数据，当运行时docker把image加载到container（容器）中运行。&lt;/p&gt;
+&lt;h2 id=&#34;21-获取docker-image&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#21-%e8%8e%b7%e5%8f%96docker-image&#34;&gt;
+        #
+    &lt;/a&gt;
+    2.1 获取docker image
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;命令： docker pull
+&lt;ul&gt;
+&lt;li&gt;Docker Registry: 地址的格式一般是 &amp;lt;域名/IP&amp;gt; :端口号 ，默认是docker hub。&lt;/li&gt;
+&lt;li&gt;仓库名：格式&amp;lt;用户名&amp;gt;/&amp;lt;软件名&amp;gt;，默认是Docker hub的&amp;quot;Library&amp;quot;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+docker pull [选项] [Docker Registry地址]&lt;仓库名&gt;:&lt;标签&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;22-查询image&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#22-%e6%9f%a5%e8%af%a2image&#34;&gt;
+        #
+    &lt;/a&gt;
+    2.2 查询image
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;命令：docker images&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              14.04               dea1945146b9        6 weeks ago         188MB
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;23-删除镜像&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#23-%e5%88%a0%e9%99%a4%e9%95%9c%e5%83%8f&#34;&gt;
+        #
+    &lt;/a&gt;
+    2.3 删除镜像
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;命令： docker rmi&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+# 先查询镜像列表
+$ docker images
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+ubuntu-mydev                      latest              0cbd01981d7e        7 weeks ago         761MB
+hyperledger/composer-playground   0.15.0              10c6824e69dd        8 weeks ago         251MB
+hyperledger/composer-playground   latest              10c6824e69dd        8 weeks ago         251MB
+ubuntu                            latest              dd6f76d9cc90        2 months ago        122MB
+
+# 使用rmi删除镜像
+$ docker rmi dea1945146b9
+Untagged: ubuntu:14.04
+Untagged: ubuntu@sha256:6e3e3f3c5c36a91ba17ea002f63e5607ed6a8c8e5fbbddb31ad3e15638b51ebc
+Deleted: sha256:dea1945146b96542e6e20642830c78df702d524a113605a906397db1db022703
+Deleted: sha256:6401e3024b4d4ef4c981cde2e830858eb790ee84284e1401cf569a6db8df51d9
+Deleted: sha256:f12ee38eb7aa0ffdd43c657b433d91ac4c2930887c02eb638fd1518f374bc738
+Deleted: sha256:9ac64e2751425199591402799079940629829c7c2fc0e083fb714e5dd94d70a9
+Deleted: sha256:12a6279e654d2f23c2fa086bf2dcd82e1a2c82b01028379bbf2cde061d9235e6
+Deleted: sha256:c47d9b229ca4eaf5d3b85b6fa7f794d00910a42634dd0fd5107a9a937b13b20f 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;但有时候会发现无法删除，原因可能是因为这个镜像可能被某个容器使用，即使是这个容器处于停止的状态也无法删除，这种时候可以先查询所有的容器信息，然后删除对应的容器再删除镜像，例如下面的例子：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ docker images
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+ubuntu-mydev                      latest              0cbd01981d7e        7 weeks ago         761MB
+hyperledger/composer-playground   0.15.0              10c6824e69dd        8 weeks ago         251MB
+ubuntu                            latest              dd6f76d9cc90        2 months ago        122MB
+hyperledger/fabric-ca             x86_64-1.0.4        8e691b3509bf        2 months ago        238MB
+hyperledger/fabric-couchdb        x86_64-1.0.4        cf24b91dfeb1        2 months ago        1.5GB
+hyperledger/fabric-orderer        x86_64-1.0.4        b17741e7b036        2 months ago        151MB
+hyperledger/fabric-peer           x86_64-1.0.4        1ce935adc397        2 months ago        154MB
+hyperledger/fabric-ccenv          x86_64-1.0.4        856061b1fed7        2 months ago        1.28GB
+
+# 想删除&#39;hyperledger/composer-playground&#39;/1ce935adc397这个镜像
+$ docker rmi 1ce935adc397
+Error response from daemon: conflict: unable to delete 1ce935adc397 (must be forced) - image is being used by stopped container ebf84b524cd1
+
+# 使用ps -a查询所有的容器发现这个镜像正在被使用
+$ docker ps -a
+CONTAINER ID        IMAGE                                     COMMAND                  CREATED             STATUS                     PORTS                                            NAMES
+5f023623d725        10c6824e69dd                              &#34;pm2-docker compos...&#34;   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:8080-&gt;8080/tcp                           composer
+ebf84b524cd1        hyperledger/fabric-peer:x86_64-1.0.4      &#34;peer node start -...&#34;   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7051-&gt;7051/tcp, 0.0.0.0:7053-&gt;7053/tcp   peer0.org1.example.com
+8c1ec47087ed        hyperledger/fabric-ca:x86_64-1.0.4        &#34;sh -c &#39;fabric-ca-...&#34;   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7054-&gt;7054/tcp                           ca.org1.example.com
+626a1425e63b        hyperledger/fabric-orderer:x86_64-1.0.4   &#34;orderer&#34;                7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7050-&gt;7050/tcp                           orderer.example.com
+88d33e9fb79b        hyperledger/fabric-couchdb:x86_64-1.0.4   &#34;tini -- /docker-e...&#34;   7 weeks ago         Exited (255) 7 weeks ago   4369/tcp, 9100/tcp, 0.0.0.0:5984-&gt;5984/tcp       couchdb
+
+# 先删除容器
+$ docker rm 5f023623d725
+5f023623d725
+
+# 删除使用的容器后就可以成功删除镜像了
+$ docker rmi 10c6824e69dd
+Untagged: hyperledger/composer-playground:0.15.0
+Untagged: hyperledger/composer-playground@sha256:99e9085d3ba41756346c2cbd1b742ee47e3711ef80beffd7c3f213b12d0ab742
+Deleted: sha256:10c6824e69dda798c9e410022f98e611588d6329d971dd3dd820222b8f7bc262
+Deleted: sha256:c1a2d861f0a7ceb3522aae14766378f43ecce9f2fc7cf8378c717c87706c9858
+Deleted: sha256:a0cd8928aca4f0f2bb928c87708b8567cb24943ebc90087d11e731d18e057fe7
+Deleted: sha256:739201d02a774f402f04caed742be27d05b662df6dacb7cb3443230ebcfc8533
+Deleted: sha256:18b9f03395a2502b91191724608944527109d92cde1835dc4bfc566a441d9d80
+Deleted: sha256:5c95c8934a297dd3bc9e748edad7f00040c7be218f81b7e0488712c30829d407
+Deleted: sha256:2aebd096e0e237b447781353379722157e6c2d434b9ec5a0d63f2a6f07cf90c2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;3-container容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3-container%e5%ae%b9%e5%99%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3. Container（容器）
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;首先了解一下容器的生命周期：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xpbnt.com1.z0.glb.clouddn.com/docker-architecture-v12-15-638.jpg&#34; alt=&#34;container life-cycle&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;31-创建一个容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#31-%e5%88%9b%e5%bb%ba%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.1 创建一个容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;create命令用来创建一个容器，但不运行：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+docker create [OPTIONS] IMAGE [COMMAND] [ARG...]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;32-直接启动一个conainer容器并运行指定的image镜像&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#32-%e7%9b%b4%e6%8e%a5%e5%90%af%e5%8a%a8%e4%b8%80%e4%b8%aaconainer%e5%ae%b9%e5%99%a8%e5%b9%b6%e8%bf%90%e8%a1%8c%e6%8c%87%e5%ae%9a%e7%9a%84image%e9%95%9c%e5%83%8f&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.2 直接启动一个Conainer(容器)并运行指定的image(镜像)
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;命令：docker run&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run &amp;lt;仓库名&amp;gt;:&amp;lt;标签&amp;gt;
+或 docker run &amp;lt;Image ID&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ docker run -it --rm dea1945146b9 bash
+root@dc13a33ffc94:/#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;-d：后台运行&lt;/li&gt;
+&lt;li&gt;-p：指定端口：
+&lt;ul&gt;
+&lt;li&gt;-p port：把容器的port端口发布到host的随机端口&lt;/li&gt;
+&lt;li&gt;-p host_port:port：把容器的port发布到host的host_port端口&lt;/li&gt;
+&lt;li&gt;-p host_ip:host_port:port：把容器的port端口发布到主机的host_ip:host_port上&lt;/li&gt;
+&lt;li&gt;-P：发布容器的所有端口到主机的随机端口上&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;-it：这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。我们这里打算进入 bash 执行一些命令并查看返回结果，因此我们需要交互式终端。&lt;/li&gt;
+&lt;li&gt;-v：指定卷
+&lt;ul&gt;
+&lt;li&gt;-v volume_path：启动容器并指定volume_path为卷&lt;/li&gt;
+&lt;li&gt;-v host_path:volume_path：启动容器并将volume_path映射到host的host_path上&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&amp;ndash;volume-from：从别的容器中加载卷&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+# 启动容器db
+$ docker run -v /var/lib/postgresql/data --name mydb postgres
+# 启动backup容器，从mydb容器中挂载卷
+$ docker run --volumes-from mydb backup
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;ndash;rm：这个参数是说容器退出后随之将其删除。默认情况下，为了排障需求，退出的容器并不会立即删除，除非手动 docker rm。我们这里只是随便执行个命令，看看结果，不需要排障和保留结果，因此使用 &amp;ndash;rm 可以避免浪费空间。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;前台(Foreground)/后台(Detached)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;默认情况下容器再前台运行，如果需要后台运行可以指定&amp;rsquo;-d&amp;rsquo;参数，这时容器不再使用&amp;rsquo;docker run&amp;rsquo;这个终端作为I/O界面，只能通过网络或共享卷与这个容器通讯。&lt;/p&gt;
+&lt;p&gt;如果一个容器处于后台状态可以用&amp;rsquo;attach&amp;rsquo;命令重新恢复前台状态。&lt;/p&gt;
+&lt;h2 id=&#34;33-在运行的容器内执行命令&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#33-%e5%9c%a8%e8%bf%90%e8%a1%8c%e7%9a%84%e5%ae%b9%e5%99%a8%e5%86%85%e6%89%a7%e8%a1%8c%e5%91%bd%e4%bb%a4&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.3 在运行的容器内执行命令
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;命令：docker exec&lt;/p&gt;
+&lt;p&gt;例子：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+docker exec -it webserver bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;33-查询容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#33-%e6%9f%a5%e8%af%a2%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.3 查询容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;一个运行状态的容器可以使用docker ps进行查询，但如果一个容器处于停止状态时则需要通过docker ps -a来进行查询了&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+# 查询运行状态的容器
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+# 查询所有包括停止的容器
+$ docker ps -a
+CONTAINER ID        IMAGE                                     COMMAND                  CREATED             STATUS                     PORTS                                            NAMES
+ebf84b524cd1        hyperledger/fabric-peer:x86_64-1.0.4      &#34;peer node start -...&#34;   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7051-&gt;7051/tcp, 0.0.0.0:7053-&gt;7053/tcp   peer0.org1.example.com
+8c1ec47087ed        hyperledger/fabric-ca:x86_64-1.0.4        &#34;sh -c &#39;fabric-ca-...&#34;   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7054-&gt;7054/tcp                           ca.org1.example.com
+626a1425e63b        hyperledger/fabric-orderer:x86_64-1.0.4   &#34;orderer&#34;                7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7050-&gt;7050/tcp                           orderer.example.com
+88d33e9fb79b        hyperledger/fabric-couchdb:x86_64-1.0.4   &#34;tini -- /docker-e...&#34;   7 weeks ago         Exited (255) 7 weeks ago   4369/tcp, 9100/tcp, 0.0.0.0:5984-&gt;5984/tcp       couchdb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;34-停止运行一个容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#34-%e5%81%9c%e6%ad%a2%e8%bf%90%e8%a1%8c%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.4 停止/运行一个容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+# 启动一个或多个停止的容器
+docker start [OPTIONS] CONTAINER [CONTAINER...]
+
+# 停止一个或多个运行的容器
+docker stop [OPTIONS] CONTAINER [CONTAINER...]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;35-暂停继续运行一个容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#35-%e6%9a%82%e5%81%9c%e7%bb%a7%e7%bb%ad%e8%bf%90%e8%a1%8c%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.5 暂停/继续运行一个容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+# 暂停一个或多个容器
+docker pause CONTAINER [CONTAINER...]
+
+# 继续运行一个或多个容器
+docker unpause CONTAINER [CONTAINER...]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;36-重启一个容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#36-%e9%87%8d%e5%90%af%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.6 重启一个容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+docker restart [OPTIONS] CONTAINER [CONTAINER...]
+
+# 可以指定参数&#39;-t&#39;
+-t, --time int   Seconds to wait for stop before killing the container (default 10)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;37-杀死容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#37-%e6%9d%80%e6%ad%bb%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.7 杀死容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+docker kill [OPTIONS] CONTAINER [CONTAINER...]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;37-删除容器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#37-%e5%88%a0%e9%99%a4%e5%ae%b9%e5%99%a8&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.7 删除容器
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;删除指定容器：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ docker rm 5f023623d725
+5f023623d725
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;删除所有的容器：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ docker rm `docker ps -a -q`
+ebf84b524cd1
+8c1ec47087ed
+626a1425e63b
+88d33e9fb79b
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;4-其他命令&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#4-%e5%85%b6%e4%bb%96%e5%91%bd%e4%bb%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    4. 其他命令
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;
+$ docker create  # 创建一个容器，但不启动它
+$ docker run     #  创建并启动一个容器
+$ docker stop    # 停止容器
+$ docker start   #  启动容器
+$ docker restart # 重启容器
+$ docker rm      # 删除容器
+$ docker kill    #  给容器发送kill信号
+$ docker attach  # 连接到正在运行的容器中
+$ docker wait    # 阻塞直到容器停止为止
+$ docker exec    # 在运行的容器中执行一条命令
+
+# 检查容器
+$ docker ps      # 显示运行的容器
+$ docker inspect # 显示容器信息（包括ip地址）
+$ docker logs    # 获取容器中的日志
+$ docker events  # 获取容器事件
+$ docker port    # 显示容器的公开端口
+$ docker top     # 显示容器中运行的进程
+$ docker diff    # 查看容器文件系统中改变的文件
+$ docker stats   # 查看各种纬度数据、内存、CPU、文件系统等
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;5-高级使用&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#5-%e9%ab%98%e7%ba%a7%e4%bd%bf%e7%94%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    5. 高级使用
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;51-修改提交镜像&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#51-%e4%bf%ae%e6%94%b9%e6%8f%90%e4%ba%a4%e9%95%9c%e5%83%8f&#34;&gt;
+        #
+    &lt;/a&gt;
+    5.1 修改/提交镜像
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;当镜像在容器中运行起来之后可以像一般的系统使用一样对镜像中的文件进行修改，镜像修改过之后可以通过commit命令提交保存。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+# 启动容器
+docker run -it  &lt;image ID&gt; /bin/bash
+
+# 在容器内做一些改动...
+
+# 获取容器ID
+docker ps -a
+
+# 在容器外进行提交
+docker commit -m &#34;Did some changes...&#34; CONTAINER [REPOSITORY[:TAG]]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;52-网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#52-%e7%bd%91%e7%bb%9c&#34;&gt;
+        #
+    &lt;/a&gt;
+    5.2 网络
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;docker run有下面几个参数可以配置容器的网络参数：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+--dns=[]         : Set custom dns servers for the container
+--net=&#34;bridge&#34;   : Set the Network mode for the container
+                              &#39;bridge&#39;: creates a new network stack for the container on the docker bridge
+                              &#39;none&#39;: no networking for this container
+                              &#39;container:&lt;name|id&gt;&#39;: reuses another container network stack
+                              &#39;host&#39;: use the host network stack inside the container
+--add-host=&#34;&#34;    : Add a line to /etc/hosts (host:IP)
+--mac-address=&#34;&#34; : Sets the container&#39;s Ethernet device&#39;s MAC address
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;None：&lt;/p&gt;
+&lt;p&gt;将网络模式设置为none时，这个container将不允许访问任何外部router。这个container内部只会有一个loopback接口，而且不存在任何可以访问外部网络的router。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Bridge：&lt;/p&gt;
+&lt;p&gt;Docker默认是将container设置为bridge模式。此时在host上面讲存在一个docker0的网络接口，同时会针对container创建一对veth接口。其中一个veth接口是在host充当网卡桥接作用，另外一个veth接口存在于container的命名空间中，并且指向container的loopback。Docker会自动给这个container分配一个IP，并且将container内的数据通过桥接转发到外部。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Host：&lt;/p&gt;
+&lt;p&gt;当网络模式设置为host时，这个container将完全共享host的网络堆栈。host所有的网络接口将完全对container开放。container的主机名也会存在于host的hostname中。这时，container所有对外暴露的port和对其它container的link，将完全失效。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Container：&lt;/p&gt;
+&lt;p&gt;当网络模式设置为Container时，这个container将完全复用另外一个container的网络堆栈。同时使用时这个container的名称必须要符合下面的格式：&amp;ndash;net container:.&lt;/p&gt;
+&lt;p&gt;比如当前有一个绑定了本地地址localhost的redis container。如果另外一个container需要复用这个网络堆栈，则需要如下操作：&lt;/p&gt;
+  &lt;pre&gt;&lt;code&gt;
+  $ sudo docker run -d --name redis example/redis --bind 127.0.0.1
+  $ # use the redis container&#39;s network stack to access localhost
+  $ sudo docker run --rm -ti --net container:redis example/redis-cli -h 127.0.0.1
+  &lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;管理/etc/hosts：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ /docker run -ti --add-host db-static:86.75.30.9 ubuntu cat /etc/hosts
+172.17.0.22     09d03f76bf2c
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+86.75.30.9      db-static
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;53-资源限制&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#53-%e8%b5%84%e6%ba%90%e9%99%90%e5%88%b6&#34;&gt;
+        #
+    &lt;/a&gt;
+    5.3 资源限制
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;
+-m=&#34;&#34;: Memory limit (format: &lt;number&gt;&lt;optional unit&gt;, where unit = b, k, m or g)
+-c=0 : CPU shares (relative weight)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;54-添加设备&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#54-%e6%b7%bb%e5%8a%a0%e8%ae%be%e5%a4%87&#34;&gt;
+        #
+    &lt;/a&gt;
+    5.4 添加设备
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;docker run可以将host中的设备映射到container中，并控制container对设备的访问权限：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+--device list                    Add a host device to the container
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;
+$ sudo docker run --device=/dev/sda:/dev/xvdc --rm -it ubuntu fdisk  /dev/xvdc
+Command (m for help): q
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

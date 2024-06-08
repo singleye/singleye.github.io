@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blockchain on singleye</title>
+    <link>/tags/blockchain/</link>
+    <description>singleye (Blockchain)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sat, 13 Jan 2018 09:30:01 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/blockchain/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>在区块链上存储信息</title>
+      <link>/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/</link>
+      <pubDate>Sat, 13 Jan 2018 09:30:01 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/</guid>
+      <description>&lt;p&gt;区块链本质上讲是一个分布式存储，目前流行的比特币/以太坊主要用来存储交易数据，那么是否可以利用这些公链存储别的信息呢？&lt;/p&gt;
+&lt;p&gt;当然是有的，收集了几篇关于如何使用区块链存储数据文章，回头有空了再来整理一下。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.righto.com/2014/02/ascii-bernanke-wikileaks-photographs.html&#34;&gt;http://www.righto.com/2014/02/ascii-bernanke-wikileaks-photographs.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bitcoin.stackexchange.com/questions/39347/how-to-store-data-on-the-blockchain&#34;&gt;https://bitcoin.stackexchange.com/questions/39347/how-to-store-data-on-the-blockchain&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://ethereum.stackexchange.com/questions/7884/how-can-i-store-data-in-ethereum-blockchain&#34;&gt;https://ethereum.stackexchange.com/questions/7884/how-can-i-store-data-in-ethereum-blockchain&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/1UwaaUgunnrFpL6jetA_DdNLQsbbqBx1HLcln07kLrUw/edit&#34;&gt;https://docs.google.com/document/d/1UwaaUgunnrFpL6jetA_DdNLQsbbqBx1HLcln07kLrUw/edit&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Hyperledger Intro</title>
+      <link>/2017/11/hyperledger-intro/</link>
+      <pubDate>Thu, 16 Nov 2017 17:23:21 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/hyperledger-intro/</guid>
+      <description>&lt;p&gt;Hyperledger项目：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hyperledger Fabric&lt;/li&gt;
+&lt;li&gt;Hyperledger Sawtooth&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hyperledger.github.io/composer/&#34;&gt;Hyperledger Composer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;模型：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Assets(资产)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一般定义方式：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	/**
+	 * A vehicle asset.
+	 */
+	asset Vehicle identified by vin {
+	  o String vin
+	}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;继承方式：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	/**
+	 * A car asset. A car is related to a list of parts
+	 */
+	asset Car extends Vehicle {
+	  o String model
+	  --&amp;gt; Part[] Parts
+	}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;抽象方式：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	/**
+	* An abstract Vehicle asset.
+	*/
+	abstract asset Vehicle identified by vin {
+	  o String vin
+	}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Participants(参与者)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  /**
+  * An enumerated type
+  */
+  enum ProductType {
+  o DAIRY
+  o BEEF
+  o VEGETABLES
+  }
+  participant Farmer identified by farmerId {
+      o String farmerId
+      o ProductType primaryProduct
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Transactions(事务)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Concepts(概念)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  abstract concept Address {
+    o String street
+    o String city default =&amp;quot;Winchester&amp;quot;
+    o String country default = &amp;quot;UK&amp;quot;
+    o Integer[] counts optional
+  }
+
+  concept UnitedStatesAddress extends Address {
+    o String zipcode
+  }
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.8btc.com/blockchain-poc-hyperledger&#34;&gt;http://www.8btc.com/blockchain-poc-hyperledger&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Test:&lt;/p&gt;
+&lt;p&gt;概念：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;BND: business network definition (BND)&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

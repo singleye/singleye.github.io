@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ecs on singleye</title>
+    <link>/tags/ecs/</link>
+    <description>singleye (Ecs)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sat, 19 Jan 2019 00:39:37 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/ecs/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>阿里ECS服务器使用腾讯企业邮箱发送SMTP邮件的问题</title>
+      <link>/2019/01/%E9%98%BF%E9%87%8Cecs%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BD%BF%E7%94%A8%E8%85%BE%E8%AE%AF%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E5%8F%91%E9%80%81smtp%E9%82%AE%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 19 Jan 2019 00:39:37 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/01/%E9%98%BF%E9%87%8Cecs%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BD%BF%E7%94%A8%E8%85%BE%E8%AE%AF%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E5%8F%91%E9%80%81smtp%E9%82%AE%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>&lt;p&gt;在阿里ECS上搭建的服务需要使用腾讯企业邮箱发送团队邮件，结果发现使用腾讯官方SMTP服务器配置方法无法发送成功，最后发现需要使用 587 端口才可以，这一点在官方文档里根本看不到，真是不得不吐槽啊！&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/01/ecs-exmail-issue.jpeg&#34; alt=&#34;ecs-exmail-issue&#34;&gt;&lt;/p&gt;
+&lt;p&gt;正确的SMTP配置是： smtp.exmail.qq.com:587&lt;/p&gt;
+&lt;p&gt;另外需要注意的一点，如果需要使用外部的25端口上的SMTP服务器时需要向ECS申请开通才行，默认情况下ECS会屏蔽25端口出方向的流量。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

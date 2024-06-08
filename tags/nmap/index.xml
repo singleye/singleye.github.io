@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Nmap on singleye</title>
+    <link>/tags/nmap/</link>
+    <description>singleye (Nmap)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sun, 04 Jun 2017 21:12:03 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/nmap/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>nmap NSE脚本中host/port的内容</title>
+      <link>/2017/06/nmap-nse%E8%84%9A%E6%9C%AC%E4%B8%ADhost/port%E7%9A%84%E5%86%85%E5%AE%B9/</link>
+      <pubDate>Sun, 04 Jun 2017 21:12:03 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/06/nmap-nse%E8%84%9A%E6%9C%AC%E4%B8%ADhost/port%E7%9A%84%E5%86%85%E5%AE%B9/</guid>
+      <description>&lt;p&gt;周末写了一个简单的nmap的NSE脚本，其中使用了nmap API中的host,port两个变量，数据结构记录。&lt;/p&gt;
+&lt;p&gt;Host&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Key&lt;/th&gt;
+&lt;th&gt;Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;registry&lt;/td&gt;
+&lt;td&gt;table: 0x7feae1dc5080&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;name&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;reason_ttl&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bin_ip&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ip&lt;/td&gt;
+&lt;td&gt;192.168.1.10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;reason&lt;/td&gt;
+&lt;td&gt;user-set&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;interface_mtu&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;times&lt;/td&gt;
+&lt;td&gt;table: 0x7feae1d9dbf0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Key&lt;/th&gt;
+&lt;th&gt;Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;number&lt;/td&gt;
+&lt;td&gt;443&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;reason&lt;/td&gt;
+&lt;td&gt;syn-ack&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;version&lt;/td&gt;
+&lt;td&gt;table: 0x7feae1dfb720&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;state&lt;/td&gt;
+&lt;td&gt;open&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;reason_ttl&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;service&lt;/td&gt;
+&lt;td&gt;https&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;protocol&lt;/td&gt;
+&lt;td&gt;tcp&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;a href=&#34;https://nmap.org/book/nse-api.html&#34;&gt;https://nmap.org/book/nse-api.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://nmap.org/docs/nmap-mindmap.pdf&#34;&gt;https://nmap.org/docs/nmap-mindmap.pdf&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,2470 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AI &amp; Machine learning on singleye</title>
+    <link>/post/machinelearning/</link>
+    <description>singleye (AI &amp; Machine learning)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 06 Jun 2024 09:26:40 +0800</lastBuildDate>
+    
+    <atom:link href="/post/machinelearning/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>在 Apple silicon (M3 Max) 上对 Llama2 进行微调</title>
+      <link>/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/</link>
+      <pubDate>Fri, 26 Apr 2024 23:48:40 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;参考 &lt;a href=&#34;https://www.datacamp.com/tutorial/fine-tuning-llama-2&#34;&gt;https://www.datacamp.com/tutorial/fine-tuning-llama-2&lt;/a&gt; 进行Llama2 微调训练时发现使用稳重代码无法在 Apple M3 Max 上运行起来，经过一番实验后得以顺利运行，下面把过程记录下来。&lt;/p&gt;
+&lt;p&gt;相关代码： &lt;a href=&#34;https://github.com/singleye/Llama2-finetune&#34;&gt;https://github.com/singleye/Llama2-finetune&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;1-准备&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-%e5%87%86%e5%a4%87&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1. 准备
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pip install accelerate peft bitsandbytes &lt;span style=&#34;color:#ff5c57&#34;&gt;transformers&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;==&lt;/span&gt;4.38.1 trl
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;注意：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;transformers 不能使用 4.38.2 版本，否则在 M3 上会碰到下面的错误&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;RuntimeError: User specified an unsupported autocast device_type &amp;#39;mps&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;bitsandbytes 无法在 M3 上使用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; os
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; torch
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; datasets &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; load_dataset
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; transformers &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; (
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    AutoModelForCausalLM,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    AutoTokenizer,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    BitsAndBytesConfig,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    TrainingArguments,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    pipeline,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    logging,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; peft &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; LoraConfig
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; trl &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; SFTTrainer
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;2-模型配置&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2-%e6%a8%a1%e5%9e%8b%e9%85%8d%e7%bd%ae&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2. 模型配置
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;由于国内直接从 HuggingFace 网站下载模型速度太慢，可以使用镜像站进行下载。&lt;/p&gt;
+&lt;p&gt;设置环境变量 HF_ENDPOINT：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;export HF_ENDPOINT=https://hf-mirror.com
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;下载模型：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;huggingface-cli download --resume-download NousResearch/Llama-2-7b-chat-hf --local-dir Llama-2-7b-chat-hf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;下载数据集：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;huggingface-cli download --repo-type dataset --resume-download mlabonne/guanaco-llama2-1k --local-dir guanaco-llama2-1k
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;base_dir &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;～/Llama2-finetuning&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#78787e&#34;&gt;# Model from local directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;base_model &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; base_dir &lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;/Llama-2-7b-chat-hf&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#78787e&#34;&gt;# Dataset from local directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;guanaco_dataset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; base_dir &lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;/guanaco-llama2-1k&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#78787e&#34;&gt;# Fine-tuned model&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;new_model &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;llama-2-7b-chat-guanaco&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;3-加载数据集&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3-%e5%8a%a0%e8%bd%bd%e6%95%b0%e6%8d%ae%e9%9b%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3. 加载数据集
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dataset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; load_dataset(guanaco_dataset, split&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;train&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;4-qlora-4-bit-量化配置-m3-跳过&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#4-qlora-4-bit-%e9%87%8f%e5%8c%96%e9%85%8d%e7%bd%ae-m3-%e8%b7%b3%e8%bf%87&#34;&gt;
+        ##
+    &lt;/a&gt;
+    4. QLoRA 4-bit 量化配置 (M3 跳过)
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;Paper: &lt;a href=&#34;https://arxiv.org/abs/2305.14314&#34;&gt;&amp;ldquo;QLoRA: Efficient Finetuning of Quantized LLMs&amp;rdquo;&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;compute_dtype &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;getattr&lt;/span&gt;(torch, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;float16&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;quant_config &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; BitsAndBytesConfig(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    load_in_4bit&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bnb_4bit_quant_type&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;nf4&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bnb_4bit_compute_dtype&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;compute_dtype,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bnb_4bit_use_double_quant&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;False&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;5-加载模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#5-%e5%8a%a0%e8%bd%bd%e6%a8%a1%e5%9e%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    5. 加载模型
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;注意，由于 BitsAndBytesConfig 无法在 Apple Silicon (M3) 上使用，所以需要进行平台判断并做相应处理。由于无法使用量化方法进行处理，所以在 Apple Silicon (M3) 上需要使用更多的内存进行微调训练，在这个例子中大约使用了 75 GB 的内存。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;compute_dtype &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;getattr&lt;/span&gt;(torch, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;float16&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;quant_config &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; BitsAndBytesConfig(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    load_in_4bit&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bnb_4bit_quant_type&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;nf4&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bnb_4bit_compute_dtype&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;compute_dtype,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bnb_4bit_use_double_quant&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;False&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;if&lt;/span&gt; torch&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;backends&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;mps&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;is_available():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;Using &amp;#39;mps&amp;#39; (Apple Silicon)&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    active_device &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;device(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;mps&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    model &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; AutoModelForCausalLM&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;from_pretrained(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        pretrained_model_name_or_path&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;base_model,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        trust_remote_code&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        low_cpu_mem_usage&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        device_map&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;active_device
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;elif&lt;/span&gt; torch&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;cuda&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;is_available():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;Using GPU&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    active_device &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;device(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;cuda&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    model &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; AutoModelForCausalLM&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;from_pretrained(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        base_model,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        quantization_config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;quant_config,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        device_map&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;active_device
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;else&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;Using CPU&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    active_device &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;device(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;cpu&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    model &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; AutoModelForCausalLM&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;from_pretrained(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        base_model,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        quantization_config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;quant_config,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        device_map&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;active_device
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;model&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;config&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;use_cache &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;False&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;model&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;config&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;pretraining_tp &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;6-加载模型的-tokenizer&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#6-%e5%8a%a0%e8%bd%bd%e6%a8%a1%e5%9e%8b%e7%9a%84-tokenizer&#34;&gt;
+        ##
+    &lt;/a&gt;
+    6. 加载模型的 tokenizer
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tokenizer &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; AutoTokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;from_pretrained(base_model, trust_remote_code&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;pad_token &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; tokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;eos_token
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;tokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;padding_side &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;right&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;7-配置-peft-参数&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#7-%e9%85%8d%e7%bd%ae-peft-%e5%8f%82%e6%95%b0&#34;&gt;
+        ##
+    &lt;/a&gt;
+    7. 配置 PEFT 参数
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://huggingface.co/docs/peft/conceptual_guides/lora&#34;&gt;Parameter-Efficient Fine-Tuning (PEFT) &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://arxiv.org/abs/2305.14314&#34;&gt;&amp;ldquo;QLoRA&amp;rdquo;&lt;/a&gt;
+&lt;img src=&#34;https://images.datacamp.com/image/upload/v1697713094/image7_3e12912d0d.png&#34; alt=&#34;QLoRA&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;peft_params &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; LoraConfig(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    lora_alpha&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;16&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    lora_dropout&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;0.1&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    r&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;64&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    bias&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;none&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    task_type&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;CAUSAL_LM&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;8-配置训练参数&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#8-%e9%85%8d%e7%bd%ae%e8%ae%ad%e7%bb%83%e5%8f%82%e6%95%b0&#34;&gt;
+        ##
+    &lt;/a&gt;
+    8. 配置训练参数
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;training_params &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; TrainingArguments(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	output_dir&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;./results&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	num_train_epochs&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	per_device_train_batch_size&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;4&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	gradient_accumulation_steps&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	gradient_checkpointing &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	learning_rate&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;2e-4&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	weight_decay&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;0.001&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	lr_scheduler_type&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;constant&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	warmup_ratio&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;0.03&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	max_grad_norm&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;0.3&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	max_steps&lt;span style=&#34;color:#ff6ac1&#34;&gt;=-&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	save_steps&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;25&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	logging_steps&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;25&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	logging_dir&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;./logs&amp;#34;&lt;/span&gt;, 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	group_by_length&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	fp16&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;False&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	report_to&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;tensorboard&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	adam_beta2&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;0.999&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	do_train&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;True&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;9-模型微调训练&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#9-%e6%a8%a1%e5%9e%8b%e5%be%ae%e8%b0%83%e8%ae%ad%e7%bb%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    9. 模型微调训练
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;trainer &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; SFTTrainer(
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    model&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;model,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    train_dataset&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;dataset_train,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    peft_config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;peft_params,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    dataset_text_field&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    max_seq_length&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;None&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    tokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;tokenizer,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    args&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;training_params,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    packing&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;False&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;trainer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;train()
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;10-保存训练好的模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#10-%e4%bf%9d%e5%ad%98%e8%ae%ad%e7%bb%83%e5%a5%bd%e7%9a%84%e6%a8%a1%e5%9e%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    10. 保存训练好的模型
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;trainer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;model&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;save_pretrained(new_model)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;trainer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;tokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;save_pretrained(new_model)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;11-使用模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#11-%e4%bd%bf%e7%94%a8%e6%a8%a1%e5%9e%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    11. 使用模型
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;logging&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;set_verbosity(logging&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;CRITICAL)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;prompt &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;Who is Leonardo Da Vinci?&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pipe &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; pipeline(task&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;text-generation&amp;#34;&lt;/span&gt;, model&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;model, tokenizer&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;tokenizer, max_length&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;200&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;result &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; pipe(&lt;span style=&#34;color:#5af78e&#34;&gt;f&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;&amp;lt;s&amp;gt;[INST] &lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{&lt;/span&gt;prompt&lt;span style=&#34;color:#5af78e&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt; [/INST]&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(result[&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;][&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;generated_text&amp;#39;&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>tmux AI 助手</title>
+      <link>/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/</link>
+      <pubDate>Thu, 04 Apr 2024 17:06:50 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/MachineLearning/tmux_ai_helper/demo.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。&lt;/p&gt;
+&lt;p&gt;使用方法： &lt;prefix&gt; + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。&lt;/p&gt;
+&lt;p&gt;项目链接： &lt;a href=&#34;https://github.com/singleye/tmux-ai-helper&#34;&gt;https://github.com/singleye/tmux-ai-helper&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>NLP 资源整理</title>
+      <link>/2019/09/nlp-%E8%B5%84%E6%BA%90%E6%95%B4%E7%90%86/</link>
+      <pubDate>Thu, 19 Sep 2019 12:18:54 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/09/nlp-%E8%B5%84%E6%BA%90%E6%95%B4%E7%90%86/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%a8%a1%e5%9e%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    模型
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;模型&lt;/th&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;论文&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;GloVe: Global Vectors for Word Representation&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://nlp.stanford.edu/projects/glove/&#34;&gt;https://nlp.stanford.edu/projects/glove/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://nlp.stanford.edu/pubs/glove.pdf&#34;&gt;https://nlp.stanford.edu/pubs/glove.pdf&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;The Annotated Transformer&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://nlp.seas.harvard.edu/2018/04/03/attention.html&#34;&gt;http://nlp.seas.harvard.edu/2018/04/03/attention.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;GPT (from OpenAI)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/openai/finetune-transformer-lm&#34;&gt;https://github.com/openai/finetune-transformer-lm&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf&#34;&gt;language understanding&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://openai.com/blog/language-unsupervised/&#34;&gt;Improving Language Understanding with Unsupervised Learning&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;GPT-2 (from OpenAI)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/openai/gpt-2&#34;&gt;https://github.com/openai/gpt-2&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf&#34;&gt;https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://openai.com/blog/better-language-models/&#34;&gt;Better Language Models and Their Implications&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Transformer-XL (from Google/CMU)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/kimiyoung/transformer-xl&#34;&gt;https://github.com/kimiyoung/transformer-xl&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://arxiv.org/abs/1901.02860&#34;&gt;Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Attentive Language Models Beyond a Fixed-Length Context&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;XLNet (from Google/CMU)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/zihangdai/xlnet/&#34;&gt;https://github.com/zihangdai/xlnet/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1906.08237&#34;&gt;XLNet: Generalized Autoregressive Pretraining for Language Understanding&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;XLM (from Facebook)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/facebookresearch/XLM/&#34;&gt;https://github.com/facebookresearch/XLM/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1901.07291&#34;&gt;Cross-lingual Language Model Pretraining&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;RoBERTa (from Facebook)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/pytorch/fairseq/tree/master/examples/roberta&#34;&gt;https://github.com/pytorch/fairseq/tree/master/examples/roberta&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1907.11692&#34;&gt;Robustly Optimized BERT Pretraining Approach&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;DistilBERT (from HuggingFace)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/huggingface/transformers/tree/master/examples/distillation&#34;&gt;https://github.com/huggingface/transformers/tree/master/examples/distillation&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://medium.com/huggingface/distilbert-8cf3380435b5&#34;&gt;Smaller, faster, cheaper, lighter: Introducing DistilBERT, a distilled version of BERT&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;bert&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/google-research/bert&#34;&gt;https://github.com/google-research/bert&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1810.04805&#34;&gt;https://arxiv.org/abs/1810.04805&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;项目&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%a1%b9%e7%9b%ae&#34;&gt;
+        ##
+    &lt;/a&gt;
+    项目
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;模型&lt;/th&gt;
+&lt;th&gt;论文&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://allennlp.org&#34;&gt;https://allennlp.org&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/didi/delta&#34;&gt;https://github.com/didi/delta&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/pdf/1908.01853.pdf&#34;&gt;https://arxiv.org/pdf/1908.01853.pdf&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;滴滴 Delta&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://nlp.stanford.edu/software/CRF-NER.html&#34;&gt;https://nlp.stanford.edu/software/CRF-NER.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;CRF&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Stanford CRF NER&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;模型&lt;/th&gt;
+&lt;th&gt;论文&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://nlp.stanford.edu/projects/glove/&#34;&gt;https://nlp.stanford.edu/projects/glove/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;GloVe: Global Vectors for Word Representation&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://nlp.stanford.edu/pubs/glove.pdf&#34;&gt;https://nlp.stanford.edu/pubs/glove.pdf&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;http://nlp.seas.harvard.edu/2018/04/03/attention.html&#34;&gt;http://nlp.seas.harvard.edu/2018/04/03/attention.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;The Annotated Transformer&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/huggingface/transformers&#34;&gt;https://github.com/huggingface/transformers&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Transformers&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://huggingface.co/transformers&#34;&gt;https://huggingface.co/transformers&lt;/a&gt; 实现了很多模型（Bert, GPT, GPT-2, Transformer-XL, XLNet, XLM, RoBERTa, DistilBERT）&amp;lt;\b&amp;gt; &lt;a href=&#34;https://transformer.huggingface.co&#34;&gt;https://transformer.huggingface.co&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/openai/finetune-transformer-lm&#34;&gt;https://github.com/openai/finetune-transformer-lm&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;GPT (from OpenAI)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf&#34;&gt;language understanding&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://openai.com/blog/language-unsupervised/&#34;&gt;Improving Language Understanding with Unsupervised Learning&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/openai/gpt-2&#34;&gt;https://github.com/openai/gpt-2&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;GPT-2 (from OpenAI)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf&#34;&gt;https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://openai.com/blog/better-language-models/&#34;&gt;Better Language Models and Their Implications&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/kimiyoung/transformer-xl&#34;&gt;https://github.com/kimiyoung/transformer-xl&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Transformer-XL (from Google/CMU)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://arxiv.org/abs/1901.02860&#34;&gt;Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Attentive Language Models Beyond a Fixed-Length Context&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/zihangdai/xlnet/&#34;&gt;https://github.com/zihangdai/xlnet/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;XLNet (from Google/CMU)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1906.08237&#34;&gt;XLNet: Generalized Autoregressive Pretraining for Language Understanding&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/facebookresearch/XLM/&#34;&gt;https://github.com/facebookresearch/XLM/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;XLM (from Facebook)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1901.07291&#34;&gt;Cross-lingual Language Model Pretraining&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/pytorch/fairseq/tree/master/examples/roberta&#34;&gt;https://github.com/pytorch/fairseq/tree/master/examples/roberta&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;RoBERTa (from Facebook)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1907.11692&#34;&gt;Robustly Optimized BERT Pretraining Approach&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/huggingface/transformers/tree/master/examples/distillation&#34;&gt;https://github.com/huggingface/transformers/tree/master/examples/distillation&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;DistilBERT (from HuggingFace)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://medium.com/huggingface/distilbert-8cf3380435b5&#34;&gt;Smaller, faster, cheaper, lighter: Introducing DistilBERT, a distilled version of BERT&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/google-research/bert&#34;&gt;https://github.com/google-research/bert&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;bert&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/abs/1810.04805&#34;&gt;https://arxiv.org/abs/1810.04805&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/hundredblocks/concrete_NLP_tutorial&#34;&gt;https://github.com/hundredblocks/concrete_NLP_tutorial&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;An NLP workshop by Emmanuel Ameisen &lt;a href=&#34;https://twitter.com/EmmanuelAmeisen&#34;&gt;(@EmmanuelAmeisen)&lt;/a&gt;, from Insight AI&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/BrikerMan/Kashgari&#34;&gt;https://github.com/BrikerMan/Kashgari&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Word2Vec, BERT, and GPT2&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Kashgari is a Production-ready NLP Transfer learning framework for text-labeling and text-classification, includes Word2Vec, BERT, and GPT2 Language Embedding.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/kyzhouhzau/BERT-NER&#34;&gt;https://github.com/kyzhouhzau/BERT-NER&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Bert&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;基于 CoNLL-2003 数据集的实现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/ProHiryu/bert-chinese-ner&#34;&gt;https://github.com/ProHiryu/bert-chinese-ner&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;基于人民日报数据集的实现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/macanv/BERT-BiLSTM-CRF-NER&#34;&gt;https://github.com/macanv/BERT-BiLSTM-CRF-NER&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;bert&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;training, serving&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/marcotcr/lime&#34;&gt;https://github.com/marcotcr/lime&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;用于解释机器学习的分类器。&lt;/p&gt;论文：&lt;a href=&#34;https://arxiv.org/abs/1602.04938&#34;&gt;https://arxiv.org/abs/1602.04938&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;数据集&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%95%b0%e6%8d%ae%e9%9b%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    数据集
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据集&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/SophonPlus/ChineseNlpCorpus&#34;&gt;https://github.com/SophonPlus/ChineseNlpCorpus&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/SophonPlus/ChineseWordVectors&#34;&gt;https://github.com/SophonPlus/ChineseWordVectors&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/SophonPlus/ChineseNlpCorpus/blob/master/datasets/ChnSentiCorp_htl_all/intro.ipynb&#34;&gt;ChnSentiCorp_htl_all&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/thunlp/CAIL&#34;&gt;https://github.com/thunlp/CAIL&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Chinese AI &amp;amp; Law Challenge &lt;a href=&#34;http://cail.cipsc.org.cn&#34;&gt;http://cail.cipsc.org.cn&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;ner-数据集&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#ner-%e6%95%b0%e6%8d%ae%e9%9b%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    NER 数据集
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据集&lt;/th&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/ontonotes/conll-formatted-ontonotes-5.0&#34;&gt;https://github.com/ontonotes/conll-formatted-ontonotes-5.0&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;This is a CoNLL formatted version of the OntoNotes 5.0 release.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/juand-r/entity-recognition-datasets#references&#34;&gt;https://github.com/juand-r/entity-recognition-datasets#references&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;A collection of corpora for named entity recognition (NER) and entity recognition tasks. These annotated datasets cover a variety of languages, domains and entity types.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;学习资料&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ad%a6%e4%b9%a0%e8%b5%84%e6%96%99&#34;&gt;
+        ##
+    &lt;/a&gt;
+    学习资料
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;nlp-roadmap&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#nlp-roadmap&#34;&gt;
+        #
+    &lt;/a&gt;
+    NLP roadmap
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/graykode/nlp-roadmap&#34;&gt;https://github.com/graykode/nlp-roadmap&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;probability--statistics&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#probability--statistics&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Probability &amp;amp; Statistics
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/graykode/nlp-roadmap/raw/master/img/prob.png&#34; alt=&#34;Probability &amp;amp; Statistics&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;machine-learning&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#machine-learning&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Machine Learning
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/graykode/nlp-roadmap/raw/master/img/ml.png&#34; alt=&#34;Machine Learning&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;text-mining&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#text-mining&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Text Mining
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/graykode/nlp-roadmap/raw/master/img/textmining.png&#34; alt=&#34;Text Mining&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;natural-language-processing&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#natural-language-processing&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Natural Language Processing
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/graykode/nlp-roadmap/raw/master/img/nlp.png&#34; alt=&#34;Natural Language Processing&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;标注工具&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%a0%87%e6%b3%a8%e5%b7%a5%e5%85%b7&#34;&gt;
+        ##
+    &lt;/a&gt;
+    标注工具
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;| 工具 | 链接 | 描述 |
+|&amp;mdash;+&amp;mdash;+&amp;mdash;|
+| Prodigy |https://prodi.gy/docs/|Prodigy (explosion.ai 开发 spacy 的公司)|
+| brat |https://github.com/nlplab/brat||
+| Knowtator |http://knowtator.sourceforge.net/index.shtml||
+| Protégé + Knowtator plugin |https://github.com/UCDenver-ccp/Knowtator-2.0 &lt;a href=&#34;https://protege.stanford.edu/short-courses.php&#34;&gt;https://protege.stanford.edu/short-courses.php&lt;/a&gt;||
+||http://deepdive.stanford.edu/labeling||
+||https://github.com/SongRb/DeepDiveChineseApps||
+||https://github.com/qiangsiwei/DeepDive_Chinese||
+||https://github.com/jiesutd/SUTDAnnotator||
+||https://github.com/HazyResearch/snorkel||
+||https://bitbucket.org/dainkaplan/slate/||
+| iepy | &lt;a href=&#34;https://github.com/machinalis/iepy&#34;&gt;https://github.com/machinalis/iepy&lt;/a&gt; | 标注，信息提取 |
+| doccano |https://github.com/chakki-works/doccano||
+| YEDDA |https://github.com/jiesutd/YEDDA||
+| Chinese-Annotator | &lt;a href=&#34;https://github.com/deepwel/Chinese-Annotator&#34;&gt;https://github.com/deepwel/Chinese-Annotator&lt;/a&gt; | online/offline 结合的中文标注工具，想法比较好，目前项目还不完善 |
+| HanNLP | &lt;a href=&#34;https://github.com/hankcs/HanLP&#34;&gt;https://github.com/hankcs/HanLP&lt;/a&gt; | NLP 工具箱（中文分词 词性标注 命名实体识别 依存句法分析 新词发现 关键词短语提取 自动摘要 文本分类聚类 拼音简繁），Java语言 |
+| poplar |https://github.com/synyi/poplar|国内“森亿”公司开发|&lt;/p&gt;
+&lt;h2 id=&#34;brat&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#brat&#34;&gt;
+        #
+    &lt;/a&gt;
+    brat
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;brat-配置&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#brat-%e9%85%8d%e7%bd%ae&#34;&gt;
+        ##
+    &lt;/a&gt;
+    brat 配置
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;h4 id=&#34;annotation-配置-annotationconf&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#annotation-%e9%85%8d%e7%bd%ae-annotationconf&#34;&gt;
+        ###
+    &lt;/a&gt;
+    Annotation 配置 annotation.conf
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;[entities]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[entities]	 
+Person
+Location
+Organization
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;[relations]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参数指定格式 &amp;ldquo;ARG:TYPE&amp;rdquo;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[relations]	 
+Family	Arg1:Person, Arg2:Person
+Employment	Arg1:Person, Arg2:Organization
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;参数可以有多个，使用 &amp;ldquo;|&amp;rdquo; 分隔&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[relations]	 	 
+Located	Arg1:Person,	Arg2:Building|City|Country
+Located	Arg1:Building,	Arg2:City|Country
+Located	Arg1:City,	Arg2:Country
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;[events]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;事件参数格式 &amp;ldquo;ROLE:TYPE&amp;rdquo;, ROLE 可以任意指定。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[events]	 
+Marriage	Participant1:Person, Participant2:Person
+Bankruptcy	Org:Company
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;[attributes]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;属性作用域 &amp;ldquo;ARG:TYPE&amp;rdquo; ，可以用在 relation 和 event 中。&lt;/p&gt;
+&lt;p&gt;拥有多个值的属性的值的定义方法是 &amp;ldquo;Value:VAL1|VAL2|VAL3[&amp;hellip;]&amp;rdquo;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[attributes]	 
+Negated	Arg:&amp;lt;EVENT&amp;gt;
+Confidence	Arg:&amp;lt;EVENT&amp;gt;, Value:L1|L2|L3
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;brat-标注信息格式&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#brat-%e6%a0%87%e6%b3%a8%e4%bf%a1%e6%81%af%e6%a0%bc%e5%bc%8f&#34;&gt;
+        ##
+    &lt;/a&gt;
+    brat 标注信息格式
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;http://brat.nlplab.org/standoff.html&#34;&gt;http://brat.nlplab.org/standoff.html&lt;/a&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;T1	Organization 0 4	Sony
+T2	MERGE-ORG 14 27	joint venture
+T3	Organization 33 41	Ericsson
+E1	MERGE-ORG:T2 Org1:T1 Org2:T3
+T4	Country 75 81	Sweden
+R1	Origin Arg1:T3 Arg2:T4
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;protege--knowtator&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#protege--knowtator&#34;&gt;
+        #
+    &lt;/a&gt;
+    Protege &amp;amp; Knowtator
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;编译 Knowtator 插件：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git clone https://github.com/UCDenver-ccp/Knowtator-2.0.git
+mvn clean install
+cp xxx/plugins/knowtator-2.1.5.jar /Applications/Protégé.app/Contents/Java/plugins/
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;重启 Protege&lt;/p&gt;
+&lt;h2 id=&#34;iepy&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#iepy&#34;&gt;
+        #
+    &lt;/a&gt;
+    iepy
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;NOTE&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;iepy 的 preprcess.py 会失败，需要按照以下方式修改 corenlp.sh 脚本&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Preprocess not running under MacOS&lt;/p&gt;
+&lt;p&gt;Problems with the preprocess under MacOS? Apparently a change in the CoreNLP script is needed to be run. You need to change the file corenlp.sh that is located on /Users/&lt;your user&gt;/Library/Application Support/iepy/stanford-corenlp-full-2014-08-27/ and change scriptdir=&lt;code&gt;dirname $0&lt;/code&gt; for scriptdir=&lt;code&gt;dirname &amp;quot;$0&amp;quot;&lt;/code&gt; (ie, add double quotes around $0)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://iepy.readthedocs.io/en/stable/troubleshooting.html#troubleshooting&#34;&gt;https://iepy.readthedocs.io/en/stable/troubleshooting.html#troubleshooting&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;自然语言处理工具&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%b7%a5%e5%85%b7&#34;&gt;
+        ##
+    &lt;/a&gt;
+    自然语言处理工具
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;自然语言处理 中文分词 词性标注 命名实体识别 依存句法分析 新词发现 关键词短语提取 自动摘要 文本分类聚类 拼音简繁&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/hankcs/HanLP&#34;&gt;https://github.com/hankcs/HanLP&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;nlp-应用&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#nlp-%e5%ba%94%e7%94%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    NLP 应用
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;聊天机器人&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%81%8a%e5%a4%a9%e6%9c%ba%e5%99%a8%e4%ba%ba&#34;&gt;
+        #
+    &lt;/a&gt;
+    聊天机器人
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.jianshu.com/p/3c6f1e32e128&#34;&gt;用 TensorFlow 做个聊天机器人&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;论文&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%ae%ba%e6%96%87&#34;&gt;
+        ##
+    &lt;/a&gt;
+    论文
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;http://nlp.seas.harvard.edu/2018/04/03/attention.html&#34;&gt;http://nlp.seas.harvard.edu/2018/04/03/attention.html&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>机器学习笔记 - 贝叶斯分类法推导</title>
+      <link>/2019/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E6%B3%95%E6%8E%A8%E5%AF%BC/</link>
+      <pubDate>Fri, 09 Aug 2019 10:57:50 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E6%B3%95%E6%8E%A8%E5%AF%BC/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;这篇笔记记录了最近对贝叶斯分类法的学习和理解。&lt;/p&gt;
+&lt;h1 id=&#34;1概率基本概念回顾&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1%e6%a6%82%e7%8e%87%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5%e5%9b%9e%e9%a1%be&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1.概率基本概念回顾
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;11概率&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#11%e6%a6%82%e7%8e%87&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.1.概率：
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;事件发生的概率 = $ \dfrac{事件可能发生的个数} {结果的总数} $&lt;/p&gt;
+&lt;h2 id=&#34;12事件的分类&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#12%e4%ba%8b%e4%bb%b6%e7%9a%84%e5%88%86%e7%b1%bb&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.2.事件的分类：
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;独立事件：每个事件的发生是独立的，不受其他事件的影响，例如：抛硬币，掷骰子。&lt;/li&gt;
+&lt;li&gt;相关事件：当前事件受之前发生事件的影响，例如：抽扑克牌。&lt;/li&gt;
+&lt;li&gt;互斥事件：事件发生只能是其一，不能同时发生，例如：一枚硬币不能同时为正面和反面。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;13独立事件的概率&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#13%e7%8b%ac%e7%ab%8b%e4%ba%8b%e4%bb%b6%e7%9a%84%e6%a6%82%e7%8e%87&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.3.独立事件的概率：
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;单个独立事件的概率： P(A) = $ \dfrac{事件可能发生的个数} {结果的总数} $&lt;/li&gt;
+&lt;li&gt;事件A和B发生的概率（多个独立事件的概率）： P(A B) = P(A) * P(B)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;14条件概率&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#14%e6%9d%a1%e4%bb%b6%e6%a6%82%e7%8e%87&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.4.条件概率：
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;在相关事件的情况中应用条件概率，用 P(B|A) 表示在事件 A 发生的条件下事件 B 发生的概率。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;事件A和B发生的概率： P(A B) = P(A) * P(B|A)&lt;/p&gt;
+&lt;p&gt;另外一个有用的公式转换： P(B|A) = $ \dfrac{P(A B)} {P(A)} $&lt;/p&gt;
+&lt;p&gt;在事件 A 发生的情况下 B 发生的概率等于事件 A 和 B 的概率除以事件 A 的概率&lt;/p&gt;
+&lt;p&gt;例子：冰淇淋&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  在你的社交群组里，70% 喜欢巧克力冰淇淋，35% 喜欢巧克力和草莓。
+
+  在喜欢巧克力的人里，也喜欢草莓的百分比是多少？
+
+  P(草莓|巧克力) = P(巧克力 与 草莓) / P(巧克力)
+
+  0.35 / 0.7 = 50%
+
+  在喜欢巧克力的人里，50% 也喜欢草莓
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;141-尝试计算下面的概率&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#141-%e5%b0%9d%e8%af%95%e8%ae%a1%e7%ae%97%e4%b8%8b%e9%9d%a2%e7%9a%84%e6%a6%82%e7%8e%87&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1.4.1. 尝试计算下面的概率
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;4个人在5个数字中各选一个数字，请问任何两个人选重的概率是多少？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/08/bayes-classification/events-dependent-ex-3.svg&#34; alt=&#34;events-dependent-ex-3.svg&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;2贝叶斯定理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2%e8%b4%9d%e5%8f%b6%e6%96%af%e5%ae%9a%e7%90%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2.贝叶斯定理
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;$ P(A|B) = \dfrac {P(A)*P(B|A)} {P(B)} $&lt;/p&gt;
+&lt;p&gt;在 B 发生的情况下发生 A 事件的概率 P(A|B) 可以通过已知 A 发生情况下 B 发生的概率和 A 与 B 的独自发生的概率求出来。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;P(A|B)：在 B 发生的情况下 A 发生的概率&lt;/li&gt;
+&lt;li&gt;P(A)：A 发生的概率&lt;/li&gt;
+&lt;li&gt;P(B)：B 发生的概率&lt;/li&gt;
+&lt;li&gt;P(B|A)：在 A 发生的情况下 B 发生的概率&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;**例子1：**计算天气有云时下雨的概率：&lt;/p&gt;
+&lt;p&gt;$ P(雨|云) = \dfrac {P(雨)*P(云|雨)} {P(云)} $&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;P(雨)：下雨的概率 = 10%&lt;/li&gt;
+&lt;li&gt;P(云|雨)：下雨时有云的概率 = 50%&lt;/li&gt;
+&lt;li&gt;P(云)：有云的概率 = 40%&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;$ P(雨|云) = \dfrac {0.1 * 0.5} {0.4} = 0.125 $&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;例子2：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;有一种疾病检测手段，但是这种检测手段并不准确&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在真正有这种疾病的人中有 80% 的人可以被检测出&lt;/li&gt;
+&lt;li&gt;对于没有这种疾病的人有 10% 的概率会被错误检测出&lt;/li&gt;
+&lt;li&gt;以往的统计数据表明人群中有 1% 的人得了这种疾病，99% 的人没有得过&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;请问，当有一个人被检测出有该疾病时他真正有这种病的概率是多少？&lt;/p&gt;
+&lt;p&gt;$ P(真有病|检测有病) = \dfrac {P(真有病) * P(检测有病|真有病)} {P(检测有病)} $&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;真实情况 \ 检测结果&lt;/th&gt;
+&lt;th&gt;检测有病&lt;/th&gt;
+&lt;th&gt;检测没病&lt;/th&gt;
+&lt;th&gt;得病统计&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;真有病&lt;/td&gt;
+&lt;td&gt;80%&lt;/td&gt;
+&lt;td&gt;20%&lt;/td&gt;
+&lt;td&gt;1%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;真没病&lt;/td&gt;
+&lt;td&gt;10%&lt;/td&gt;
+&lt;td&gt;90%&lt;/td&gt;
+&lt;td&gt;99%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;P(真有病)：1%&lt;/li&gt;
+&lt;li&gt;P(检测有病|真有病)：80%&lt;/li&gt;
+&lt;li&gt;P(检测有病)：P(没有病的人被检测出有病的概率) + P(真有病的人被检测出有病的概率)
+&lt;ul&gt;
+&lt;li&gt;P(没有病的人被检测出有病的概率) = P(真没病) * P(检测有病|真没病) = 99% * 10% = 0.099&lt;/li&gt;
+&lt;li&gt;P(真有病的人被检测出有病的概率) = P(真有病) * P(检测有病|真有病) = 1% * 80% = 0.008&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;$ P(真有病|检测有病) = \dfrac {1% * 80%} { 99% * 10% + 1% * 80%} =  7.48% $&lt;/p&gt;
+&lt;p&gt;示意图：&lt;/p&gt;
+&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/08/bayes-classification/disease_1.jpeg&#34; style=&#34;width:400px&#34;/&gt;
+&lt;p&gt;计算方法：&lt;/p&gt;
+&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/08/bayes-classification/disease_2.jpeg&#34; style=&#34;width:600px&#34;/&gt;
+&lt;p&gt;那么怎么评估这个方法是否有效呢？可以使用准确度（Precision）和召回（Recall）两个指标来评估。&lt;/p&gt;
+&lt;p&gt;$ Precision = \dfrac {TP} {TP + FP} = \dfrac {P(真有病) * P(检测有病|真有病)} {P(检测有病)} = \dfrac {1% * 80%} {1% * 80% + 99% * 10%} = 7.48%$&lt;/p&gt;
+&lt;p&gt;$ Recall = \dfrac {TP} {TP + FN} = \dfrac {P(真有病) * P(检测有病|真有病)} {P(真有病)} = \dfrac {1% * 80%} {1%} = 80% $&lt;/p&gt;
+&lt;h1 id=&#34;3贝叶斯定理在机器学习中的应用---文本分类&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3%e8%b4%9d%e5%8f%b6%e6%96%af%e5%ae%9a%e7%90%86%e5%9c%a8%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e4%b8%ad%e7%9a%84%e5%ba%94%e7%94%a8---%e6%96%87%e6%9c%ac%e5%88%86%e7%b1%bb&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3.贝叶斯定理在机器学习中的应用 - 文本分类
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;**任务目标：**通过利用一批分好类（2类：正常/非正常）的文本信息，训练一个模型来识别一段给定文字，判断是不是正常言论。&lt;/p&gt;
+&lt;p&gt;$ P(类别|数据) = \dfrac {P(类别) * P(数据|类别)} {P(数据)} $&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当 P(正常|数据) &amp;gt; P(不正常|数据) 时认为文本为“正常”&lt;/li&gt;
+&lt;li&gt;当 P(正常|数据) &amp;lt; P(不正常|数据) 时认为文本为“不正常”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;算法推导：&lt;/p&gt;
+&lt;p&gt;进一步把问题转换成下面的表达方式：&lt;/p&gt;
+&lt;p&gt;$ P(class|words) = \dfrac {P(words|class) * P(class)} {P(words)} $&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;class：代表类别&lt;/li&gt;
+&lt;li&gt;words：代表一句话，它是由一组单词构成的，记做：w0, w1, w2, &amp;hellip;, wn&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;$ P(class|w0, w0, w1, w2, &amp;hellip;, wn) = \dfrac {P(w0, w1, w2, &amp;hellip;, wn|class) * P(class)} {P(w0, w1, w2, &amp;hellip;, wn)} $&lt;/p&gt;
+&lt;p&gt;由于 P(w0, w1, w2, &amp;hellip;, wn|class) 非常难于计算因此通过条件独立性假设把这个概率进行简化计算，最终转换成计算 P(w0|class)P(w1|class)P(w2|class)&amp;hellip;P(wn|class)。&lt;/p&gt;
+&lt;p&gt;$ P(class|w0, w0, w1, w2, &amp;hellip;, wn) = \dfrac {P(w0|class)*P(w1|class)*P(w2|class)&amp;hellip;P(wn|class) * P(class)} {P(w0, w1, w2, &amp;hellip;, wn)} $&lt;/p&gt;
+&lt;p&gt;训练方法就转换成根据已提供的数据计算下列概率值得过程：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个类别中出现某个单词的概率 P(w0|class), P(w1|class), P(w2|class)&amp;hellip;P(wn|class)&lt;/li&gt;
+&lt;li&gt;训练数据中某个类别的概率 P(class)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;比较 P(class1|w0, w0, w1, w2, &amp;hellip;, wn) P(class2|w0, w0, w1, w2, &amp;hellip;, wn) 可以简化成比较&lt;/p&gt;
+&lt;p&gt;$ P(w0|class1)*P(w1|class1)*P(w2|class1)&amp;hellip;P(wn|class1) * P(class1) $&lt;/p&gt;
+&lt;p&gt;$ P(w0|class2)*P(w1|class2)*P(w2|class2)&amp;hellip;P(wn|class2) * P(class2) $&lt;/p&gt;
+&lt;p&gt;**注意：**实际计算中很少直接使用这样的乘法进行计算，主要原因是：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;乘法运算计算量相对加法来说是复杂很多的&lt;/li&gt;
+&lt;li&gt;由于每一项 P(wn|class1) 值很小或者为0（有时为了避免所有项为0会把每一项给一个初始化很小的数字），因此容易导致计算结果直接为0或者由于太小造成下溢出&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;所以，在实际情况下多使用 log 运算，根据 log 的性质可以进一步简化成比较：&lt;/p&gt;
+&lt;p&gt;$ log(P(w0|class1)*P(w1|class1)*P(w2|class1)&amp;hellip;P(wn|class1) * P(class1)) = log(P(w0|class1) + log(P(w1|class1) + log(P(w2|class1) + &amp;hellip;  + log(P(wn|class1) + log(class1)$&lt;/p&gt;
+&lt;p&gt;$ log(P(w0|class2)*P(w1|class2)*P(w2|class2)&amp;hellip;P(wn|class2) * P(class2)) = log(P(w0|class2) + log(P(w1|class2) + log(P(w2|class2) + &amp;hellip;  + log(P(wn|class2) + log(class2)$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;另外使用 log 进行计算还有额外的好处：&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;首先是直接将乘法运算转换成了加法，计算速度得到提升&lt;/li&gt;
+&lt;li&gt;每一项 log(P(wn|class) 都可以在训练阶段固化，操作中可以直接用查表法解决进一步减少运算量&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最后，引用一下来自《机器学习实战》的例子：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; numpy &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;loadDataSet&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    postingList&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;[[&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;my&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dog&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;has&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;flea&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;problems&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;help&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;please&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;maybe&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;not&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;take&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;him&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;to&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dog&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;park&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stupid&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;my&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dalmation&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;is&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;so&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;cute&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;I&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;love&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;him&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stop&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;posting&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stupid&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;worthless&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;garbage&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;mr&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;licks&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;ate&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;my&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;steak&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;how&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;to&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stop&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;him&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                 [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;quit&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;buying&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;worthless&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dog&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;food&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stupid&amp;#39;&lt;/span&gt;]]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    classVec &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;]    &lt;span style=&#34;color:#78787e&#34;&gt;#1 is abusive, 0 not&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; postingList,classVec
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;createVocabList&lt;/span&gt;(dataSet):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    vocabSet &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;set&lt;/span&gt;([])  &lt;span style=&#34;color:#78787e&#34;&gt;#create empty set&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; document &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; dataSet:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        vocabSet &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; vocabSet &lt;span style=&#34;color:#ff6ac1&#34;&gt;|&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;set&lt;/span&gt;(document) &lt;span style=&#34;color:#78787e&#34;&gt;#union of the two sets&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;list&lt;/span&gt;(vocabSet)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;setOfWords2Vec&lt;/span&gt;(vocabList, inputSet):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    returnVec &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;]&lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(vocabList)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; word &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; inputSet:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;if&lt;/span&gt; word &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; vocabList:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            returnVec[vocabList&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;index(word)] &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;else&lt;/span&gt;: &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;the word: &lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt; is not in my Vocabulary!&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;%&lt;/span&gt; word)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; returnVec
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;trainNB0&lt;/span&gt;(trainMatrix,trainCategory):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    numTrainDocs &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(trainMatrix)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    numWords &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(trainMatrix[&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    pAbusive &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;sum&lt;/span&gt;(trainCategory)&lt;span style=&#34;color:#ff6ac1&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;float&lt;/span&gt;(numTrainDocs)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p0Num &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; ones(numWords); p1Num &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; ones(numWords)      &lt;span style=&#34;color:#78787e&#34;&gt;#change to ones()，备注：初始化成1避免该项为0的情况发生&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p0Denom &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;2.0&lt;/span&gt;; p1Denom &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;2.0&lt;/span&gt;                        &lt;span style=&#34;color:#78787e&#34;&gt;#change to 2.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;range&lt;/span&gt;(numTrainDocs):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;if&lt;/span&gt; trainCategory[i] &lt;span style=&#34;color:#ff6ac1&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            p1Num &lt;span style=&#34;color:#ff6ac1&#34;&gt;+=&lt;/span&gt; trainMatrix[i]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            p1Denom &lt;span style=&#34;color:#ff6ac1&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;sum&lt;/span&gt;(trainMatrix[i])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;else&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            p0Num &lt;span style=&#34;color:#ff6ac1&#34;&gt;+=&lt;/span&gt; trainMatrix[i]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            p0Denom &lt;span style=&#34;color:#ff6ac1&#34;&gt;+=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;sum&lt;/span&gt;(trainMatrix[i])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p1Vect &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; log(p1Num&lt;span style=&#34;color:#ff6ac1&#34;&gt;/&lt;/span&gt;p1Denom)          &lt;span style=&#34;color:#78787e&#34;&gt;#change to log()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p0Vect &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; log(p0Num&lt;span style=&#34;color:#ff6ac1&#34;&gt;/&lt;/span&gt;p0Denom)          &lt;span style=&#34;color:#78787e&#34;&gt;#change to log()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; p0Vect,p1Vect,pAbusive
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;classifyNB&lt;/span&gt;(vec2Classify, p0Vec, p1Vec, pClass1):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p1 &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;sum&lt;/span&gt;(vec2Classify &lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt; p1Vec) &lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt; log(pClass1)    &lt;span style=&#34;color:#78787e&#34;&gt;#element-wise mult&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p0 &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;sum&lt;/span&gt;(vec2Classify &lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt; p0Vec) &lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt; log(&lt;span style=&#34;color:#ff9f43&#34;&gt;1.0&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;-&lt;/span&gt; pClass1)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;if&lt;/span&gt; p1 &lt;span style=&#34;color:#ff6ac1&#34;&gt;&amp;gt;&lt;/span&gt; p0:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;else&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;testingNB&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    listOPosts,listClasses &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; loadDataSet()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    myVocabList &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; createVocabList(listOPosts)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    trainMat&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;[]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; postinDoc &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; listOPosts:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        trainMat&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;append(setOfWords2Vec(myVocabList, postinDoc))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    p0V,p1V,pAb &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; trainNB0(array(trainMat),array(listClasses))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    testEntry &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;love&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;my&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dalmation&amp;#39;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    thisDoc &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; array(setOfWords2Vec(myVocabList, testEntry))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(testEntry,&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;classified as: &amp;#39;&lt;/span&gt;,classifyNB(thisDoc,p0V,p1V,pAb))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    testEntry &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stupid&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;garbage&amp;#39;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    thisDoc &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; array(setOfWords2Vec(myVocabList, testEntry))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(testEntry,&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;classified as: &amp;#39;&lt;/span&gt;,classifyNB(thisDoc,p0V,p1V,pAb))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;第一步加载已分类数据并创建词典&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%8a%a0%e8%bd%bd%e5%b7%b2%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae%e5%b9%b6%e5%88%9b%e5%bb%ba%e8%af%8d%e5%85%b8&#34;&gt;
+        #
+    &lt;/a&gt;
+    第一步：加载已分类数据，并创建词典
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;listOPosts,listClasses &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; loadDataSet()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;myVocabList &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; createVocabList(listOPosts)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;All posts:&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;-&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;80&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(listOPosts)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Vocabulary:&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;-&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;80&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(myVocabList)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;All posts:
+--------------------------------------------------------------------------------
+[[&#39;my&#39;, &#39;dog&#39;, &#39;has&#39;, &#39;flea&#39;, &#39;problems&#39;, &#39;help&#39;, &#39;please&#39;], [&#39;maybe&#39;, &#39;not&#39;, &#39;take&#39;, &#39;him&#39;, &#39;to&#39;, &#39;dog&#39;, &#39;park&#39;, &#39;stupid&#39;], [&#39;my&#39;, &#39;dalmation&#39;, &#39;is&#39;, &#39;so&#39;, &#39;cute&#39;, &#39;I&#39;, &#39;love&#39;, &#39;him&#39;], [&#39;stop&#39;, &#39;posting&#39;, &#39;stupid&#39;, &#39;worthless&#39;, &#39;garbage&#39;], [&#39;mr&#39;, &#39;licks&#39;, &#39;ate&#39;, &#39;my&#39;, &#39;steak&#39;, &#39;how&#39;, &#39;to&#39;, &#39;stop&#39;, &#39;him&#39;], [&#39;quit&#39;, &#39;buying&#39;, &#39;worthless&#39;, &#39;dog&#39;, &#39;food&#39;, &#39;stupid&#39;]]
+
+
+Vocabulary:
+--------------------------------------------------------------------------------
+[&#39;to&#39;, &#39;mr&#39;, &#39;quit&#39;, &#39;take&#39;, &#39;my&#39;, &#39;dalmation&#39;, &#39;is&#39;, &#39;has&#39;, &#39;flea&#39;, &#39;stop&#39;, &#39;worthless&#39;, &#39;him&#39;, &#39;problems&#39;, &#39;cute&#39;, &#39;maybe&#39;, &#39;I&#39;, &#39;so&#39;, &#39;not&#39;, &#39;buying&#39;, &#39;help&#39;, &#39;how&#39;, &#39;park&#39;, &#39;food&#39;, &#39;garbage&#39;, &#39;steak&#39;, &#39;please&#39;, &#39;dog&#39;, &#39;ate&#39;, &#39;licks&#39;, &#39;posting&#39;, &#39;love&#39;, &#39;stupid&#39;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;第二步将词典数据转换成可计算的向量&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%b0%86%e8%af%8d%e5%85%b8%e6%95%b0%e6%8d%ae%e8%bd%ac%e6%8d%a2%e6%88%90%e5%8f%af%e8%ae%a1%e7%ae%97%e7%9a%84%e5%90%91%e9%87%8f&#34;&gt;
+        #
+    &lt;/a&gt;
+    第二步：将词典数据转换成可计算的向量
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;trainMat&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;[]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; postinDoc &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; listOPosts:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    trainMat&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;append(setOfWords2Vec(myVocabList, postinDoc))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;第三步训练模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ac%ac%e4%b8%89%e6%ad%a5%e8%ae%ad%e7%bb%83%e6%a8%a1%e5%9e%8b&#34;&gt;
+        #
+    &lt;/a&gt;
+    第三步：训练模型
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;p0V,p1V,pAb &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; trainNB0(array(trainMat),array(listClasses))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;最后测试模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%9c%80%e5%90%8e%e6%b5%8b%e8%af%95%e6%a8%a1%e5%9e%8b&#34;&gt;
+        #
+    &lt;/a&gt;
+    最后：测试模型
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;testEntry &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;love&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;my&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dalmation&amp;#39;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;thisDoc &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; array(setOfWords2Vec(myVocabList, testEntry))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(testEntry,&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;classified as: &amp;#39;&lt;/span&gt;,classifyNB(thisDoc,p0V,p1V,pAb))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;testEntry &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;stupid&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;garbage&amp;#39;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;thisDoc &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; array(setOfWords2Vec(myVocabList, testEntry))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(testEntry,&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;classified as: &amp;#39;&lt;/span&gt;,classifyNB(thisDoc,p0V,p1V,pAb))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;[&#39;love&#39;, &#39;my&#39;, &#39;dalmation&#39;] classified as:  0
+[&#39;stupid&#39;, &#39;garbage&#39;] classified as:  1&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>机器学习 - 决策树</title>
+      <link>/2019/04/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%86%B3%E7%AD%96%E6%A0%91/</link>
+      <pubDate>Mon, 15 Apr 2019 17:04:37 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/04/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%86%B3%E7%AD%96%E6%A0%91/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;机器学习-决策树&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e5%86%b3%e7%ad%96%e6%a0%91&#34;&gt;
+        ##
+    &lt;/a&gt;
+    机器学习-决策树
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;1什么是问题树&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1%e4%bb%80%e4%b9%88%e6%98%af%e9%97%ae%e9%a2%98%e6%a0%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    1.什么是问题树？
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;请思考以下场景&lt;/p&gt;
+&lt;h3 id=&#34;11玩过猜字游戏吗&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#11%e7%8e%a9%e8%bf%87%e7%8c%9c%e5%ad%97%e6%b8%b8%e6%88%8f%e5%90%97&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1.1.玩过猜字游戏吗？
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/1.png&#34; alt=&#34;1&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;12如何通过几个问题区分猫狗鸡鸭&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#12%e5%a6%82%e4%bd%95%e9%80%9a%e8%bf%87%e5%87%a0%e4%b8%aa%e9%97%ae%e9%a2%98%e5%8c%ba%e5%88%86%e7%8c%ab%e7%8b%97%e9%b8%a1%e9%b8%ad&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1.2.如何通过几个问题区分“猫狗鸡鸭”？
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/2.png&#34; alt=&#34;2&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;121他们的特征是什么&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#121%e4%bb%96%e4%bb%ac%e7%9a%84%e7%89%b9%e5%be%81%e6%98%af%e4%bb%80%e4%b9%88&#34;&gt;
+        ###
+    &lt;/a&gt;
+    1.2.1.他们的特征是什么？
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;物种&lt;/th&gt;
+&lt;th&gt;腿的数量&lt;/th&gt;
+&lt;th&gt;有没有脚蹼&lt;/th&gt;
+&lt;th&gt;喙的形状&lt;/th&gt;
+&lt;th&gt;会不会游泳&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;猫&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;不会&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;狗&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;会&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;鸡&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;尖&lt;/td&gt;
+&lt;td&gt;不会&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;鸭&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;有&lt;/td&gt;
+&lt;td&gt;扁&lt;/td&gt;
+&lt;td&gt;会&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;数据的表示方法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;类别：猫、狗、鸡、鸭&lt;/li&gt;
+&lt;li&gt;特征：腿的数量、有没有脚蹼、喙的形状，会不会游泳&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;122以下是一种区分方法&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#122%e4%bb%a5%e4%b8%8b%e6%98%af%e4%b8%80%e7%a7%8d%e5%8c%ba%e5%88%86%e6%96%b9%e6%b3%95&#34;&gt;
+        ###
+    &lt;/a&gt;
+    1.2.2.以下是一种区分方法
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/6.png&#34; alt=&#34;6&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考1：以上是不是唯一的方法？&lt;/strong&gt;
+&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/7.png&#34; alt=&#34;7&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考2：哪种判定方式更好？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考3：如何更有效的区分？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果某个特征区分问题更有效？&lt;/li&gt;
+&lt;li&gt;怎么判断问题更有效？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2为什么需要决策树&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%86%b3%e7%ad%96%e6%a0%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    2.为什么需要决策树
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;此刻你可能会想到：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1. 寻找关键性问题！&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. 什么是关键性问题？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3. 怎么寻找关键性问题？&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;21理论依据是什么&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#21%e7%90%86%e8%ae%ba%e4%be%9d%e6%8d%ae%e6%98%af%e4%bb%80%e4%b9%88&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2.1.理论依据是什么？
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;&amp;ldquo;香农&amp;quot;提出信息论，其中对信息的度量成为香农熵，简称“熵(Entropy)”&lt;/p&gt;
+&lt;p&gt;在分类问题中，假设存在类别集合为  $ (X_1, X_2, &amp;hellip; X_n) $ ，将类别 $ X_i $ 的信息定义为:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;$ l(X_i) = -log(P(X_i))$ , 其中 $ P(X_i)$为 $X_i $的概率&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;熵：信息的数学期望值： $ H= -\sum_{i=1}^n P(X_i) log(P(X_i))$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;思考4：怎么理解熵？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;信息量越大，熵越小&lt;/li&gt;
+&lt;li&gt;信息量越小，熵越大&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/5.png&#34; alt=&#34;5&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考5：为什么使用对数表示信息？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;概率 vs 信息&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;概率越大，信息量越小&lt;/li&gt;
+&lt;li&gt;概率越小，信息量越大&lt;/li&gt;
+&lt;li&gt;多个事件同时发生的概率是多个事件发生概率相乘，总信息量是多个事件信息量相加&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;练习1：给定以下数据集，写出熵的计算方法&lt;/strong&gt;&lt;/p&gt;
+$$ H= -\sum_{i=1}^n P(X_i) log(P(X_i)) $$
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;from&lt;/span&gt; math &lt;span style=&#34;color:#ff6ac1&#34;&gt;import&lt;/span&gt; log
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;create_dataset&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    features &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;legs&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;flippers&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;beak&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;swim&amp;#39;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    dataset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; [
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;cat&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;cat&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;cat&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Yes&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dog&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Yes&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;dog&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Sharp&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;chicken&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Sharp&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;chicken&amp;#39;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        [&lt;span style=&#34;color:#ff9f43&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Flat&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;No&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;duck&amp;#39;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; dataset, features
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;calc_entropy&lt;/span&gt;(dataset):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    count &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(dataset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    class_counter &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; vector &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; dataset:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        cls &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; vector[&lt;span style=&#34;color:#ff6ac1&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        class_counter[cls] &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; class_counter&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;get(cls, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    entropy &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;0.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; key &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; class_counter&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;keys():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        prob &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;float&lt;/span&gt;(class_counter[key])&lt;span style=&#34;color:#ff6ac1&#34;&gt;/&lt;/span&gt;count
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        entropy &lt;span style=&#34;color:#ff6ac1&#34;&gt;-=&lt;/span&gt; prob &lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt; log(prob)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; entropy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dataset, features &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; create_dataset()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;entropy &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; calc_entropy(dataset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Entropy: &lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;format(entropy))
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;Entropy: 1.3208883431493221
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;3怎么构建决策树&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3%e6%80%8e%e4%b9%88%e6%9e%84%e5%bb%ba%e5%86%b3%e7%ad%96%e6%a0%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    3.怎么构建决策树
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;核心问题：如何通过划分数据集计算信息量的提升来找到最有效的数据特征&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;练习2：重新划分数据集，将符合指定特征值的数据提取出来组合新的数据集合&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;split_dataset&lt;/span&gt;(dataset, feature, value):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    new_dataset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; data &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; dataset:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;if&lt;/span&gt; data[feature] &lt;span style=&#34;color:#ff6ac1&#34;&gt;==&lt;/span&gt; value:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            new_data &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; data[:feature]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            new_data&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;extend(data[feature&lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;:])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            new_dataset&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;append(new_data)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; new_dataset
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;小实验1：以下将有脚蹼和没有脚蹼的数据集划分出来&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;feature &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; features&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;index(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;flippers&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;with_flipper_dataset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; split_dataset(dataset, feature, &lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Dataset with flippers:&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(with_flipper_dataset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Dataset without flippers:&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;with_flipper_dataset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; split_dataset(dataset, feature, &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(with_flipper_dataset)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;Dataset with flippers:
+[[2, &#39;Flat&#39;, &#39;No&#39;, &#39;duck&#39;]]
+Dataset without flippers:
+[[4, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [4, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [4, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [4, &#39;No&#39;, &#39;Yes&#39;, &#39;dog&#39;], [4, &#39;No&#39;, &#39;Yes&#39;, &#39;dog&#39;], [2, &#39;Sharp&#39;, &#39;No&#39;, &#39;chicken&#39;], [2, &#39;Sharp&#39;, &#39;No&#39;, &#39;chicken&#39;]]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;思考6：怎么表示最好的特征？&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;信息增益：通过观察信息熵的变化求得&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#57c7ff&#34;&gt;select_best_feature&lt;/span&gt;(dataset, features):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    feature_count &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(dataset[&lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;])&lt;span style=&#34;color:#ff6ac1&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    current_entropy &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; calc_entropy(dataset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    feature_selected &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff6ac1&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    best_entropy_gain &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    dataset_size &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(dataset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sub_datasets &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sub_features &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; []
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;range&lt;/span&gt;(feature_count):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        feature_values &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff5c57&#34;&gt;set&lt;/span&gt;([vector[i] &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; vector &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; dataset])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        subset_entropy &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;0.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;  Calculating entropy by splitting dataset with feature[&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{0}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;]&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;format(features[i]))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        subsets &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; {}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; value &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; feature_values:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;    Splitting dataset with feature[&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{0}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;]==&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{1}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;format(features[i], value))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            subset &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; split_dataset(dataset, i, value)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            subsets[value] &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; subset
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            prob &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; (&lt;span style=&#34;color:#ff5c57&#34;&gt;len&lt;/span&gt;(subset)&lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1.0&lt;/span&gt;)&lt;span style=&#34;color:#ff6ac1&#34;&gt;/&lt;/span&gt;dataset_size
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            subset_entropy &lt;span style=&#34;color:#ff6ac1&#34;&gt;+=&lt;/span&gt; prob &lt;span style=&#34;color:#ff6ac1&#34;&gt;*&lt;/span&gt; calc_entropy(subset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;      Subset:&amp;#39;&lt;/span&gt;, subset)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;      Entropy:&amp;#39;&lt;/span&gt;, subset_entropy)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        entropy_gain &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; current_entropy&lt;span style=&#34;color:#ff6ac1&#34;&gt;-&lt;/span&gt;subset_entropy
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;    Entropy gain: &lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;format(entropy_gain))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#ff6ac1&#34;&gt;if&lt;/span&gt; best_entropy_gain &lt;span style=&#34;color:#ff6ac1&#34;&gt;&amp;lt;&lt;/span&gt; entropy_gain:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            best_entropy_gain &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; entropy_gain
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            feature_selected &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; i
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            sub_datasets &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; subsets
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            sub_features &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; features[:feature_selected]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            sub_features&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;extend(features[feature_selected&lt;span style=&#34;color:#ff6ac1&#34;&gt;+&lt;/span&gt;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt;:])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff6ac1&#34;&gt;return&lt;/span&gt; feature_selected, sub_datasets, sub_features
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;小实验2：请在数据全集上运行计算出最优数据特征&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;best_feature, sub_datasets, sub_features &lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt; select_best_feature(dataset, features)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Best feature: &lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;, name: &lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;format(best_feature, features[best_feature]))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; feature_value &lt;span style=&#34;color:#ff6ac1&#34;&gt;in&lt;/span&gt; sub_datasets&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;keys():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Sub dataset with feature[&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;]==&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;{}&lt;/span&gt;&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#ff6ac1&#34;&gt;.&lt;/span&gt;format(features[best_feature], feature_value))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(sub_datasets[feature_value])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#ff5c57&#34;&gt;print&lt;/span&gt;(&lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#39;Sub features: &amp;#39;&lt;/span&gt;, sub_features)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;  Calculating entropy by splitting dataset with feature[legs]
+    Splitting dataset with feature[legs]==2
+      Subset: [[0, &#39;Sharp&#39;, &#39;No&#39;, &#39;chicken&#39;], [0, &#39;Sharp&#39;, &#39;No&#39;, &#39;chicken&#39;], [1, &#39;Flat&#39;, &#39;No&#39;, &#39;duck&#39;]]
+      Entropy: 0.2386928131105548
+    Splitting dataset with feature[legs]==4
+      Subset: [[0, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [0, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [0, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [0, &#39;No&#39;, &#39;Yes&#39;, &#39;dog&#39;], [0, &#39;No&#39;, &#39;Yes&#39;, &#39;dog&#39;]]
+      Entropy: 0.6593251049913401
+    Entropy gain: 0.661563238157982
+  Calculating entropy by splitting dataset with feature[flippers]
+    Splitting dataset with feature[flippers]==0
+      Subset: [[4, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [4, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [4, &#39;No&#39;, &#39;No&#39;, &#39;cat&#39;], [4, &#39;No&#39;, &#39;Yes&#39;, &#39;dog&#39;], [4, &#39;No&#39;, &#39;Yes&#39;, &#39;dog&#39;], [2, &#39;Sharp&#39;, &#39;No&#39;, &#39;chicken&#39;], [2, &#39;Sharp&#39;, &#39;No&#39;, &#39;chicken&#39;]]
+      Entropy: 0.9441181818928854
+    Splitting dataset with feature[flippers]==1
+      Subset: [[2, &#39;Flat&#39;, &#39;No&#39;, &#39;duck&#39;]]
+      Entropy: 0.9441181818928854
+    Entropy gain: 0.3767701612564367
+  Calculating entropy by splitting dataset with feature[beak]
+    Splitting dataset with feature[beak]==No
+      Subset: [[4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;Yes&#39;, &#39;dog&#39;], [4, 0, &#39;Yes&#39;, &#39;dog&#39;]]
+      Entropy: 0.4206322918807853
+    Splitting dataset with feature[beak]==Flat
+      Subset: [[2, 1, &#39;No&#39;, &#39;duck&#39;]]
+      Entropy: 0.4206322918807853
+    Splitting dataset with feature[beak]==Sharp
+      Subset: [[2, 0, &#39;No&#39;, &#39;chicken&#39;], [2, 0, &#39;No&#39;, &#39;chicken&#39;]]
+      Entropy: 0.4206322918807853
+    Entropy gain: 0.9002560512685368
+  Calculating entropy by splitting dataset with feature[swim]
+    Splitting dataset with feature[swim]==No
+      Subset: [[4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;No&#39;, &#39;cat&#39;], [2, 0, &#39;Sharp&#39;, &#39;chicken&#39;], [2, 0, &#39;Sharp&#39;, &#39;chicken&#39;], [2, 1, &#39;Flat&#39;, &#39;duck&#39;]]
+      Entropy: 0.7585531985305136
+    Splitting dataset with feature[swim]==Yes
+      Subset: [[4, 0, &#39;No&#39;, &#39;dog&#39;], [4, 0, &#39;No&#39;, &#39;dog&#39;]]
+      Entropy: 0.7585531985305136
+    Entropy gain: 0.5623351446188085
+Best feature: 2, name: beak
+Sub dataset with feature[beak]==No
+[[4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;No&#39;, &#39;cat&#39;], [4, 0, &#39;Yes&#39;, &#39;dog&#39;], [4, 0, &#39;Yes&#39;, &#39;dog&#39;]]
+Sub features:  [&#39;legs&#39;, &#39;flippers&#39;, &#39;swim&#39;]
+Sub dataset with feature[beak]==Flat
+[[2, 1, &#39;No&#39;, &#39;duck&#39;]]
+Sub features:  [&#39;legs&#39;, &#39;flippers&#39;, &#39;swim&#39;]
+Sub dataset with feature[beak]==Sharp
+[[2, 0, &#39;No&#39;, &#39;chicken&#39;], [2, 0, &#39;No&#39;, &#39;chicken&#39;]]
+Sub features:  [&#39;legs&#39;, &#39;flippers&#39;, &#39;swim&#39;]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;思考7：如果改动数据集会出现什么情况？&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;决策树算法&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%86%b3%e7%ad%96%e6%a0%91%e7%ae%97%e6%b3%95&#34;&gt;
+        #
+    &lt;/a&gt;
+    决策树算法
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h4 id=&#34;算法描述&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ae%97%e6%b3%95%e6%8f%8f%e8%bf%b0&#34;&gt;
+        ###
+    &lt;/a&gt;
+    算法描述：
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;当前数据集是否是确定的某个类型的数据，如果是则不用再对该数据集进行分类&lt;/li&gt;
+&lt;li&gt;在当前数据集上选择最好的特征，通过使用这个特征区分的子数据集拥有最好的信息&lt;/li&gt;
+&lt;li&gt;对各子数据集重复进行上述计算&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;伪代码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bc%aa%e4%bb%a3%e7%a0%81&#34;&gt;
+        ###
+    &lt;/a&gt;
+    伪代码：
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Function CreateTree
+    IF 数据集不用再分割 THEN return 该数据集类别
+    ELSE
+        寻找待分类数据的最好特征
+        划分子数据集
+        创建分支节点
+        for 每个划分的子数据集
+            branchPoint = CreateTree
+        return 分支节点
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;大家动手实现上面的算法，输出一棵树&lt;/strong&gt;&lt;/p&gt;
+&lt;h1 id=&#34;4其他思考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#4%e5%85%b6%e4%bb%96%e6%80%9d%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    4.其他思考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;思考8：数据集有什么样的影响？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考9：数据特征有什么样的影响？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# &amp;#39;meow&amp;#39;:0, &amp;#39;wong&amp;#39;:1, &amp;#39;googooda&amp;#39;:2, &amp;#39;ga&amp;#39;:3
+
+def create_dataset():
+    features = [&amp;#39;legs&amp;#39;, &amp;#39;flippers&amp;#39;, &amp;#39;voice&amp;#39;]
+    dataset = [
+        [4, 0, 0, &amp;#39;cat&amp;#39;],
+        [4, 0, 0, &amp;#39;cat&amp;#39;],
+        [4, 0, 0, &amp;#39;cat&amp;#39;],
+        [4, 0, 1, &amp;#39;dog&amp;#39;],
+        [4, 0, 1, &amp;#39;dog&amp;#39;],
+        [2, 0, 2, &amp;#39;chicken&amp;#39;],
+        [2, 0, 2, &amp;#39;chicken&amp;#39;],
+        [2, 1, 3, &amp;#39;duck&amp;#39;]
+    ]
+    return dataset, features
+&lt;/code&gt;&lt;/pre&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;物种&lt;/th&gt;
+&lt;th&gt;腿的数量&lt;/th&gt;
+&lt;th&gt;有没有脚蹼&lt;/th&gt;
+&lt;th&gt;叫声&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;猫&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;喵喵&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;狗&lt;/td&gt;
+&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;旺旺&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;鸡&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;没有&lt;/td&gt;
+&lt;td&gt;咯咯哒&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;鸭&lt;/td&gt;
+&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;有&lt;/td&gt;
+&lt;td&gt;嘎嘎&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;一种区分方法&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/3.png&#34; alt=&#34;3&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考10：有没有其他方法？&lt;/strong&gt;
+&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/4.png&#34; alt=&#34;4&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;思考11：如果使用前面的算法会得出什么样的结果呢？&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>模型评估指标</title>
+      <link>/2019/03/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</link>
+      <pubDate>Thu, 28 Mar 2019 15:49:48 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/03/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;!--
+精确率
+
+召回率
+
+# AP
+## step1
+
+1. 将检测结果按照confidence排序
+2. 
+--&gt;
+&lt;p&gt;关于mAP这篇文章写得不错：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://medium.com/@chih.sheng.huang821/&#34;&gt;https://medium.com/@chih.sheng.huang821/&lt;/a&gt;深度學習系列-什麼是ap-map-aaf089920848&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2019/03/TP-TF-FP-FN.jpg&#34; alt=&#34;TP-FP-FN-TN&#34;&gt;&lt;/p&gt;
+&lt;p&gt;mAP定义及相关概念mAP: mean Average Precision, 即各类别AP的平均值AP: PR曲线下面积，后文会详细讲解PR曲线: Precision-Recall曲线Precision: TP / (TP + FP)Recall: TP / (TP + FN)TP: IoU&amp;gt;0.5的检测框数量（同一Ground Truth只计算一次）FP: IoU&amp;lt;=0.5的检测框，或者是检测到同一个GT的多余检测框的数量FN: 没有检测到的GT的数量&lt;/p&gt;
+&lt;p&gt;mAP计算示例假设，对于Aeroplane类别，我们网络有以下输出(BB表示BoundingBox序号，IoU&amp;gt;0.5时GT=1)：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;BB  | confidence | GT
+----------------------
+BB1 |  0.9       | 1
+----------------------
+BB2 |  0.9       | 1
+----------------------
+BB1 |  0.8       | 1
+----------------------
+BB3 |  0.7       | 0
+----------------------
+BB4 |  0.7       | 0
+----------------------
+BB5 |  0.7       | 1
+----------------------
+BB6 |  0.7       | 0
+----------------------
+BB7 |  0.7       | 0
+----------------------
+BB8 |  0.7       | 1
+----------------------
+BB9 |  0.7       | 1
+----------------------
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;因此，我们有 TP=5 (BB1, BB2, BB5, BB8, BB9), FP=5 (重复检测到的BB1也算FP)。除了表里检测到的5个GT以外，我们还有2个GT没被检测到，因此: FN = 2. 这时我们就可以按照Confidence的顺序给出各处的PR值，如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;rank=1  precision=1.00 and recall=0.14
+----------
+rank=2  precision=1.00 and recall=0.29
+----------
+rank=3  precision=0.66 and recall=0.29
+----------
+rank=4  precision=0.50 and recall=0.29
+----------
+rank=5  precision=0.40 and recall=0.29
+----------
+rank=6  precision=0.50 and recall=0.43
+----------
+rank=7  precision=0.43 and recall=0.43
+----------
+rank=8  precision=0.38 and recall=0.43
+----------
+rank=9  precision=0.44 and recall=0.57
+----------
+rank=10 precision=0.50 and recall=0.71
+----------
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;作者：知乎用户
+链接：https://www.zhihu.com/question/53405779/answer/419532990
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>机器学习资料收集</title>
+      <link>/2019/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%E6%94%B6%E9%9B%86/</link>
+      <pubDate>Sat, 23 Mar 2019 23:23:28 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%96%99%E6%94%B6%E9%9B%86/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;框架&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%a1%86%e6%9e%b6&#34;&gt;
+        ##
+    &lt;/a&gt;
+    框架
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;tensorflow-models&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#tensorflow-models&#34;&gt;
+        #
+    &lt;/a&gt;
+    Tensorflow models
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;tensorflow官方自带的例子：&lt;a href=&#34;https://github.com/tensorflow/models&#34;&gt;https://github.com/tensorflow/models&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;算法模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%ae%97%e6%b3%95%e6%a8%a1%e5%9e%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    算法模型
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;cnn&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#cnn&#34;&gt;
+        #
+    &lt;/a&gt;
+    CNN
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://cs231n.github.io/neural-networks-case-study/#grad&#34;&gt;CS231n Convolutional Neural Networks for Visual Recognition&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;lstm&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#lstm&#34;&gt;
+        #
+    &lt;/a&gt;
+    LSTM
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://colah.github.io/posts/2015-08-Understanding-LSTMs/&#34;&gt;Understanding LSTM Networks by colah&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;数据集&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%95%b0%e6%8d%ae%e9%9b%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    数据集
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;cv数据集&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#cv%e6%95%b0%e6%8d%ae%e9%9b%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    CV数据集
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Name&lt;/th&gt;
+&lt;th&gt;Link&lt;/th&gt;
+&lt;th&gt;Info&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;ImageNet&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://www.image-net.org/about-stats&#34;&gt;http://www.image-net.org/about-stats&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;~1TB，1400多万幅图片，涵盖2万多个类别，超过百万的图片有明确的类别标注和图像中物体位置的标注&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;COCO&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://cocodataset.org/#home&#34;&gt;http://cocodataset.org/#home&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;~40GB，Common Object in Context&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;PASCAL VOC&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://host.robots.ox.ac.uk/pascal/VOC/voc2012/index.html&#34;&gt;http://host.robots.ox.ac.uk/pascal/VOC/voc2012/index.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;~2GB PASCAL VOC挑战赛是视觉对象的分类识别和检测的一个基准测试，提供了检测算法和学习性能的标准图像注释数据集和标准的评估系统。PASCAL VOC图片集包括20个目录：人类；动物（鸟、猫、牛、狗、马、羊）；交通工具（飞机、自行车、船、公共汽车、小轿车、摩托车、火车）；室内（瓶子、椅子、餐桌、盆栽植物、沙发、电视）。PASCAL VOC挑战赛在2012年后便不再举办，但其数据集图像质量好，标注完备，非常适合用来测试算法性能。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;CIFAR&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://www.cs.toronto.edu/~kriz/cifar.html&#34;&gt;http://www.cs.toronto.edu/~kriz/cifar.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;~170MB CIFAR-10包含10个类别，50,000个训练图像，彩色图像大小：32x32，10,000个测试图像。CIFAR-100与CIFAR-10类似，包含100个类，每类有600张图片，其中500张用于训练，100张用于测试；这100个类分组成20个超类。图像类别均有明确标注。CIFAR对于图像分类算法测试来说是一个非常不错的中小规模数据集。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Open Image&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/openimages/dataset&#34;&gt;https://github.com/openimages/dataset&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;~1.5GB（不包括图片） ，~900万张图像URL的数据集，里面的图片通过标签注释被分为6000多类。该数据集中的标签要比ImageNet（1000类）包含更真实生活的实体存在&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Youtube-8M&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://research.google.com/youtube8m/&#34;&gt;https://research.google.com/youtube8m/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;~1.5TB，来自youtube，共计8百万个视频，总时长50万小时，4800类。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;深度学习数据集收集网站&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://deeplearning.net/datasets/&#34;&gt;http://deeplearning.net/datasets/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Tiny Images Dataset&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://horatio.cs.nyu.edu/mit/tiny/data/index.html&#34;&gt;http://horatio.cs.nyu.edu/mit/tiny/data/index.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;8000万的32x32图像，CIFAR-10和CIFAR-100便是从中挑选的。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;CoPhIR&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://cophir.isti.cnr.it/whatis.html&#34;&gt;http://cophir.isti.cnr.it/whatis.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;雅虎发布的超大Flickr数据集，包含1亿多张图片。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MirFlickr1M&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://press.liacs.nl/mirflickr/&#34;&gt;http://press.liacs.nl/mirflickr/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Flickr数据集中挑选出的100万图像集。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SBU captioned photo dataset&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://dsl1.cewit.stonybrook.edu/~vicente/sbucaptions/&#34;&gt;http://dsl1.cewit.stonybrook.edu/~vicente/sbucaptions/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Flickr的一个子集，包含100万的图像集。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NUS-WIDE&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://lms.comp.nus.edu.sg/research/NUS-WIDE.htm&#34;&gt;http://lms.comp.nus.edu.sg/research/NUS-WIDE.htm&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Flickr中的27万的图像集。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Large-Scale Image Annotation using Visual Synset(ICCV 2011)&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://cpl.cc.gatech.edu/projects/VisualSynset/&#34;&gt;http://cpl.cc.gatech.edu/projects/VisualSynset/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;机器标注的一个超大规模数据集，包含2亿图像。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SUN dataset&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://people.csail.mit.edu/jxiao/SUN/&#34;&gt;http://people.csail.mit.edu/jxiao/SUN/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;包含13万的图像的数据集。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MSRA-MM&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://research.microsoft.com/en-us/projects/msrammdata/&#34;&gt;http://research.microsoft.com/en-us/projects/msrammdata/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;包含100万的图像，23000视频；微软亚洲研究院出品，质量应该有保障。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;LSUN：用于场景理解和多任务辅助（房间布局估计，显着性预测等）&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://lsun.cs.princeton.edu/2016/&#34;&gt;http://lsun.cs.princeton.edu/2016/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Caltech行人检测数据库&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://www.vision.caltech.edu/Image_Datasets/CaltechPedestrians/&#34;&gt;http://www.vision.caltech.edu/Image_Datasets/CaltechPedestrians/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;UMDFaces 人脸数据库&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;http://www.umdfaces.io/&#34;&gt;http://www.umdfaces.io/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;一共8000+个类别，总共36W张人脸图片，标注数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;李子青组的 CASIA-WebFace(50万，1万个人)&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;需申请&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MegaFace&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;华盛顿大学百万人脸MegaFace数据集，60G，邮件申请&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;南洋理工 WLFDB （Weakly Labeled Faces Database ）&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;70万+,6,025&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;微软的MSRA-CFW&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;202792 张, 1583人&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;汤晓欧实验室的CelebA&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;20万+，标注，Large-scale CelebFaces Attributes (CelebA) Dataset&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;FaceScrub&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;100,100张，530人&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;搜狗实验室数据集&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;包括人物、动物、建筑、机械、风景、运动等类别，总数高达2,836,535张图片&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;标注工具&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%a0%87%e6%b3%a8%e5%b7%a5%e5%85%b7&#34;&gt;
+        ##
+    &lt;/a&gt;
+    标注工具
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;nlp-标注工具&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#nlp-%e6%a0%87%e6%b3%a8%e5%b7%a5%e5%85%b7&#34;&gt;
+        #
+    &lt;/a&gt;
+    NLP 标注工具
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;| 工具 | 链接 |
+|&amp;mdash;+&amp;mdash;|
+| BRAT | |&lt;/p&gt;
+&lt;h2 id=&#34;图像标注工具&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%9b%be%e5%83%8f%e6%a0%87%e6%b3%a8%e5%b7%a5%e5%85%b7&#34;&gt;
+        #
+    &lt;/a&gt;
+    图像标注工具
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;| 工具 | 链接 | 描述 |
+|&amp;mdash;+&amp;mdash;+&amp;mdash;|
+| labelImg | &lt;a href=&#34;https://github.com/tzutalin/labelImg&#34;&gt;https://github.com/tzutalin/labelImg&lt;/a&gt; | |
+| BBox-Label-Tool || |
+| Yolo_mark | &lt;a href=&#34;https://github.com/AlexeyAB/Yolo_mark&#34;&gt;https://github.com/AlexeyAB/Yolo_mark&lt;/a&gt; | YOLO v2 标注工具|&lt;/p&gt;
+&lt;h2 id=&#34;视频标注工具&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%a7%86%e9%a2%91%e6%a0%87%e6%b3%a8%e5%b7%a5%e5%85%b7&#34;&gt;
+        #
+    &lt;/a&gt;
+    视频标注工具
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;| 工具 | 链接 |
+|&amp;mdash;+&amp;mdash;|
+| vatic | &lt;a href=&#34;http://web.mit.edu/vondrick/vatic/&#34;&gt;http://web.mit.edu/vondrick/vatic/&lt;/a&gt; |
+| CDVA（compact descriptor for video analysis）||&lt;/p&gt;
+&lt;h1 id=&#34;论文&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%ae%ba%e6%96%87&#34;&gt;
+        ##
+    &lt;/a&gt;
+    论文
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;cv&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#cv&#34;&gt;
+        #
+    &lt;/a&gt;
+    CV
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Title&lt;/th&gt;
+&lt;th&gt;Link&lt;/th&gt;
+&lt;th&gt;Info&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Speed/accuracy trade-offs for modern convolutional object detectors&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://arxiv.org/pdf/1611.10012.pdf&#34;&gt;https://arxiv.org/pdf/1611.10012.pdf&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;nlp&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#nlp&#34;&gt;
+        #
+    &lt;/a&gt;
+    NLP
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.singleye.net/2019/09/nlp-%E8%B5%84%E6%BA%90%E6%95%B4%E7%90%86/&#34;&gt;NLP相关资源&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;书籍&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b9%a6%e7%b1%8d&#34;&gt;
+        ##
+    &lt;/a&gt;
+    书籍
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Title&lt;/th&gt;
+&lt;th&gt;Link&lt;/th&gt;
+&lt;th&gt;Info&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Interpretable machine learning&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://christophm.github.io/interpretable-ml-book/intro.html&#34;&gt;https://christophm.github.io/interpretable-ml-book/intro.html&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;学习资料&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ad%a6%e4%b9%a0%e8%b5%84%e6%96%99&#34;&gt;
+        ##
+    &lt;/a&gt;
+    学习资料
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.deeplearningbook.org&#34;&gt;MIT 经典教程 Deep Learning&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.jianshu.com/p/9bb0bd8597a0&#34;&gt;新手 Python-机器学习 四部曲资源汇总&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/Avik-Jain/100-Days-Of-ML-Code&#34;&gt;100-Days-Of-ML-Code&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>Build Tensorflow v1.7 on NVIDIA Jetson tx2</title>
+      <link>/2018/04/build-tensorflow-v1.7-on-nvidia-jetson-tx2/</link>
+      <pubDate>Thu, 12 Apr 2018 11:06:51 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/04/build-tensorflow-v1.7-on-nvidia-jetson-tx2/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;how-to-install-tensorflow-v17-on-nvidia-jetson-tx2&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#how-to-install-tensorflow-v17-on-nvidia-jetson-tx2&#34;&gt;
+        ##
+    &lt;/a&gt;
+    How to install tensorflow v1.7 on NVIDIA Jetson TX2
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;Tensorflow is a popular machine learning platform and the latest version 1.7 comes out recently. I have a NVIDIA Jetson TX2 development board and I would like to use tensorflow on it, but tensorflow doesn&amp;rsquo;t come along with the Jetpack. Here is what I did to compile one from the source code.&lt;/p&gt;
+&lt;h2 id=&#34;environment&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#environment&#34;&gt;
+        #
+    &lt;/a&gt;
+    Environment
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Platform: NVIDIA Jetson TX2&lt;/li&gt;
+&lt;li&gt;Jetpack: v3.2&lt;/li&gt;
+&lt;li&gt;CUDA: 9.0&lt;/li&gt;
+&lt;li&gt;cuDNN: 7.0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;build-process&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#build-process&#34;&gt;
+        #
+    &lt;/a&gt;
+    Build process
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;step1-upgrade-jetpack&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step1-upgrade-jetpack&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step1: Upgrade Jetpack
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;$ sudo apt-get upgrade&lt;/p&gt;
+&lt;h3 id=&#34;step2-compile-bazelhttpsgithubcombazelbuildbazel&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step2-compile-bazelhttpsgithubcombazelbuildbazel&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step2: Compile &lt;a href=&#34;https://github.com/bazelbuild/bazel&#34;&gt;bazel&lt;/a&gt;
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;I tried 2 ways to build bazel and realized it&amp;rsquo;s far more easier to build the &amp;lsquo;dist&amp;rsquo; version.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Build Bazel&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;On environment not bootstraping with protoc/grpc installed, use the &amp;lsquo;dist&amp;rsquo; distribution.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-dist.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Decompress the source and enter the source root directory, then run the commands below to build bazel:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./compile.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cp output/bazel /usr/local/bin/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;More words about the non-dist version:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you would like to try build from the non-dist version of source code, you can download it from here:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;https://github.com/bazelbuild/bazel/archive/0.11.1.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Building it depends on a bunch of stuffs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/google/protobuf&#34;&gt;protobuf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://netty.io/wiki/forked-tomcat-native.html#wiki-h2-5&#34;&gt;netty-tcnative&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/grpc/grpc-java/blob/master/COMPILING.md&#34;&gt;grpc-java&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;step3-build-tensorflow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step3-build-tensorflow&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step3: Build tensorflow
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;Install python 2.7 dependencies:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo apt-get install python-numpy python-dev python-pip python-wheel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install python 3.x dependencies:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo apt-get install python3-numpy python3-dev python3-pip python3-wheel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Download source:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;wget https://github.com/tensorflow/tensorflow/archive/v1.7.0.tar.gz
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Pre-build configure, here are the settings need to set manually:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Disable Amazon S3 File System support (I have issue of &amp;ldquo;undefined symbol: _ZN3Aws11Environment6GetEnvB5cxx11EPKc&amp;rdquo; while importing tensorflow)&lt;/li&gt;
+&lt;li&gt;Enable &amp;lsquo;CUDA&amp;rsquo; support&lt;/li&gt;
+&lt;li&gt;cuDNN library path: /usr/lib/aarch64-linux-gnu&lt;/li&gt;
+&lt;li&gt;Enable &amp;lsquo;TensorRT&amp;rsquo; and set library path: /usr/lib/aarch64-linux-gnu&lt;/li&gt;
+&lt;li&gt;CUDA compute capability: 6.2&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ./configure
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;You have bazel 0.11.1- &lt;span style=&#34;color:#ff6ac1&#34;&gt;(&lt;/span&gt;@non-git&lt;span style=&#34;color:#ff6ac1&#34;&gt;)&lt;/span&gt; installed.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location of python. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/bin/python&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Found possible Python library paths:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  /usr/local/lib/python2.7/dist-packages
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  /usr/lib/python2.7/dist-packages
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please input the desired Python library path to use.  Default is &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;/usr/local/lib/python2.7/dist-packages&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with jemalloc as malloc support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;jemalloc as malloc support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Google Cloud Platform support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Google Cloud Platform support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Hadoop File System support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Hadoop File System support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Amazon S3 File System support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;: n
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No Amazon S3 File System support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Apache Kafka Platform support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No Apache Kafka Platform support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with XLA JIT support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No XLA JIT support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with GDR support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No GDR support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with VERBS support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No VERBS support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with OpenCL SYCL support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No OpenCL SYCL support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with CUDA support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;: y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;CUDA support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the CUDA SDK version you want to use, e.g. 7.0. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Leave empty to default to CUDA 9.0&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location where CUDA 9.0 toolkit is installed. Refer to README.md &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; more details. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/local/cuda&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the cuDNN version you want to use. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Leave empty to default to cuDNN 7.0&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location where cuDNN &lt;span style=&#34;color:#ff9f43&#34;&gt;7&lt;/span&gt; library is installed. Refer to README.md &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; more details. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/local/cuda&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:/usr/lib/aarch64-linux-gnu/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with TensorRT support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;: y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;TensorRT support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location where TensorRT is installed. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/lib/x86_64-linux-gnu&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:/usr/lib/aarch64-linux-gnu/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please note that each additional compute capability significantly increases your build &lt;span style=&#34;color:#ff5c57&#34;&gt;time&lt;/span&gt; and binary size. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is: 3.5,5.2&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;6.2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you want to use clang as CUDA compiler? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvcc will be used as CUDA compiler.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify which gcc should be used by nvcc as the host compiler. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/bin/gcc&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with MPI support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No MPI support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify optimization flags to use during compilation when bazel option &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;--config=opt&amp;#34;&lt;/span&gt; is specified &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is -march&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;native&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Would you like to interactively configure ./WORKSPACE &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; Android builds? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Not configuring the WORKSPACE &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; Android builds.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Preconfigured Bazel build configs. You can use any of the below by adding &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;--config=&amp;lt;&amp;gt;&amp;#34;&lt;/span&gt; to your build command. See tools/bazel.rc &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; more details.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;mkl            &lt;span style=&#34;color:#78787e&#34;&gt;# Build with MKL support.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;monolithic     &lt;span style=&#34;color:#78787e&#34;&gt;# Config for mostly static monolithic build.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Configuration finished
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Apply patch &lt;a href=&#34;https://github.com/singleye/KnowledgeBase/blob/master/Tensorflow/Jetpack3.2/tensorrt.patch&#34;&gt;Jetpack3.2/tensorrt.patch&lt;/a&gt; if you want TensorRT support.&lt;/p&gt;
+&lt;p&gt;Start the build:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ bazel build --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;opt --local_resources 3072,4.0,1.0 --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;cuda //tensorflow/tools/pip_package:build_pip_package
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After compilation, generate pip package to &amp;rsquo;target&amp;rsquo; directory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ./bazel-bin/tensorflow/tools/pip_package/build_pip_package target
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;easy-usage&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#easy-usage&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Easy usage
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;I&amp;rsquo;ve build out the pip &lt;a href=&#34;https://pan.baidu.com/s/1ORp_FCb-ZR-ZAZoGd8CuRw&#34;&gt;package&lt;/a&gt;, feel free to use it to save some time ;-)&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>在 Nvidia Jetson TX2 上编译安装tensorflow</title>
+      <link>/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/</link>
+      <pubDate>Thu, 14 Sep 2017 00:22:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg&#34; alt=&#34;TX2&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;系统环境&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%b3%bb%e7%bb%9f%e7%8e%af%e5%a2%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    系统环境
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Jetpack：v3.0&lt;/li&gt;
+&lt;li&gt;CUDA：8.0&lt;/li&gt;
+&lt;li&gt;cuDNN：5.1.10&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;编译安装bazel&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85bazel&#34;&gt;
+        ##
+    &lt;/a&gt;
+    编译安装bazel
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;bazel是google开发的一套开发管理工具，功能类似makefile和maven，特点是速度快，编译tensorflow时需要用到这个工具。&lt;/p&gt;
+&lt;p&gt;在TX2上安装bazel需要对bazel源代码做一点修改以支持该平台。下载代码后修改文件 &amp;ldquo;bazel/src/main/java/com/google/devtools/build/lib/util/CPU.java&amp;rdquo;，修改如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public enum CPU {
+  X86_32(&amp;quot;x86_32&amp;quot;, ImmutableSet.of(&amp;quot;i386&amp;quot;, &amp;quot;i486&amp;quot;, &amp;quot;i586&amp;quot;, &amp;quot;i686&amp;quot;, &amp;quot;i786&amp;quot;, &amp;quot;x86&amp;quot;)),
+  X86_64(&amp;quot;x86_64&amp;quot;, ImmutableSet.of(&amp;quot;amd64&amp;quot;, &amp;quot;x86_64&amp;quot;, &amp;quot;x64&amp;quot;)),
+  PPC(&amp;quot;ppc&amp;quot;, ImmutableSet.of(&amp;quot;ppc&amp;quot;, &amp;quot;ppc64&amp;quot;, &amp;quot;ppc64le&amp;quot;)),
+-  ARM(&amp;quot;arm&amp;quot;, ImmutableSet.of(&amp;quot;arm&amp;quot;, &amp;quot;armv7l&amp;quot;)),
++  ARM(&amp;quot;arm&amp;quot;, ImmutableSet.of(&amp;quot;arm&amp;quot;, &amp;quot;armv7l&amp;quot;, &amp;quot;aarch64&amp;quot;)),
+  S390X(&amp;quot;s390x&amp;quot;, ImmutableSet.of(&amp;quot;s390x&amp;quot;, &amp;quot;s390&amp;quot;)),
+  UNKNOWN(&amp;quot;unknown&amp;quot;, ImmutableSet.&amp;lt;String&amp;gt;of());
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;修改好之后在代码目录运行 &amp;ldquo;compile.sh&amp;rdquo; 进行编译，编译好后将程序拷贝到执行环境：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ sudo cp output/bazel /usr/local/bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;安装tensorflow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85tensorflow&#34;&gt;
+        ##
+    &lt;/a&gt;
+    安装tensorflow
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;下载tensorflow源码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%8b%e8%bd%bdtensorflow%e6%ba%90%e7%a0%81&#34;&gt;
+        #
+    &lt;/a&gt;
+    下载tensorflow源码
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;写这篇文章的时候tensorflow已经发展到了v1.3，下载release版本代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ wget https://github.com/tensorflow/tensorflow/archive/v1.3.0.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;编译tensorflow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e8%af%91tensorflow&#34;&gt;
+        #
+    &lt;/a&gt;
+    编译tensorflow
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;配置configure&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;首先configure编译环境：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/tensorflow/tensorflow-1.3.0$ ./configure
+You have bazel 0.4.5- installed.
+Please specify the location of python. [Default is /usr/bin/python]:
+Found possible Python library paths:
+  /usr/local/lib/python2.7/dist-packages
+  /usr/lib/python2.7/dist-packages
+Please input the desired Python library path to use.  Default is [/usr/local/lib/python2.7/dist-packages]
+
+Using python library path: /usr/local/lib/python2.7/dist-packages
+Do you wish to build TensorFlow with MKL support? [y/N]
+No MKL support will be enabled for TensorFlow
+Please specify optimization flags to use during compilation when bazel option &amp;quot;--config=opt&amp;quot; is specified [Default is -march=native]:
+Do you wish to use jemalloc as the malloc implementation? [Y/n]
+jemalloc enabled
+Do you wish to build TensorFlow with Google Cloud Platform support? [y/N]
+No Google Cloud Platform support will be enabled for TensorFlow
+Do you wish to build TensorFlow with Hadoop File System support? [y/N]
+No Hadoop File System support will be enabled for TensorFlow
+Do you wish to build TensorFlow with the XLA just-in-time compiler (experimental)? [y/N]
+No XLA support will be enabled for TensorFlow
+Do you wish to build TensorFlow with VERBS support? [y/N]
+No VERBS support will be enabled for TensorFlow
+Do you wish to build TensorFlow with OpenCL support? [y/N]
+No OpenCL support will be enabled for TensorFlow
+Do you wish to build TensorFlow with CUDA support? [y/N] y
+CUDA support will be enabled for TensorFlow
+Do you want to use clang as CUDA compiler? [y/N]
+nvcc will be used as CUDA compiler
+Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to default to CUDA 8.0]: 8.0
+Please specify the location where CUDA 8.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]:
+Please specify the cuDNN version you want to use. [Leave empty to default to cuDNN 6.0]: 5.1.10
+Please specify the location where cuDNN 5.1.10 library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:
+./configure: line 669: /usr/local/cuda/extras/demo_suite/deviceQuery: No such file or directory
+Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+Please note that each additional compute capability significantly increases your build time and binary size.
+[Default is: &amp;quot;3.5,5.2&amp;quot;]: 6.2
+Do you wish to build TensorFlow with MPI support? [y/N]
+MPI support will not be enabled for TensorFlow
+Configuration finished
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这里主要说一下配置&amp;quot;compute capability&amp;quot;的方法，默认值为&amp;quot;3.5,5.2&amp;quot;，但到底该填写什么值可以通过一个jetpack自带的程序查询出来：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/NVIDIA_CUDA-8.0_Samples/1_Utilities/deviceQuery$ ./deviceQuery
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: &amp;quot;GP10B&amp;quot;
+  CUDA Driver Version / Runtime Version          8.5 / 8.0
+  CUDA Capability Major/Minor version number:    6.2
+  Total amount of global memory:                 7854 MBytes (8235577344 bytes)
+  ( 2) Multiprocessors, (128) CUDA Cores/MP:     256 CUDA Cores
+  GPU Max Clock rate:                            1301 MHz (1.30 GHz)
+  Memory Clock rate:                             13 Mhz
+  Memory Bus Width:                              64-bit
+  L2 Cache Size:                                 524288 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 32768
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            Yes
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
+  Compute Mode:
+     &amp;lt; Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) &amp;gt;
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 8.5, CUDA Runtime Version = 8.0, NumDevs = 1, Device0 = GP10B
+Result = PASS
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;主意上面的内容中有下面一行内容，这行的内容就是&amp;quot;compute capability&amp;quot;：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;CUDA Capability Major/Minor version number:    6.2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;编译tensorflow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行下面的命令进行编译，并指定使用cuda&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/tensorflow$ bazel build --config=opt --config=cuda //tensorflow/tools/pip_package:build_pip_package
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;生成pip安装包&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行完之后会生成pip包生成脚本 &amp;ldquo;./bazel-bin/tensorflow/tools/pip_package/build_pip_package&amp;rdquo;，可以执行这个脚本生成pip安装包：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/tensorflow/tensorflow-1.3.0$ ./bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/tensorflow
+Wed Sep 13 14:41:13 UTC 2017 : === Using tmpdir: /tmp/tmp.F109O2nAzd
+~/tensorflow/tensorflow-1.3.0/bazel-bin/tensorflow/tools/pip_package/build_pip_package.runfiles ~/tensorflow/tensorflow-1.3.0
+~/tensorflow/tensorflow-1.3.0
+/tmp/tmp.F109O2nAzd ~/tensorflow/tensorflow-1.3.0
+Wed Sep 13 14:41:20 UTC 2017 : === Building wheel
+warning: no files found matching &#39;*.dll&#39; under directory &#39;*&#39;
+warning: no files found matching &#39;*.lib&#39; under directory &#39;*&#39;
+warning: no files found matching &#39;*.h&#39; under directory &#39;tensorflow/include/tensorflow&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/Eigen&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/external&#39;
+warning: no files found matching &#39;*.h&#39; under directory &#39;tensorflow/include/google&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/third_party&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/unsupported&#39;
+~/tensorflow/tensorflow-1.3.0
+Wed Sep 13 14:41:52 UTC 2017 : === Output wheel file is in: /home/nvidia/tensorflow
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;安装tensorflow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行下面的命令安装：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ pip install tensorflow-1.3.0-cp27-cp27mu-linux_aarch64.whl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;eigen导致编译错误处理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#eigen%e5%af%bc%e8%87%b4%e7%bc%96%e8%af%91%e9%94%99%e8%af%af%e5%a4%84%e7%90%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    eigen导致编译错误处理
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;在编译tensorflow的过程中碰到了几个问题，主要是由于eigen引起。&lt;/p&gt;
+&lt;h2 id=&#34;错误1-jacobih-has-no-member-named-pmul&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%94%99%e8%af%af1-jacobih-has-no-member-named-pmul&#34;&gt;
+        #
+    &lt;/a&gt;
+    错误1: Jacobi.h has no member named &amp;lsquo;pmul&amp;rsquo;
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;...
+
+In file included from external/eigen_archive/Eigen/Jacobi:27:0,
+                 from external/eigen_archive/Eigen/Eigenvalues:16,
+                 from ./third_party/eigen3/Eigen/Eigenvalues:1,
+                 from tensorflow/core/kernels/self_adjoint_eig_v2_op.cc:19:
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h: In instantiation of &#39;void Eigen::internal::apply_rotation_in_the_plane(Eigen::DenseBase&amp;lt;Derived&amp;gt;&amp;amp;, Eigen::DenseBase&amp;lt;Derived&amp;gt;&amp;amp;, const Eigen::J
+acobiRotation&amp;lt;OtherScalar&amp;gt;&amp;amp;) [with VectorX = Eigen::Block&amp;lt;Eigen::Map&amp;lt;Eigen::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;, 0, Eigen::Stride&amp;lt;0, 0&amp;gt; &amp;gt;, -1, 1, true&amp;gt;; VectorY = Eigen::Block&amp;lt;Eigen::Map&amp;lt;Eige
+n::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;, 0, Eigen::Stride&amp;lt;0, 0&amp;gt; &amp;gt;, -1, 1, true&amp;gt;; OtherScalar = float]&#39;:
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:297:40:   required from &#39;void Eigen::MatrixBase&amp;lt;Derived&amp;gt;::applyOnTheRight(Eigen::Index, Eigen::Index, const Eigen::JacobiRotation&amp;lt;OtherScalar&amp;gt;
+&amp;amp;) [with OtherScalar = float; Derived = Eigen::Map&amp;lt;Eigen::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;, 0, Eigen::Stride&amp;lt;0, 0&amp;gt; &amp;gt;; Eigen::Index = long int]&#39;
+external/eigen_archive/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:861:7:   required from &#39;void Eigen::internal::tridiagonal_qr_step(RealScalar*, RealScalar*, Index, Index, Scalar*, Index)
+ [with int StorageOrder = 0; RealScalar = float; Scalar = std::complex&amp;lt;float&amp;gt;; Index = long int]&#39;
+external/eigen_archive/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:520:87:   required from &#39;Eigen::ComputationInfo Eigen::internal::computeFromTridiagonal_impl(DiagType&amp;amp;, SubDiagType&amp;amp;, Eig
+en::Index, bool, MatrixType&amp;amp;) [with MatrixType = Eigen::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;; DiagType = Eigen::Matrix&amp;lt;float, -1, 1&amp;gt;; SubDiagType = Eigen::Matrix&amp;lt;float, -1, 1&amp;gt;; Eigen::Index =
+long int]&#39;
+
+....
+
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:386:35: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:415:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+       pstore(px, padd(pm.pmul(pc,xi),pcj.pmul(ps,yi)));
+                      ^
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:415:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:416:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+       pstore(py, psub(pcj.pmul(pc,yi),pm.pmul(ps,xi)));
+                      ^
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:416:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+Target //tensorflow/tools/pip_package:build_pip_package failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 2366.425s, Critical Path: 2221.96s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;错误2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl参数错误&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%94%99%e8%af%af2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl%e5%8f%82%e6%95%b0%e9%94%99%e8%af%af&#34;&gt;
+        #
+    &lt;/a&gt;
+    错误2: tensorflow/core/lib/core/threadpool.cc NonBlockingThreadPoolTempl()参数错误
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;ERROR: /home/nvidia/tensorflow/tensorflow-1.3.0/tensorflow/core/BUILD:1244:1: C++ compilation of rule &#39;//tensorflow/core:lib_internal&#39; failed: crosstool_wrapper_driver_is_not_gcc failed: error executing command external/              local_config_cuda/crosstool/clang/bin/crosstool_wrapper_driver_is_not_gcc -U_FORTIFY_SOURCE &#39;-D_FORTIFY_SOURCE=1&#39; -fstack-protector -fPIE -Wall -Wunused-but-set-parameter ... (remaining 115 argument(s) skipped): com.google.devtools.build.lib.shell.BadExitStatusException: Process exited with status 1.
+tensorflow/core/lib/core/threadpool.cc: In constructor &#39;tensorflow::thread::ThreadPool::Impl::Impl(tensorflow::Env*, const tensorflow::ThreadOptions&amp;amp;, const string&amp;amp;, int, bool)&#39;:
+tensorflow/core/lib/core/threadpool.cc:91:56: error: no matching function for call to &#39;Eigen::NonBlockingThreadPoolTempl&amp;lt;tensorflow::thread::EigenEnvironment&amp;gt;::NonBlockingThreadPoolTempl(int&amp;amp;, bool&amp;amp;, tensorflow::thread::              EigenEnvironment)&#39;
+             EigenEnvironment(env, thread_options, name)) {}
+                                                        ^
+In file included from external/eigen_archive/unsupported/Eigen/CXX11/ThreadPool:58:0,
+                 from external/eigen_archive/unsupported/Eigen/CXX11/Tensor:72,
+                 from ./third_party/eigen3/unsupported/Eigen/CXX11/Tensor:1,
+                 from tensorflow/core/lib/core/threadpool.cc:19:
+external/eigen_archive/unsupported/Eigen/CXX11/src/ThreadPool/NonBlockingThreadPool.h:22:3: note: candidate: Eigen::NonBlockingThreadPoolTempl&amp;lt;Environment&amp;gt;::NonBlockingThreadPoolTempl(int, Environment) [with Environment = tensorflow::thread::EigenEnvironment]
+   NonBlockingThreadPoolTempl(int num_threads, Environment env = Environment())
+   ^
+external/eigen_archive/unsupported/Eigen/CXX11/src/ThreadPool/NonBlockingThreadPool.h:22:3: note:   candidate expects 2 arguments, 3 provided
+Target //tensorflow/tools/pip_package:build_pip_package failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 292.433s, Critical Path: 68.80s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;解决方法是使用正确版本的eigen，其中“问题一”是用v3.3.4的eigen可以解决，“问题二”需要使用最新的eigen：&lt;/p&gt;
+&lt;p&gt;修复的方法是编辑&amp;quot;tensorflow/workspace.bzl&amp;quot;，并指定最新的eigen：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  native.new_http_archive(
+      name = &amp;quot;eigen_archive&amp;quot;,
+      #urls = [
+      #    &amp;quot;http://mirror.bazel.build/bitbucket.org/eigen/eigen/get/f3a22f35b044.tar.gz&amp;quot;,
+      #    &amp;quot;https://bitbucket.org/eigen/eigen/get/f3a22f35b044.tar.gz&amp;quot;,
+      #],
+      #sha256 = &amp;quot;ca7beac153d4059c02c8fc59816c82d54ea47fe58365e8aded4082ded0b820c4&amp;quot;,
+      #strip_prefix = &amp;quot;eigen-eigen-f3a22f35b044&amp;quot;,
+      urls = [
+          &amp;quot;https://bitbucket.org/eigen/eigen/get/tip.tar.gz&amp;quot;,
+      ],
+      sha256 = &amp;quot;6fe7af8244ab5d9c314a26bc8615adc61269896cfd66f1ae2cce3d6ee91a5b88&amp;quot;,
+      strip_prefix = &amp;quot;eigen-eigen-034fba127699&amp;quot;,
+      build_file = str(Label(&amp;quot;//third_party:eigen.BUILD&amp;quot;)),
+  )
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其中“sha256”和“strip_prefix”需要根据新的eigen修正。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The Current State of Machine Intelligence (from Shivon Zilis)</title>
+      <link>/2017/09/the-current-state-of-machine-intelligence-from-shivon-zilis/</link>
+      <pubDate>Fri, 01 Sep 2017 14:29:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/09/the-current-state-of-machine-intelligence-from-shivon-zilis/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;看到几张描绘近几年来机器学习领域的行业版图：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.oreilly.com/ideas/the-current-state-of-machine-intelligence-3-0&#34;&gt;&amp;ldquo;The Current State of Machine Intelligence 3.0&amp;rdquo;&lt;/a&gt; published in 2016 by &lt;a href=&#34;http://www.shivonzilis.com&#34;&gt;Shivon Zilis&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://format-com-cld-res.cloudinary.com/image/private/s--c_G81ApD--/c_crop,h_2250,w_3000,x_0,y_0/c_fill,g_center,h_855,w_1140/a_auto,fl_keep_iptc.progressive,q_95/Machine_Intelligence_Landscape_2015-05-28_2_zh0pbb.png&#34; alt=&#34;The Current State of Machine Intelligence 3.0&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.oreilly.com/ideas/the-current-state-of-machine-intelligence-2-0&#34;&gt;&amp;ldquo;The current state of machine intelligence 2.0&amp;rdquo;&lt;/a&gt; published in 2015 by &lt;a href=&#34;http://www.shivonzilis.com&#34;&gt;Shivon Zilis&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://format-com-cld-res.cloudinary.com/image/private/s--XrGmu9XK--/c_crop,h_2250,w_3000,x_0,y_0/c_fill,g_center,h_855,w_1140/a_auto,fl_keep_iptc.progressive,q_95/v1/d8404d830b489d7a87eaefc35063a8a7/MI-Landscape-2_0-R10.jpg&#34; alt=&#34;The current state of machine intelligence 2.0&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;The Current State of Machine Intelligence&amp;rdquo; published in 2014 by &lt;a href=&#34;http://www.shivonzilis.com&#34;&gt;Shivon Zilis&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://format-com-cld-res.cloudinary.com/image/private/s--LpKDjJvM--/c_crop,h_1500,w_2000,x_0,y_0/c_fill,g_center,h_855,w_1140/a_auto,fl_keep_iptc.progressive,q_95/v1/19575bcc040a6dcff3097618ec9c585e/MI-Landscape-3_7.png&#34; alt=&#34;The Current State of Machine Intelligence&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>tensorflow playground</title>
+      <link>/2017/02/tensorflow-playground/</link>
+      <pubDate>Sat, 18 Feb 2017 17:39:21 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/02/tensorflow-playground/</guid>
+      <description>&lt;p&gt;Tensorflow playground，感受一下machine learning的奇特之处：&lt;a href=&#34;http://playground.tensorflow.org&#34;&gt;http://playground.tensorflow.org&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

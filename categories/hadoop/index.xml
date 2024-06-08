@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hadoop on singleye</title>
+    <link>/categories/hadoop/</link>
+    <description>singleye (Hadoop)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sat, 23 Dec 2017 15:38:37 +0800</lastBuildDate>
+    
+    <atom:link href="/categories/hadoop/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Horwonworks HDP 2.6安装过程</title>
+      <link>/2017/12/horwonworks-hdp-2.6%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</link>
+      <pubDate>Sat, 23 Dec 2017 15:38:37 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/12/horwonworks-hdp-2.6%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B/</guid>
+      <description>&lt;h1 id=&#34;安装ambari-server&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85ambari-server&#34;&gt;
+        ##
+    &lt;/a&gt;
+    安装ambari-server
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;# yum install ambari-server
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;配置ambari-cluster&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%85%8d%e7%bd%aeambari-cluster&#34;&gt;
+        ##
+    &lt;/a&gt;
+    配置ambari cluster
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;# ambari-server setup
+# ambari-server start
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;配置cluster&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%85%8d%e7%bd%aecluster&#34;&gt;
+        ##
+    &lt;/a&gt;
+    配置cluster
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;步骤1:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;将clsuter中的所有node设置成ssh免密码登录了的方式。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤2:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;访问 http://&amp;lt;ambari-server&amp;gt;:8080&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤3:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;设置cluster名称&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-001.png&#34; alt=&#34;001&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤4:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;配置安装源，可以使用私有源：&lt;/p&gt;
+&lt;p&gt;HDP私有源：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://hdp-repo.iwaterdata.com:7300/HDP/centos7/2.x/updates/2.6.3.0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;HDP-UTILS私有源：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://hdp-repo.iwaterdata.com:7300/HDP-UTILS-1.1.0.21/repos/centos7
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-002.png&#34; alt=&#34;002&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤5:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;安装程序检查配置节点&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-003.png&#34; alt=&#34;003&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤6:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;选择安装软件列表&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-004.png&#34; alt=&#34;004&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤7:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;设置各软件的配置信息&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-005.png&#34; alt=&#34;005&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤8:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;安装完成后程序会尝试启动各服务，有可能启动会失败（比如内存不足无法启动所有程序），只要确定程序正确安装可以继续&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-006.png&#34; alt=&#34;006&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;misc&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#misc&#34;&gt;
+        ##
+    &lt;/a&gt;
+    misc
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;设置JDBC driver(Customize service中 oozie需要)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

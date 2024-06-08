@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Beego开发入门 - singleye</title>
+
+<meta name="description" content="## 安装 安装beego： $ go get github.com/astaxie/beego 安装bee开发工具： $ go get github.com/beego/bee $ bee Bee is a Fast and Flexible tool for managing your Beego Web Application.">
+
+
+    <meta name="keywords" content="Go,Beego">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">Beego开发入门</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-11-30">2017-11-30</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/11/beego%E5%BC%80%E5%8F%91%E5%85%A5%E9%97%A8/">/2017/11/beego%E5%BC%80%E5%8F%91%E5%85%A5%E9%97%A8/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/programming/">Programming</a></li>
+                
+                    
+                    <li><a href="/categories/go/">Go</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/go/">#Go</a></li>
+                
+                    
+                    <li><a href="/tags/beego/">#Beego</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#创建项目">创建项目</a>
+      <ul>
+        <li><a href="#mvc类网页项目">MVC类网页项目</a></li>
+        <li><a href="#web-service类项目">Web service类项目</a></li>
+      </ul>
+    </li>
+    <li><a href="#运行项目">运行项目</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#route">Route</a></li>
+    <li><a href="#controller">Controller</a>
+      <ul>
+        <li><a href="#get方法">Get()方法：</a></li>
+      </ul>
+    </li>
+    <li><a href="#view">View</a></li>
+    <li><a href="#model">Model</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <h1 id="安装" >
+<div>
+    <a href="#%e5%ae%89%e8%a3%85">
+        ##
+    </a>
+    安装
+</div>
+</h1>
+<ul>
+<li>安装beego：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ go get github.com/astaxie/beego</span></span></code></pre></div>
+<ul>
+<li>安装bee开发工具：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ go get github.com/beego/bee
+</span></span><span style="display:flex;"><span>$ bee
+</span></span><span style="display:flex;"><span>Bee is a Fast and Flexible tool <span style="color:#007020;font-weight:bold">for</span> managing your Beego Web Application.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>USAGE
+</span></span><span style="display:flex;"><span>    bee <span style="color:#007020">command</span> <span style="color:#666">[</span>arguments<span style="color:#666">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>AVAILABLE COMMANDS
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    version     Prints the current Bee version
+</span></span><span style="display:flex;"><span>    migrate     Runs database migrations
+</span></span><span style="display:flex;"><span>    api         Creates a Beego API application
+</span></span><span style="display:flex;"><span>    bale        Transforms non-Go files to Go <span style="color:#007020">source</span> files
+</span></span><span style="display:flex;"><span>    fix         Fixes your application by making it compatible with newer versions of Beego
+</span></span><span style="display:flex;"><span>    dlv         Start a debugging session using Delve
+</span></span><span style="display:flex;"><span>    dockerize   Generates a Dockerfile <span style="color:#007020;font-weight:bold">for</span> your Beego application
+</span></span><span style="display:flex;"><span>    generate    Source code generator
+</span></span><span style="display:flex;"><span>    hprose      Creates an RPC application based on Hprose and Beego frameworks
+</span></span><span style="display:flex;"><span>    new         Creates a Beego application
+</span></span><span style="display:flex;"><span>    pack        Compresses a Beego application into a single file
+</span></span><span style="display:flex;"><span>    rs          Run customized scripts
+</span></span><span style="display:flex;"><span>    run         Run the application by starting a <span style="color:#007020">local</span> development server
+</span></span><span style="display:flex;"><span>    server      serving static content over HTTP on port
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Use bee <span style="color:#007020">help</span> <span style="color:#666">[</span>command<span style="color:#666">]</span> <span style="color:#007020;font-weight:bold">for</span> more information about a command.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ADDITIONAL HELP TOPICS
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Use bee <span style="color:#007020">help</span> <span style="color:#666">[</span>topic<span style="color:#666">]</span> <span style="color:#007020;font-weight:bold">for</span> more information about that topic.</span></span></code></pre></div>
+<h1 id="基本使用" >
+<div>
+    <a href="#%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8">
+        ##
+    </a>
+    基本使用
+</div>
+</h1>
+<h2 id="创建项目" >
+<div>
+    <a href="#%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae">
+        #
+    </a>
+    创建项目
+</div>
+</h2>
+<h3 id="mvc类网页项目" >
+<div>
+    <a href="#mvc%e7%b1%bb%e7%bd%91%e9%a1%b5%e9%a1%b9%e7%9b%ae">
+        ##
+    </a>
+    MVC类网页项目
+</div>
+</h3>
+<p>创建普通的web服务类项目使用&rsquo;bee new&rsquo;命令，这类项目遵循通常的MVC代码架构。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ bee new test/beego/bee/hello
+</span></span><span style="display:flex;"><span>______
+</span></span><span style="display:flex;"><span>| ___ <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>| |_/ /  ___   ___
+</span></span><span style="display:flex;"><span>| ___ <span style="color:#4070a0;font-weight:bold">\ </span>/ _ <span style="color:#4070a0;font-weight:bold">\ </span>/ _ <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>| |_/ /|  __/|  __/
+</span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold">\_</span>___/  <span style="color:#4070a0;font-weight:bold">\_</span>__| <span style="color:#4070a0;font-weight:bold">\_</span>__| v1.9.1
+</span></span><span style="display:flex;"><span>2017/11/30 18:50:07 WARN     ▶ <span style="color:#40a070">0001</span> You current workdir is not inside <span style="color:#bb60d5">$GOPATH</span>/src.
+</span></span><span style="display:flex;"><span>2017/11/30 18:50:07 INFO     ▶ <span style="color:#40a070">0002</span> Creating application...
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/conf/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/controllers/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/models/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/routers/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/tests/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/static/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/static/js/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/static/css/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/static/img/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/views/
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/conf/app.conf
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/controllers/default.go
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/views/index.tpl
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/routers/router.go
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/tests/default_test.go
+</span></span><span style="display:flex;"><span>        create   Your_GOPATH/src/test/beego/bee/hello/main.go
+</span></span><span style="display:flex;"><span>2017/11/30 18:50:07 SUCCESS  ▶ <span style="color:#40a070">0003</span> New application successfully created!</span></span></code></pre></div>
+<h3 id="web-service类项目" >
+<div>
+    <a href="#web-service%e7%b1%bb%e9%a1%b9%e7%9b%ae">
+        ##
+    </a>
+    Web service类项目
+</div>
+</h3>
+<p>如果项目是web service类型的则可以使用&rsquo;bee api&rsquo;来创建，这类项目创建完后比&rsquo;bee new&rsquo;类的项目省略&rsquo;static&rsquo;及&rsquo;views&rsquo;目录部分的内容。</p>
+<h2 id="运行项目" >
+<div>
+    <a href="#%e8%bf%90%e8%a1%8c%e9%a1%b9%e7%9b%ae">
+        #
+    </a>
+    运行项目
+</div>
+</h2>
+<p>使用bee运行项目也非常简单，直接在项目代码目录下运行&rsquo;bee run&rsquo;即可，运行完后</p>
+<p><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>$ bee run
+</span></span><span style="display:flex;"><span>______
+</span></span><span style="display:flex;"><span>| ___ <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>| |_/ /  ___   ___
+</span></span><span style="display:flex;"><span>| ___ <span style="color:#4070a0;font-weight:bold">\ </span>/ _ <span style="color:#4070a0;font-weight:bold">\ </span>/ _ <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>| |_/ /|  __/|  __/
+</span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold">\_</span>___/  <span style="color:#4070a0;font-weight:bold">\_</span>__| <span style="color:#4070a0;font-weight:bold">\_</span>__| v1.9.1
+</span></span><span style="display:flex;"><span>2017/11/30 19:11:02 INFO     ▶ <span style="color:#40a070">0001</span> Using <span style="color:#4070a0">&#39;hello&#39;</span> as <span style="color:#4070a0">&#39;appname&#39;</span>
+</span></span><span style="display:flex;"><span>2017/11/30 19:11:02 INFO     ▶ <span style="color:#40a070">0002</span> Initializing watcher...
+</span></span><span style="display:flex;"><span>2017/11/30 19:11:03 SUCCESS  ▶ <span style="color:#40a070">0003</span> Built Successfully!
+</span></span><span style="display:flex;"><span>2017/11/30 19:11:03 INFO     ▶ <span style="color:#40a070">0004</span> Restarting <span style="color:#4070a0">&#39;hello&#39;</span>...
+</span></span><span style="display:flex;"><span>2017/11/30 19:11:03 SUCCESS  ▶ <span style="color:#40a070">0005</span> <span style="color:#4070a0">&#39;./hello&#39;</span> is running...
+</span></span><span style="display:flex;"><span>2017/11/30 19:11:03 <span style="color:#666">[</span>I<span style="color:#666">]</span> <span style="color:#666">[</span>asm_amd64.s:2337<span style="color:#666">]</span> http server Running on http://:8080</span></span></code></pre></div>
+<img src="https://beego.me/docs/images/beerun.png" alt="bee run"></p>
+<h1 id="进阶开发" >
+<div>
+    <a href="#%e8%bf%9b%e9%98%b6%e5%bc%80%e5%8f%91">
+        ##
+    </a>
+    进阶开发
+</div>
+</h1>
+<h2 id="route" >
+<div>
+    <a href="#route">
+        #
+    </a>
+    Route
+</div>
+</h2>
+<p>项目创建后的router文件在“routers/router.go”</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">package</span> routers
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#4070a0">&#34;wangq/test/beego/bee/hello/controllers&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#4070a0">&#34;github.com/astaxie/beego&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> <span style="color:#06287e">init</span>() {
+</span></span><span style="display:flex;"><span>    beego.<span style="color:#06287e">Router</span>(<span style="color:#4070a0">&#34;/&#34;</span>, <span style="color:#666">&amp;</span>controllers.MainController{})
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></td></tr></table>
+</div>
+</div>
+<p>创建一条router记录的方法是调用“beego.Router”方法，并提供两个参数：</p>
+<ul>
+<li>URI：请求的URI记录，比如&quot;/&quot;</li>
+<li>Controller：处理该请求的Controller</li>
+</ul>
+<h2 id="controller" >
+<div>
+    <a href="#controller">
+        #
+    </a>
+    Controller
+</div>
+</h2>
+<p>bee创建的项目controller位于“controllers/default.go”文件中。</p>
+<div class="highlight"><div style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">package</span> controllers
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>        <span style="color:#4070a0">&#34;github.com/astaxie/beego&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">type</span> MainController <span style="color:#007020;font-weight:bold">struct</span> {
+</span></span><span style="display:flex;"><span>        beego.Controller
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">func</span> (c <span style="color:#666">*</span>MainController) <span style="color:#06287e">Get</span>() {
+</span></span><span style="display:flex;"><span>        c.Data[<span style="color:#4070a0">&#34;Website&#34;</span>] = <span style="color:#4070a0">&#34;beego.me&#34;</span>
+</span></span><span style="display:flex;"><span>        c.Data[<span style="color:#4070a0">&#34;Email&#34;</span>] = <span style="color:#4070a0">&#34;astaxie@gmail.com&#34;</span>
+</span></span><span style="display:flex;"><span>        c.TplName = <span style="color:#4070a0">&#34;index.tpl&#34;</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></td></tr></table>
+</div>
+</div>
+<p>项目的&rsquo;MainController&rsquo;继承自&rsquo;beego.Controller&rsquo;，&lsquo;beego.Controller&rsquo;中定义了interface &lsquo;ControllerInterface&rsquo;用于处理HTTP请求，这些接口包括&quot;Init, Prepare, Post, Get, Delete, Head&quot;等，因此&rsquo;MainController&rsquo;可以通过实现这些方法来处理相应的请求。</p>
+<p>在默认创建的controller中包括了&rsquo;Get()&lsquo;方法，该方法用来处理HTTP &lsquo;GET&rsquo;请求。</p>
+<h3 id="get方法" >
+<div>
+    <a href="#get%e6%96%b9%e6%b3%95">
+        ##
+    </a>
+    Get()方法：
+</div>
+</h3>
+<ul>
+<li>
+<p>c.Data: 处理方法主要是利用&rsquo;c.Data&rsquo;这个map（数据类型为：map[interface{}]interface{}）来存放返回的数据，其中的信息可以被template引用并render。</p>
+</li>
+<li>
+<p>c.TplName: 指定template文件名字，如果不指定这个名字那么beego会尝试使用&rsquo;controller/method_name.tpl&rsquo;名字的文件作为模版。</p>
+</li>
+</ul>
+<h2 id="view" >
+<div>
+    <a href="#view">
+        #
+    </a>
+    View
+</div>
+</h2>
+<p>beego使用go内建的html/template模版引擎，可以参考这个<a href="https://github.com/Unknwon/build-web-application-with-golang_EN/blob/master/eBook/07.4.md">使用方法</a>。</p>
+<p>下面是例子模版，其中&rsquo;{{.Website}}&lsquo;及&rsquo;{{.Email}}&lsquo;是通过Controller的Data map提供给模版的参数。</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>&lt;body&gt;
+</span></span><span style="display:flex;"><span>  &lt;header&gt;
+</span></span><span style="display:flex;"><span>    &lt;h1 <span style="color:#bb60d5">class</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;logo&#34;</span>&gt;Welcome to Beego&lt;/h1&gt;
+</span></span><span style="display:flex;"><span>    &lt;div <span style="color:#bb60d5">class</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;description&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      Beego is a simple &amp; powerful Go web framework which is inspired by tornado and sinatra.
+</span></span><span style="display:flex;"><span>    &lt;/div&gt;
+</span></span><span style="display:flex;"><span>  &lt;/header&gt;
+</span></span><span style="display:flex;"><span>  &lt;footer&gt;
+</span></span><span style="display:flex;"><span>    &lt;div <span style="color:#bb60d5">class</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;author&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      Official website:
+</span></span><span style="display:flex;"><span>      &lt;a <span style="color:#bb60d5">href</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;http://{{.Website}}&#34;</span>&gt;<span style="color:#666">{{</span>.Website<span style="color:#666">}}</span>&lt;/a&gt; /
+</span></span><span style="display:flex;"><span>      Contact me:
+</span></span><span style="display:flex;"><span>      &lt;a <span style="color:#bb60d5">class</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;email&#34;</span> <span style="color:#bb60d5">href</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;mailto:{{.Email}}&#34;</span>&gt;<span style="color:#666">{{</span>.Email<span style="color:#666">}}</span>&lt;/a&gt;
+</span></span><span style="display:flex;"><span>    &lt;/div&gt;
+</span></span><span style="display:flex;"><span>  &lt;/footer&gt;
+</span></span><span style="display:flex;"><span>  &lt;div <span style="color:#bb60d5">class</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;backdrop&#34;</span>&gt;&lt;/div&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  &lt;script <span style="color:#bb60d5">src</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;/static/js/reload.min.js&#34;</span>&gt;&lt;/script&gt;
+</span></span><span style="display:flex;"><span>&lt;/body&gt;
+</span></span><span style="display:flex;"><span>&lt;/html&gt;</span></span></code></pre></div>
+<h2 id="model" >
+<div>
+    <a href="#model">
+        #
+    </a>
+    Model
+</div>
+</h2>
+<p>GO语言相关的几个常用数据库支持如下：</p>
+<ul>
+<li>MySQL：github.com/go-sql-driver/mysql</li>
+<li>PostgreSQL：github.com/lib/pq</li>
+<li>Sqlite3：github.com/mattn/go-sqlite3</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"></code></pre></div>
+<h1 id="beego架构" >
+<div>
+    <a href="#beego%e6%9e%b6%e6%9e%84">
+        ##
+    </a>
+    beego架构
+</div>
+</h1>
+<p><a href="http://astaxie.me/beego/tutorial/hello.html">工作流程</a>：
+<img src="http://astaxie.me/beego/images/beegojiegou.png" alt="architecture"></p>
+<p><a href="https://beego.me/docs/mvc/">详细执行流程</a>：
+<img src="https://beego.me/docs/images/detail.png" alt="Detail work flow"></p>
+<h1 id="参考" >
+<div>
+    <a href="#%e5%8f%82%e8%80%83">
+        ##
+    </a>
+    参考
+</div>
+</h1>
+<ul>
+<li><a href="http://astaxie.me/beego/tutorial/hello.html#!overview">beego应用框架之入门</a></li>
+</ul>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/2017/11/go%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/">GO开发技巧</a></li>
+                
+                <li><a href="/2017/11/go%E8%AF%AD%E8%A8%80%E4%B8%ADnew%E4%B8%8Emake%E7%9A%84%E6%AF%94%E8%BE%83/">Go语言中new与make的比较</a></li>
+                
+                <li><a href="/2017/11/go%E8%AF%AD%E8%A8%80%E4%B8%ADarray%E4%B8%8Eslice%E7%9A%84%E6%AF%94%E8%BE%83/">GO语言中array与slice的比较</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

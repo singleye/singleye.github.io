@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Neural Network on singleye</title>
+    <link>/post/machinelearning/neuralnetwork/</link>
+    <description>singleye (Neural Network)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 06 Jun 2024 09:26:40 +0800</lastBuildDate>
+    
+    <atom:link href="/post/machinelearning/neuralnetwork/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>基于 Kalman filter 的目标跟踪</title>
+      <link>/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/</link>
+      <pubDate>Thu, 06 Jun 2024 09:26:40 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/MachineLearning/object_tracking_kalman_filter/demo.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用卡尔曼滤波进行目标跟踪的数学原理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e8%bf%9b%e8%a1%8c%e7%9b%ae%e6%a0%87%e8%b7%9f%e8%b8%aa%e7%9a%84%e6%95%b0%e5%ad%a6%e5%8e%9f%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用卡尔曼滤波进行目标跟踪的数学原理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;卡尔曼滤波器（Kalman Filter）是一种递归估计方法，广泛应用于目标跟踪中。其核心思想是在动态系统中利用先验信息、测量数据和系统模型来估计目标状态。卡尔曼滤波器特别适用于线性系统和高斯噪声环境。&lt;/p&gt;
+&lt;h3 id=&#34;1-卡尔曼滤波的基本概念&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e7%9a%84%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1. 卡尔曼滤波的基本概念
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;卡尔曼滤波器的工作过程可以分为两个阶段：预测（Prediction）和更新（Update）。在预测阶段，基于系统模型对下一个时刻的状态进行预测。在更新阶段，利用新的测量数据对预测结果进行修正。下面将详细介绍卡尔曼滤波器的数学原理。&lt;/p&gt;
+&lt;h3 id=&#34;2-卡尔曼滤波的数学模型&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#2-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e7%9a%84%e6%95%b0%e5%ad%a6%e6%a8%a1%e5%9e%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    2. 卡尔曼滤波的数学模型
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;h4 id=&#34;21-状态方程和测量方程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#21-%e7%8a%b6%e6%80%81%e6%96%b9%e7%a8%8b%e5%92%8c%e6%b5%8b%e9%87%8f%e6%96%b9%e7%a8%8b&#34;&gt;
+        ###
+    &lt;/a&gt;
+    2.1 状态方程和测量方程
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;卡尔曼滤波器假设系统的状态可以用以下线性差分方程来描述：&lt;/p&gt;
+$$
+\[
+x_k = A x_{k-1} + B u_{k-1} + w_{k-1} 
+\]
+$$
+&lt;p&gt;其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\( $x_k$ \) 是系统在时刻 \( $k$ \) 的状态向量。&lt;/li&gt;
+&lt;li&gt;\( $A$ \) 是状态转移矩阵，描述了系统从时刻 \( $k-1$ \) 到时刻 \( $k$ \) 的状态转移关系。&lt;/li&gt;
+&lt;li&gt;\( $B$ \) 是控制输入矩阵，描述了控制输入 \( $u_{k-1}$ \) 对系统的影响。&lt;/li&gt;
+&lt;li&gt;\( $w_{k-1}$ \) 是过程噪声，假设其满足高斯分布，均值为零，协方差为 \( $Q$ \)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;测量方程描述了测量值与系统状态之间的关系：&lt;/p&gt;
+$$
+\[ 
+z_k = H x_k + v_k 
+\]
+$$
+&lt;p&gt;其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;\( $z_k$ \) 是时刻 \( $k$ \) 的测量向量。&lt;/li&gt;
+&lt;li&gt;\( $H$ \) 是测量矩阵，描述了系统状态到测量值的映射关系。&lt;/li&gt;
+&lt;li&gt;\( $v_k$ \) 是测量噪声，假设其满足高斯分布，均值为零，协方差为 \( $R$ \)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;22-卡尔曼滤波器的递归过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#22-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e5%99%a8%e7%9a%84%e9%80%92%e5%bd%92%e8%bf%87%e7%a8%8b&#34;&gt;
+        ###
+    &lt;/a&gt;
+    2.2 卡尔曼滤波器的递归过程
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;卡尔曼滤波器的递归过程包括预测和更新两个阶段。&lt;/p&gt;
+&lt;h5 id=&#34;预测阶段&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%a2%84%e6%b5%8b%e9%98%b6%e6%ae%b5&#34;&gt;
+        ####
+    &lt;/a&gt;
+    预测阶段
+&lt;/div&gt;
+&lt;/h5&gt;
+&lt;p&gt;在预测阶段，根据当前状态估计和控制输入，对下一时刻的状态进行预测：&lt;/p&gt;
+$$ \hat{x}_{k|k-1} = A \hat{x}_{k-1|k-1} + B u_{k-1} $$
+&lt;p&gt;同时，预测状态协方差：&lt;/p&gt;
+$$
+\[ 
+P_{k|k-1} = A P_{k-1|k-1} A^T + Q 
+\]
+$$
+&lt;h5 id=&#34;更新阶段&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%9b%b4%e6%96%b0%e9%98%b6%e6%ae%b5&#34;&gt;
+        ####
+    &lt;/a&gt;
+    更新阶段
+&lt;/div&gt;
+&lt;/h5&gt;
+&lt;p&gt;在更新阶段，利用新的测量数据对预测状态进行修正。首先计算卡尔曼增益：&lt;/p&gt;
+$$
+\[ 
+K_k = P_{k|k-1} H^T (H P_{k|k-1} H^T + R)^{-1} 
+\]
+$$
+&lt;p&gt;然后更新状态估计：&lt;/p&gt;
+$$
+\[ 
+\hat{x}_{k|k} = \hat{x}_{k|k-1} + K_k (z_k - H \hat{x}_{k|k-1}) 
+\]
+$$
+&lt;p&gt;最后更新状态协方差：&lt;/p&gt;
+$$
+\[ 
+P_{k|k} = (I - K_k H) P_{k|k-1} 
+\]
+$$
+&lt;h3 id=&#34;3-卡尔曼滤波器在目标跟踪中的应用&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#3-%e5%8d%a1%e5%b0%94%e6%9b%bc%e6%bb%a4%e6%b3%a2%e5%99%a8%e5%9c%a8%e7%9b%ae%e6%a0%87%e8%b7%9f%e8%b8%aa%e4%b8%ad%e7%9a%84%e5%ba%94%e7%94%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    3. 卡尔曼滤波器在目标跟踪中的应用
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;在目标跟踪中，卡尔曼滤波器可以用来估计目标的位置信息（例如位置、速度）。假设目标在二维平面上运动，我们可以定义状态向量为：&lt;/p&gt;
+$$
+\[ 
+x_k = \begin{bmatrix} x \\ y \\ a \\ h \\ v_x \\ v_y \\ v_a \\ v_h \end{bmatrix} 
+\]
+$$
+&lt;p&gt;其中 \( x \) 和 \( y \) 是目标的框的位置，\( a \) 和 \( h \) 是目标的大小比例（如宽高比），\( $v_x$ \) 和 \( $v_y$ \) 是目标框的运动速度，\( $v_a$ \) 和 \( $v_h$ \) 是目标框的大小比例变化速度。状态转移矩阵 \( A \) 和测量矩阵 \( H \) 可以定义为：&lt;/p&gt;
+&lt;h4 id=&#34;状态转移矩阵--a-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%8a%b6%e6%80%81%e8%bd%ac%e7%a7%bb%e7%9f%a9%e9%98%b5--a-&#34;&gt;
+        ###
+    &lt;/a&gt;
+    状态转移矩阵 \( A \)：
+&lt;/div&gt;
+&lt;/h4&gt;
+$$
+\[ 
+A = \begin{matrix} 
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 
+\end{matrix} 
+\]
+$$
+&lt;h4 id=&#34;测量矩阵--h-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b5%8b%e9%87%8f%e7%9f%a9%e9%98%b5--h-&#34;&gt;
+        ###
+    &lt;/a&gt;
+    测量矩阵 \( H \)：
+&lt;/div&gt;
+&lt;/h4&gt;
+$$
+\[ 
+H = \begin{bmatrix} 
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 
+\end{bmatrix} 
+\]
+$$
+&lt;h4 id=&#34;过程噪声协方差矩阵--q-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%bf%87%e7%a8%8b%e5%99%aa%e5%a3%b0%e5%8d%8f%e6%96%b9%e5%b7%ae%e7%9f%a9%e9%98%b5--q-&#34;&gt;
+        ###
+    &lt;/a&gt;
+    过程噪声协方差矩阵 \( Q \):
+&lt;/div&gt;
+&lt;/h4&gt;
+$$
+\[ 
+Q = \text{np.eye}(8) * 0.1 
+\]
+$$
+&lt;h4 id=&#34;预测协方差矩阵&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%a2%84%e6%b5%8b%e5%8d%8f%e6%96%b9%e5%b7%ae%e7%9f%a9%e9%98%b5&#34;&gt;
+        ###
+    &lt;/a&gt;
+    预测协方差矩阵：
+&lt;/div&gt;
+&lt;/h4&gt;
+$$
+\[ 
+P = A P_{k-1|k-1} A^T + Q 
+\]
+$$
+&lt;h3 id=&#34;4-实例分析&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#4-%e5%ae%9e%e4%be%8b%e5%88%86%e6%9e%90&#34;&gt;
+        ##
+    &lt;/a&gt;
+    4. 实例分析
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;假设我们在每个时刻测量到目标的位置 \( ($x_k$, $y_k$) \)，利用上述卡尔曼滤波算法可以对目标的位置和速度进行估计和跟踪。&lt;/p&gt;
+&lt;h4 id=&#34;41-初始化&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#41-%e5%88%9d%e5%a7%8b%e5%8c%96&#34;&gt;
+        ###
+    &lt;/a&gt;
+    4.1 初始化
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;初始状态估计：&lt;/p&gt;
+$$
+\[ 
+\hat{x}_0 = \begin{bmatrix} x_0 \\\ y_0 \\\ a_0 \\\ h_0 \\\ v_{x0} \\\ v_{y0} \\\ v_{a0} \\\ v_{h0} \end{bmatrix} 
+\]
+$$
+&lt;p&gt;初始状态协方差：&lt;/p&gt;
+$$
+\[ 
+P_0 = \begin{bmatrix} 
+\sigma_x^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; \sigma_y^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; \sigma_a^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; \sigma_h^2 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; \sigma_{vx}^2 &amp; 0 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; \sigma_{vy}^2 &amp; 0 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; \sigma_{va}^2 &amp; 0 \\\ 
+0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; \sigma_{vh}^2 
+\end{bmatrix} 
+\]
+$$
+&lt;h4 id=&#34;42-迭代过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#42-%e8%bf%ad%e4%bb%a3%e8%bf%87%e7%a8%8b&#34;&gt;
+        ###
+    &lt;/a&gt;
+    4.2 迭代过程
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;在每个时间步，通过上述预测和更新步骤迭代计算得到目标的状态估计和协方差。&lt;/p&gt;
+&lt;h3 id=&#34;5-结论&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#5-%e7%bb%93%e8%ae%ba&#34;&gt;
+        ##
+    &lt;/a&gt;
+    5. 结论
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;卡尔曼滤波器在目标跟踪中的应用非常广泛，特别是在噪声环境中具有良好的鲁棒性。通过结合系统模型和测量数据，卡尔曼滤波器能够有效地估计和跟踪目标的状态。理解其数学原理和实现细节，对于实际工程应用具有重要意义。&lt;/p&gt;
+&lt;p&gt;代码： &lt;a href=&#34;https://github.com/singleye/object_tracking_kalman_filter&#34;&gt;https://github.com/singleye/object_tracking_kalman_filter&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>softmax输出层公式推导及代码实验</title>
+      <link>/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</link>
+      <pubDate>Mon, 02 Oct 2017 02:11:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：
+&lt;ul&gt;
+&lt;li&gt;使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i + (1-y_i) \ln (1-a_i)] $&lt;/li&gt;
+&lt;li&gt;使用softmax和log-likelyhood代价函数作为输出层&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &amp;hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &amp;hellip; y_n | X) $，其中y1, &amp;hellip; yn之间相互关联，且总和为1。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。&lt;/p&gt;
+&lt;h1 id=&#34;softmax定义&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#softmax%e5%ae%9a%e4%b9%89&#34;&gt;
+        ##
+    &lt;/a&gt;
+    softmax定义：
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;div&gt;
+$$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$
+&lt;/div&gt;
+&lt;p&gt;将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个神经元的输出为正数，并且输出数值介于0-1之间。&lt;/li&gt;
+&lt;li&gt;所有神经元的输出总和为1。&lt;/li&gt;
+&lt;li&gt;某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。&lt;/li&gt;
+&lt;li&gt;softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下图展示了softmax层工作的基本原理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/how_softmax_works.png?x-oss-process=style/png2jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;应用场景&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    应用场景：
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;从softmax的定义知道所有输出神经元的总和为1，因此softmax可以用在预测在多种可能性中只有一个结果的场景，比如mnist手写判定。&lt;/p&gt;
+&lt;h1 id=&#34;softmax输出层组成的神经网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#softmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bb%84%e6%88%90%e7%9a%84%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    softmax输出层组成的神经网络
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;下面的图展示了一个简单的softmax输出层神经网络，中间层依然使用sigmoid。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg&#34; alt=&#34;softmax NN&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;代价函数c&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0c&#34;&gt;
+        #
+    &lt;/a&gt;
+    代价函数C
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;为了解决在学习过程中出现的速度问题使用log-likelihood代价函数，函数定义为：&lt;/p&gt;
+$$ C=-\sum_i^m y_i \ln a_i $$
+&lt;p&gt;关于实际应用这个等式需要解释一下。假设softmax输出层有4个输出，预测a值为(0.1, 0.2, 0.3, 0.4)，实际结果y为(0, 1, 0, 0)，那么这个等式为 $C = -(0\ln(0.1) + 1\ln(0.2) + 0\ln(0.3) + 0\ln(0.4))$，可以看出来因为0的存在可以让这个等式只保留实际结果为真（1）的项。这时可以把等式简化为：&lt;/p&gt;
+$$ C=-\ln a_i | y_i=1 $$
+&lt;h2 id=&#34;用反向传播进行梯度下降&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%94%a8%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%bf%9b%e8%a1%8c%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d&#34;&gt;
+        #
+    &lt;/a&gt;
+    用反向传播进行梯度下降
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;反向传播算法要求几个关键值：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$ \delta_i^L $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial C}{\partial w_{ij}^L} $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial C}{\partial b_{i}^L} $&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果输出层使用softmax时，最后一层（L层）的相应值与使用sigmoid的情况有些不同，下面对使用softmax是的这3个值进行推导。&lt;/p&gt;
+&lt;h3 id=&#34;求解-delta_il--a_il---y_i-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e8%a7%a3-delta_il--a_il---y_i-&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求解$ \delta_i^L = ({a_i^L} - y_i) $
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;过程如下：&lt;/p&gt;
+&lt;div&gt;
+$$ {\delta_i^L} = {\frac {\partial C}{\partial z_{i}^L}} = {\frac {\partial }{\partial z_{i}^L}} (-\sum_k^m y_k \ln {a_k^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(\sum_k^m y_k {1 \over {a_k^L}} {\frac {\partial {a_k^L}}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(y_i {1 \over a_i^L} \frac {\partial a_i^L}{\partial z_{i}^L} + \sum_{k \neq i}^m y_k {1 \over a_k^L} {\frac {\partial a_k^L}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i {1 \over a_i^L} {a_i^L(1-a_i^L)} + \sum_{k \neq i}^m y_k {1 \over a_k^L} (-{a_i^L}{a_k^L}) )$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i (1-a_i^L) - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {y_i a_i^L} - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {a_i^L}{\sum_{k=1}^m y_k})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = ({a_i^L} - y_i)$$
+&lt;/div&gt;
+&lt;h3 id=&#34;求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-%e7%9a%84%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial w_{ij}^L}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\delta_i^L} {a_j^{L-1}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}}$$
+&lt;/div&gt;
+&lt;h3 id=&#34;求-frac-partial-cpartial-b_il--a_il---y_i-的过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82-frac-partial-cpartial-b_il--a_il---y_i-%e7%9a%84%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;div&gt;
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial b_{i}^L}}$$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\delta_i^L} = ({a_i^L} - y_i) $$
+&lt;/div&gt;
+&lt;p&gt;以上求解过程中用了两个重要的计算等式:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $&lt;/li&gt;
+&lt;li&gt;$ \frac {\partial a_j} {\partial {z_i}} = -{a_i \cdot a_j} | i \neq j$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面对这两个等式进行推导：&lt;/p&gt;
+&lt;h4 id=&#34;求导情况1--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b51--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-&#34;&gt;
+        ###
+    &lt;/a&gt;
+    求导情况1: $ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-acaf14aac554ab61ff6f32845fd5128e_b.png&#34; alt=&#34;i==j&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结论：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $$
+&lt;ul&gt;
+&lt;li&gt;推导过程：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \frac {\partial a_i} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_i}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1){\frac {\partial}{\partial z_i}({e^{z_i}})} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }})^2$$
+$$ = a_i - (a_i)^2 $$
+$$ = a_i \cdot (1- a_i) $$
+&lt;/div&gt;
+&lt;h4 id=&#34;求导情况2--frac-partial-a_j-partial-z_i---a_i-cdot-a_j&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b52--frac-partial-a_j-partial-z_i---a_i-cdot-a_j&#34;&gt;
+        ###
+    &lt;/a&gt;
+    求导情况2: $ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-f09fb0c50194f6cc0828fc285eb9bc1c_b.png&#34; alt=&#34;i neq j&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结论：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$$
+&lt;ul&gt;
+&lt;li&gt;推导过程：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \frac {\partial a_j} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_j} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_j}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_j}}$$
+$$ = 0 \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1) \cdot \frac {\partial}{\partial z_i}e^{z_i} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot e^{z_i} \cdot {e^{z_j}}$$
+$$ = - {e^{z_i} \over {\sum_{k=1}^m e^{z_k}}} \cdot {{e^{z_j}} \over {\sum_{k=1}^m e^{z_k}}}$$
+$$ = -a_i \cdot a_j$$
+&lt;/div&gt;
+&lt;h2 id=&#34;sigmoid隐藏层与softmax输出层网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#sigmoid%e9%9a%90%e8%97%8f%e5%b1%82%e4%b8%8esoftmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bd%91%e7%bb%9c&#34;&gt;
+        #
+    &lt;/a&gt;
+    sigmoid隐藏层与softmax输出层网络
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;按照下图的拓扑构成的网络使用sigmoid进行隐藏层计算，使用softmax进行输出层计算，那么怎么进行网络训练呢？其实方法一样都是按照前馈网络计算代价值进行评估，使用反向传播算法进行梯度下降。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg&#34; alt=&#34;softmax NN&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;前馈网络计算步骤&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%89%8d%e9%a6%88%e7%bd%91%e7%bb%9c%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    前馈网络计算步骤：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;在隐藏层的计算时使用sigmoid&lt;/li&gt;
+&lt;li&gt;在最后输出层使用softmax&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;反向传播计算步骤&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4&#34;&gt;
+        ##
+    &lt;/a&gt;
+    反向传播计算步骤：
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;计算输出层，计算最后一层softmax输出层的下列值：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \delta_i^L = ({a_i^L} - y_i) $$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} = \delta_i^L \cdot a_j^{L-1} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) =\delta_i^L $$
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;计算隐藏层，反向一层一层计算sigmoid隐藏层的下列值：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$ \delta_j^{l-1} = (\sum_{k=1}^m {\delta_k^l \cdot w_{kj}}) \cdot { a_j^{l-1} (1 - a_j^{l-1}) } $$
+$$ \frac {\partial C}{\partial w_{ij}^l} = \delta_i^{l} \cdot a_j^{l-1} $$
+$$ \frac {\partial C}{\partial b_{i}^l} = \delta_i^{l} $$
+&lt;/div&gt;
+&lt;p&gt;计算过程中可以发现只有最后一层的$ \delta_i^L$计算较为特殊，计算权重和偏置的方法与之前的sigmoid构成的网络一致。&lt;/p&gt;
+&lt;h1 id=&#34;代码实例&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e7%a0%81%e5%ae%9e%e4%be%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    代码实例
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;下面的例子实验一个输入层有4个输入，隐藏层有5个神经元并且使用sigmoid激活函数，输出层有2个神经元并使用softmax激活函数的网络，拓扑如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/experiment-softmax.jpg&#34; alt=&#34;拓扑&#34;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# construct the network
+
+# input layer: 4 inputs
+# hidden layer: 5 neurons with sigmoid as activate function
+# * weight: 4x5 matrices
+# * bias: 1x5 matrices
+# output layer: 2 neurons with softmax as activate function
+# * weight: 5x2 matrices
+# * bias: 1x2 matrices
+
+# initialize the weight/bias of the hidden layer (2nd layer)
+w2 = np.random.rand(4, 5)
+b2 = np.random.rand(1, 5)
+
+# initialize the weight/bias of the output layer (3rd layer) 
+w3 = np.random.rand(5, 2)
+b3 = np.random.rand(1, 2)
+num_epochs = 10000
+eta = 0.1
+
+x=[]
+y=[]
+
+# training process
+for i in xrange(num_epochs):
+    # feed forward
+    z2 = np.dot(input, w2) + b2
+    a2 = sigmoid(z2)
+
+    z3 = np.dot(a2, w3) + b3
+    #z3 = np.dot(a2, w3)
+    a3 = softmax(z3)
+    
+    if i%1000 == 0:
+        print &amp;quot;Perception&amp;quot;, a3
+        print &amp;quot;W2&amp;quot;, w2
+        print &amp;quot;B2&amp;quot;, b2
+        print &amp;quot;W3&amp;quot;, w3
+        print &amp;quot;B3&amp;quot;, b3
+
+    x.append(i)
+    y.append(cost(a3, output))
+
+    delta_l3 = a3 - output
+    deriv_w3 = np.dot(a2.T, delta_l3)
+    deriv_b3 = delta_l3
+    w3 -= eta*deriv_w3
+    b3 -= eta*np.mean(deriv_b3, 0)
+    
+    delta_l2 = np.dot(delta_l3, w3.T)*(a2*(1-a2))
+    deriv_w2 = np.dot(input.T, delta_l2)
+    deriv_b2 = delta_l2
+    w2 -= eta*deriv_w2
+    b2 -= eta*np.mean(deriv_b2, 0)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-cost.png&#34; alt=&#34;训练代价&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/Softmax/experiment-softmax.ipynb&#34;&gt;完整代码&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://neuralnetworksanddeeplearning.com/chap3.html#softmax&#34;&gt;http://neuralnetworksanddeeplearning.com/chap3.html#softmax&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/25723112&#34;&gt;https://zhuanlan.zhihu.com/p/25723112&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://colah.github.io/posts/2015-09-Visual-Information/&#34;&gt;http://colah.github.io/posts/2015-09-Visual-Information/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>神经网络之反向传播算法</title>
+      <link>/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Mon, 25 Sep 2017 15:44:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;之前使用神经网络算法的时候并没有认真总结关键的算法，虽然可以用但总觉得不爽，于是这两天对神经网络算法中的反向传播（Back Propagation）进行了推导。即理解了算法的数学本质，也对神经网络算法的工程特性有了深刻体会，工程算法真的是以解决问题为驱动的，追求的是解决问题的实用性。&lt;/p&gt;
+&lt;h1 id=&#34;神经网络&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c&#34;&gt;
+        ##
+    &lt;/a&gt;
+    神经网络
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;网络拓扑&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bd%91%e7%bb%9c%e6%8b%93%e6%89%91&#34;&gt;
+        #
+    &lt;/a&gt;
+    网络拓扑
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neural-network.jpg&#34; alt=&#34;神经网络&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;神经元&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83&#34;&gt;
+        #
+    &lt;/a&gt;
+    神经元
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;神经元是神经网络的基本构成，上图的每一个圆圈代表了一个神经元。每一个神经元有一个输入和一个输出，神经元的作用是对输入值进行计算。下图是一个神经元的简单示意图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron.jpg&#34; alt=&#34;神经元&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;该神经元的输出：$ a=f(z)=sigmoid(z) $&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;神经元输入&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83%e8%be%93%e5%85%a5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    神经元输入
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;在一个复杂点的神经网络中，一个神经元接收来自多个前级神经元的激活输出，并进行加权相加后产生该神经元的输入值，这个过程示意图如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-input.jpg&#34; alt=&#34;neuron-input&#34;&gt;&lt;/p&gt;
+&lt;p&gt;定义第 $ l^{th} $ 层第 $ j^{th} $ 个神经元的输入：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-input-equation.png&#34; alt=&#34;神经元输入&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;神经元加权&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83%e5%8a%a0%e6%9d%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    神经元加权
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;神经元的加权结构可以看下面的示意图：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-weight.jpg&#34; alt=&#34;neuron-weight&#34;&gt;&lt;/p&gt;
+&lt;p&gt;注，第一层神经元的输入就是采样数据，不需要计算z值，这层采样数据直接通过权重计算输入到第二层的神经元。&lt;/p&gt;
+&lt;h1 id=&#34;反向传播算法&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e7%ae%97%e6%b3%95&#34;&gt;
+        ##
+    &lt;/a&gt;
+    反向传播算法
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;代价函数&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0&#34;&gt;
+        #
+    &lt;/a&gt;
+    代价函数
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;定义代价函数：$ cost = {1 \over 2} \sum (y^{(i)} - a^{(i)})^2 $&lt;/p&gt;
+&lt;h2 id=&#34;神经元错误量--delta_jl-&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83%e9%94%99%e8%af%af%e9%87%8f--delta_jl-&#34;&gt;
+        #
+    &lt;/a&gt;
+    神经元错误量 $ \delta_j^{(l)} $
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;每个神经元的输入记为&amp;rsquo;z&amp;rsquo;，经过激活函数&amp;rsquo;f(z)&amp;lsquo;生成激活值&amp;rsquo;a&amp;rsquo;，通常情况下激活函数使用sigmoid()。那么假设对于每个神经元的输入&amp;rsquo;z&amp;rsquo;做一点微小的改变记为 $ \Delta z $，由这个改变引起的代价变化记为这个神经元的错误量 $ \delta_j^{(l)} $，从这个定义可以看出来这是一个代价函数相对于神经元的输入&amp;rsquo;z&amp;rsquo;的偏导数。&lt;/p&gt;
+&lt;p&gt;定义 $ \delta_j^{(l)} $ 为 $ l^{th} $ 层中的第 $ j^{th} $ 个神经元的错误量，记作：$ \delta_j^{(l)} =\frac{\partial C}{\partial z_j^{(l)}} $&lt;/p&gt;
+&lt;p&gt;经过数学推导可以得出结论：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最后一层（L层）第j个神经元的错误量：&lt;/li&gt;
+&lt;/ul&gt;
+$$ \delta_j^{(L)} = -(y-a_j^{(L)}) \bigodot [a_j^{(L)}(1-a_j^{(L)})] $$
+&lt;p&gt;简单推导若成如下：&lt;/p&gt;
+$$ \delta_j^{(L)} = \frac{\partial C}{\partial z_j^{(l)}} $$
+$$ \frac{\partial C}{\partial z_j^{(l)}} = \frac{\partial C}{\partial a_j^{(L)}} \frac{\partial a_j^{(L)}}{\partial z_j^{(L)}} $$
+$$ \frac{\partial C}{\partial a_j^{(L)}} \frac{\partial a_j^{(L)}}{\partial z_j^{(L)}} = -(y-a_j^{(L)}) \bigodot [a_j^{(L)}(1-a_j^{(L)})] $$
+&lt;p&gt;y：采样的结果&lt;/p&gt;
+&lt;p&gt;$ a_j^{(L)} $：样本输入计算的结果&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;其余各层(l层)第j个神经元的错误量：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/delta-layer-l.png&#34; alt=&#34;delta-equation&#34;&gt;&lt;/p&gt;
+&lt;p&gt;因为首先可以算出来每一层的激活量 $ a_j^{(l)} $，那么可以看出来除了最后一层外的其他层的错误量可以靠后面一层的错误量计算出来，直至推算到最后一层 $ \delta_j^{(L)} $。&lt;/p&gt;
+&lt;p&gt;因此反向传播算法也就是从最后一层往前一层一层计算的过程，与计算激活量的方向正好相反，因此得名反向传播。&lt;/p&gt;
+&lt;h2 id=&#34;权重调整及偏置调整&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%9d%83%e9%87%8d%e8%b0%83%e6%95%b4%e5%8f%8a%e5%81%8f%e7%bd%ae%e8%b0%83%e6%95%b4&#34;&gt;
+        #
+    &lt;/a&gt;
+    权重调整及偏置调整
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;观察每个神经元的输入可以发现神经网络计算过程中最重要的是要确定两个量权重w和偏置b。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-input-equation.png&#34; alt=&#34;神经元输入&#34;&gt;&lt;/p&gt;
+&lt;p&gt;仿照错误量计算方法将问题进行一下转化，是否可以计算出代价函数相对于权重和偏置的变化速率（偏微分），然后通过乘以一个小数字（学习速率）来一点一点降低代价函数的输出，从而逼近最终需要的权重及偏置值呢？&lt;/p&gt;
+&lt;p&gt;因此可以将问题转化为求 $ \frac{\partial C}{\partial w_{jk}^{(l)}} $ 和 $ \frac{\partial C}{\partial b_j^{(l)}} $&lt;/p&gt;
+&lt;p&gt;通过推导可以得出：&lt;/p&gt;
+$$ \frac{\partial C}{\partial w_{jk}^{(l)}} = \delta_j^{(l+1)} a_k^{(l)} $$
+$$ \frac{\partial C}{\partial b_{jk}^{(l)}} = \delta_j^{(l)} $$
+&lt;p&gt;基于前面对于错误量 $ \delta_j^{(l)} $ 就可以非常简单的得到相应的结果。&lt;/p&gt;
+&lt;p&gt;那么最终对于权重及偏置的调整可以这样做：&lt;/p&gt;
+$$ w = w-\eta \frac{\partial C}{\partial w_{jk}^{(l)}} $$
+$$ b = b-\eta \frac{\partial C}{\partial b_{jk}^{(l)}} $$
+&lt;p&gt;其中 $ \eta $ 是一个非常小的正数，这个数字也被叫做“学习速率”，通过这个值的调整可以控制拟合的速度。&lt;/p&gt;
+&lt;h1 id=&#34;推导过程&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%8e%a8%e5%af%bc%e8%bf%87%e7%a8%8b&#34;&gt;
+        ##
+    &lt;/a&gt;
+    推导过程
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;前面的部分直接使用了结论，实际推到过程比较啰嗦，markdown直接编写公式也不方便，索性把推到过程的草稿贴出来参考好了&lt;/p&gt;
+&lt;p&gt;:-)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/derivation-process.JPG?x-oss-process=style/png2jpg&#34; alt=&#34;推导过程&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;实验代码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%9e%e9%aa%8c%e4%bb%a3%e7%a0%81&#34;&gt;
+        ##
+    &lt;/a&gt;
+    实验代码
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;做一个简单的神经网络实验，网络设计为3层，第一层对应3个输入，第二层用4个神经元，第三层为输出层使用1个神经元。&lt;/p&gt;
+&lt;p&gt;网络初始化过程如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# network design:
+# input(layer_1): 3 nodes
+#    weights: 3x4 matrix
+# layer_2: 4 nodes
+#    weights: 4x1 matrix
+# output: 1 node
+
+# create training data
+input = np.array([[0, 0, 1],
+                 [0, 1, 0],
+                 [0, 1, 1],
+                 [1, 0, 0],
+                 [1, 0, 1]])
+
+# create the label related with the input training data
+output = np.array([[0],
+                  [1],
+                  [0],
+                  [1],
+                  [1]])
+
+# initialize random weight
+weight_layer_1 = np.random.rand(3, 4)
+weight_layer_2 = np.random.rand(4, 1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;训练过程主要代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# x/y is for drawing chart
+x=[]
+y=[]
+
+# learning rate
+eta = 0.1
+
+loop = 0
+while loop &amp;lt; 50000:
+    # feed forward calculation
+    z_layer_2 = np.dot(input, weight_layer_1)
+    a_layer_2 = sigmoid(z_layer_2)
+
+    z_layer_3 = np.dot(a_layer_2, weight_layer_2)
+    a_layer_3 = sigmoid(z_layer_3)
+    
+    if loop % 100 == 0:
+        # calculate the cost
+        c = cost(output, a_layer_3)
+        print &amp;quot;[%d] Cost: %f&amp;quot; % (loop, c)
+        print &amp;quot;Perception: &amp;quot;, a_layer_3
+        x.append(loop)
+        y.append(c)
+    loop += 1
+    
+    # back propagation
+    # calculate delta_3
+    delta_layer_3 = cost_derivative(output, a_layer_3)*deriv_z(a_layer_3)
+    
+    # calculate delta_2
+    delta_layer_2 = np.dot(delta_layer_3, weight_layer_2.T)*deriv_z(a_layer_2)
+    
+    # there is NO delta_layer_1, since layer1 is the input layer
+
+    # calculate new weight for layer 2
+    weight_layer_2 -= eta*np.dot(a_layer_2.T, delta_layer_3)
+    
+    # calculate new weight for layer 1
+    weight_layer_1 -= eta*np.dot(input.T, delta_layer_2)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;上面代码可以观察到每100次计算修正后的代价函数输出以及预测值，可以发现代价值在逐渐趋近于0，说明误差在降低，预测值越来越接近实际采样的数值。&lt;/p&gt;
+&lt;p&gt;为了更加清晰的看到这个过程，把x/y输出在图上进行查看，可以观察到拟合过程，并且可以看到拟合的速度变化情况。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;import matplotlib.pyplot as plt
+plt.plot(x, y)
+plt.xlabel(&amp;quot;Epoch&amp;quot;)
+plt.ylabel(&amp;quot;Cost&amp;quot;)
+plt.show()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/cost-epoch.png&#34; alt=&#34;拟合过程&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/BackPropagation/experiment-back-propagation.ipynb&#34;&gt;完整代码&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=mOmkv5SI9hU&amp;amp;list=PLLssT5z_DsK-h9vYZkQkYNWcItqhlRJLN&amp;amp;index=52&#34;&gt;https://www.youtube.com/watch?v=mOmkv5SI9hU&amp;amp;list=PLLssT5z_DsK-h9vYZkQkYNWcItqhlRJLN&amp;amp;index=52&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.cnblogs.com/charlotte77/p/5629865.html&#34;&gt;http://www.cnblogs.com/charlotte77/p/5629865.html&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>神经网络实践：自动驾驶</title>
+      <link>/2017/08/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/</link>
+      <pubDate>Thu, 17 Aug 2017 20:01:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/08/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;最近学习了下神经网络，于是写了一个开车的小游戏，然后训练了一个6层神经网络自己驾驶练练手。&lt;/p&gt;
+&lt;p&gt;代码实现主要用了pygame和numpy，网络有7个输入分别对应小车前面的7个距离探头数据，2个输出进行转向输出。&lt;/p&gt;
+&lt;embed&gt;
+&lt;div class=&#34;td-player&#34;&gt;&lt;object type=&#34;application/x-shockwave-flash&#34; id=&#34;CustomPlayer&#34; data=&#34;http://static.youku.com/v20170420.0/v/custom/upsplayer/player.swf&#34; width=&#34;480&#34; height=&#34;400&#34;&gt;&lt;param name=&#34;menu&#34; value=&#34;false&#34;&gt;&lt;param name=&#34;scale&#34; value=&#34;noScale&#34;&gt;&lt;param name=&#34;allowFullscreen&#34; value=&#34;true&#34;&gt;&lt;param name=&#34;allowFullScreenInteractive&#34; value=&#34;true&#34;&gt;&lt;param name=&#34;allownetworking&#34; value=&#34;all&#34;&gt;&lt;param name=&#34;allowScriptAccess&#34; value=&#34;always&#34;&gt;&lt;param name=&#34;bgcolor&#34; value=&#34;#000000&#34;&gt;&lt;param name=&#34;wmode&#34; value=&#34;transparent&#34;&gt;&lt;param name=&#34;flashvars&#34; value=&#34;playerId=tdnws&amp;amp;autoPlay=true&amp;amp;skin=http://static.youku.com/v20170420.0/v/custom/upsplayer/skin/tdnws.swf&amp;amp;lang=td&amp;amp;vcode=XMjk3NjU0MTcwNA==&amp;amp;cna=JUIjEjtGCjoCAWVQ1%2BAkCtoY&amp;amp;ytid=-1&amp;amp;winType=interior&amp;amp;adext=&#34;&gt;&lt;/object&gt;&lt;div class=&#34;td-player__html5&#34; id=&#34;player_noflash&#34;&gt;&lt;div class=&#34;td-player__html5__skin&#34;&gt;&lt;div class=&#34;td-player__html5__con&#34;&gt;&lt;span class=&#34;td-player__html5__txt&#34;&gt;您还没有安装flash播放器,请点击 &lt;a href=&#34;//www.adobe.com/go/getflash&#34; target=&#34;_blank&#34;&gt;这里&lt;/a&gt; 安装&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/embed&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

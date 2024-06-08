@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Collate on singleye</title>
+    <link>/tags/collate/</link>
+    <description>singleye (Collate)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Tue, 23 Jan 2018 11:20:33 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/collate/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mysql charset/collation字符编码设置</title>
+      <link>/2018/01/mysql-charset/collation%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE/</link>
+      <pubDate>Tue, 23 Jan 2018 11:20:33 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/01/mysql-charset/collation%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE/</guid>
+      <description>&lt;p&gt;mysql在创建数据库时有两个跟字符编码相关的参数&amp;quot;character set&amp;quot;和&amp;quot;collate&amp;quot;，这里解释一下这两个参数的作用。&lt;/p&gt;
+&lt;h2 id=&#34;character-set&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#character-set&#34;&gt;
+        #
+    &lt;/a&gt;
+    character set
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;**“character set”**很容易解释，就是指定字符在存储到mysql中时使用的编码集。数据库支持哪些编码可以通过&amp;quot;show character set&amp;quot;获得。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+mysql&gt; show character set;
++----------+-----------------------------+---------------------+--------+
+| Charset  | Description                 | Default collation   | Maxlen |
++----------+-----------------------------+---------------------+--------+
+| big5     | Big5 Traditional Chinese    | big5_chinese_ci     |      2 |
+| dec8     | DEC West European           | dec8_swedish_ci     |      1 |
+| cp850    | DOS West European           | cp850_general_ci    |      1 |
+| hp8      | HP West European            | hp8_english_ci      |      1 |
+| koi8r    | KOI8-R Relcom Russian       | koi8r_general_ci    |      1 |
+| latin1   | cp1252 West European        | latin1_swedish_ci   |      1 |
+| latin2   | ISO 8859-2 Central European | latin2_general_ci   |      1 |
+| swe7     | 7bit Swedish                | swe7_swedish_ci     |      1 |
+| ascii    | US ASCII                    | ascii_general_ci    |      1 |
+| ujis     | EUC-JP Japanese             | ujis_japanese_ci    |      3 |
+| sjis     | Shift-JIS Japanese          | sjis_japanese_ci    |      2 |
+| hebrew   | ISO 8859-8 Hebrew           | hebrew_general_ci   |      1 |
+| tis620   | TIS620 Thai                 | tis620_thai_ci      |      1 |
+| euckr    | EUC-KR Korean               | euckr_korean_ci     |      2 |
+| koi8u    | KOI8-U Ukrainian            | koi8u_general_ci    |      1 |
+| gb2312   | GB2312 Simplified Chinese   | gb2312_chinese_ci   |      2 |
+| greek    | ISO 8859-7 Greek            | greek_general_ci    |      1 |
+| cp1250   | Windows Central European    | cp1250_general_ci   |      1 |
+| gbk      | GBK Simplified Chinese      | gbk_chinese_ci      |      2 |
+| latin5   | ISO 8859-9 Turkish          | latin5_turkish_ci   |      1 |
+| armscii8 | ARMSCII-8 Armenian          | armscii8_general_ci |      1 |
+| utf8     | UTF-8 Unicode               | utf8_general_ci     |      3 |
+| ucs2     | UCS-2 Unicode               | ucs2_general_ci     |      2 |
+| cp866    | DOS Russian                 | cp866_general_ci    |      1 |
+| keybcs2  | DOS Kamenicky Czech-Slovak  | keybcs2_general_ci  |      1 |
+| macce    | Mac Central European        | macce_general_ci    |      1 |
+| macroman | Mac West European           | macroman_general_ci |      1 |
+| cp852    | DOS Central European        | cp852_general_ci    |      1 |
+| latin7   | ISO 8859-13 Baltic          | latin7_general_ci   |      1 |
+| utf8mb4  | UTF-8 Unicode               | utf8mb4_general_ci  |      4 |
+| cp1251   | Windows Cyrillic            | cp1251_general_ci   |      1 |
+| utf16    | UTF-16 Unicode              | utf16_general_ci    |      4 |
+| utf16le  | UTF-16LE Unicode            | utf16le_general_ci  |      4 |
+| cp1256   | Windows Arabic              | cp1256_general_ci   |      1 |
+| cp1257   | Windows Baltic              | cp1257_general_ci   |      1 |
+| utf32    | UTF-32 Unicode              | utf32_general_ci    |      4 |
+| binary   | Binary pseudo charset       | binary              |      1 |
+| geostd8  | GEOSTD8 Georgian            | geostd8_general_ci  |      1 |
+| cp932    | SJIS for Windows Japanese   | cp932_japanese_ci   |      2 |
+| eucjpms  | UJIS for Windows Japanese   | eucjpms_japanese_ci |      3 |
++----------+-----------------------------+---------------------+--------+
+40 rows in set (0.00 sec)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;collate&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#collate&#34;&gt;
+        #
+    &lt;/a&gt;
+    collate
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;这个参数指定mysql根据哪些规则来比较存储的数据的字符集，这些信息可以用来进行数据的比较排序。&lt;/p&gt;
+&lt;p&gt;这个参数的格式构成规则如下：&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;&amp;lt;字符集&amp;gt;_&amp;lt;语言相关信息&amp;gt;_&amp;lt;后缀&amp;gt;&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;例如： &amp;ldquo;utf8_general_ci&amp;rdquo;, &amp;ldquo;latin1_danish_ci&amp;rdquo;&lt;/p&gt;
+&lt;h2 id=&#34;mysql一些其他特性&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#mysql%e4%b8%80%e4%ba%9b%e5%85%b6%e4%bb%96%e7%89%b9%e6%80%a7&#34;&gt;
+        #
+    &lt;/a&gt;
+    mysql一些其他特性
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;1-mysql支持4个级别的字符集设置服务器数据库表列&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#1-mysql%e6%94%af%e6%8c%814%e4%b8%aa%e7%ba%a7%e5%88%ab%e7%9a%84%e5%ad%97%e7%ac%a6%e9%9b%86%e8%ae%be%e7%bd%ae%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e8%a1%a8%e5%88%97&#34;&gt;
+        ##
+    &lt;/a&gt;
+    1. mysql支持4个级别的字符集设置：服务器，数据库，表，列。
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;h4 id=&#34;11-服务器级别&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#11-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%ba%a7%e5%88%ab&#34;&gt;
+        ###
+    &lt;/a&gt;
+    1.1 服务器级别
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;作用：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;服务器的字符集可以作为&amp;quot;CREATE DATABASE&amp;quot;的默认值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置方法：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;启动参数： &amp;lsquo;&amp;ndash;character-set-server&amp;rsquo; &amp;lsquo;&amp;ndash;collation-server&amp;rsquo;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查询：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;SHOW VARIABLES 查询 character_set_server/collation_server&lt;/p&gt;
+&lt;h4 id=&#34;12-数据库级别&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#12-%e6%95%b0%e6%8d%ae%e5%ba%93%e7%ba%a7%e5%88%ab&#34;&gt;
+        ###
+    &lt;/a&gt;
+    1.2 数据库级别
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;作用：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;作为创建表时的默认值&lt;/p&gt;
+&lt;p&gt;影响LOAD_DATA语句中的CHARACTER SET的值&lt;/p&gt;
+&lt;p&gt;影响存储过程中与字符编码相关的操作&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置方法：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&amp;lsquo;CREATE DATABASE&amp;rsquo;或&amp;rsquo;ALTER DATABASE&amp;rsquo; 的参数 &amp;lsquo;CHARACTER SET&amp;rsquo; &amp;lsquo;COLLATE&amp;rsquo;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查询：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;USE db_name;&lt;/br&gt;SELECT @@character_set_database, @@collation_database;&lt;/p&gt;
+&lt;h4 id=&#34;13-表级别&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#13-%e8%a1%a8%e7%ba%a7%e5%88%ab&#34;&gt;
+        ###
+    &lt;/a&gt;
+    1.3 表级别
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;作用：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;每张表可以有表级别的字符集。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置方法：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用 CREATE TABLE 和 ALTER TABLE 命令进行设置。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+CREATE TABLE tbl_name (column_list)
+    [[DEFAULT] CHARACTER SET charset_name]
+    [COLLATE collation_name]]
+
+ALTER TABLE tbl_name
+    [[DEFAULT] CHARACTER SET charset_name]
+    [COLLATE collation_name]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;查询：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+SHOW CREATE TABLE table_name;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;14-列级别&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#14-%e5%88%97%e7%ba%a7%e5%88%ab&#34;&gt;
+        ###
+    &lt;/a&gt;
+    1.4 列级别
+&lt;/div&gt;
+&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;作用：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;字符类型的列（CHAR, VARCHAR, TEXT）可以有一个本列相关的 character set和collation设置。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;设置方法：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;设置方法是在CREATE TABLE时使用相应的列参数。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+col_name {CHAR | VARCHAR | TEXT} (col_length)
+    [CHARACTER SET charset_name]
+    [COLLATE collation_name]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;比如：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+CREATE TABLE t1
+(
+    col1 VARCHAR(5)
+      CHARACTER SET utf8
+      COLLATE utf8_general_ci
+);
+
+ALTER TABLE t1 MODIFY
+    col1 VARCHAR(5)
+      CHARACTER SET utf8
+      COLLATE utf8_general_ci;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;查询：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+SHOW CREATE TABLE table_name;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;clientserver通讯字符编码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#clientserver%e9%80%9a%e8%ae%af%e5%ad%97%e7%ac%a6%e7%bc%96%e7%a0%81&#34;&gt;
+        ##
+    &lt;/a&gt;
+    client/server通讯字符编码
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;设置：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;mysql数据库client/server之间通讯的字符编码也可以单独设置，设置的方法有若干种：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用SQL命令&amp;quot;SET NAME &amp;lsquo;charset_name&amp;quot;和 &amp;ldquo;SET CHAARACTER SET &amp;lsquo;charset_name&amp;rsquo;&amp;ldquo;设置：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+SET NAME &#39;utf8&#39;;
+
+
+SET character_set_client = charset_name;
+SET character_set_results = charset_name;
+SET collation_connection = @@collation_database;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;使用mysql配置文件设置：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;[mysql]
+default-character-set=koi8r&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用mysql客户端设置：&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+mysql&gt; charset utf8
+Charset changed
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;查询：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;
+SHOW VARIABLES LIKE &#39;character_set%&#39;;
+SHOW VARIABLES LIKE &#39;collation%&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;参考&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    参考
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;*&lt;a href=&#34;https://dev.mysql.com/doc/refman/5.7/en/charset.html&#34;&gt;https://dev.mysql.com/doc/refman/5.7/en/charset.html&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

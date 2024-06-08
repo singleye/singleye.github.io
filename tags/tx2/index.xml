@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TX2 on singleye</title>
+    <link>/tags/tx2/</link>
+    <description>singleye (TX2)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 12 Apr 2018 11:06:51 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/tx2/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Build Tensorflow v1.7 on NVIDIA Jetson tx2</title>
+      <link>/2018/04/build-tensorflow-v1.7-on-nvidia-jetson-tx2/</link>
+      <pubDate>Thu, 12 Apr 2018 11:06:51 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/04/build-tensorflow-v1.7-on-nvidia-jetson-tx2/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;how-to-install-tensorflow-v17-on-nvidia-jetson-tx2&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#how-to-install-tensorflow-v17-on-nvidia-jetson-tx2&#34;&gt;
+        ##
+    &lt;/a&gt;
+    How to install tensorflow v1.7 on NVIDIA Jetson TX2
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;Tensorflow is a popular machine learning platform and the latest version 1.7 comes out recently. I have a NVIDIA Jetson TX2 development board and I would like to use tensorflow on it, but tensorflow doesn&amp;rsquo;t come along with the Jetpack. Here is what I did to compile one from the source code.&lt;/p&gt;
+&lt;h2 id=&#34;environment&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#environment&#34;&gt;
+        #
+    &lt;/a&gt;
+    Environment
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Platform: NVIDIA Jetson TX2&lt;/li&gt;
+&lt;li&gt;Jetpack: v3.2&lt;/li&gt;
+&lt;li&gt;CUDA: 9.0&lt;/li&gt;
+&lt;li&gt;cuDNN: 7.0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;build-process&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#build-process&#34;&gt;
+        #
+    &lt;/a&gt;
+    Build process
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;step1-upgrade-jetpack&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step1-upgrade-jetpack&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step1: Upgrade Jetpack
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;$ sudo apt-get upgrade&lt;/p&gt;
+&lt;h3 id=&#34;step2-compile-bazelhttpsgithubcombazelbuildbazel&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step2-compile-bazelhttpsgithubcombazelbuildbazel&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step2: Compile &lt;a href=&#34;https://github.com/bazelbuild/bazel&#34;&gt;bazel&lt;/a&gt;
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;I tried 2 ways to build bazel and realized it&amp;rsquo;s far more easier to build the &amp;lsquo;dist&amp;rsquo; version.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Build Bazel&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;On environment not bootstraping with protoc/grpc installed, use the &amp;lsquo;dist&amp;rsquo; distribution.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;wget https://github.com/bazelbuild/bazel/releases/download/0.11.1/bazel-0.11.1-dist.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Decompress the source and enter the source root directory, then run the commands below to build bazel:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./compile.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cp output/bazel /usr/local/bin/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;More words about the non-dist version:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you would like to try build from the non-dist version of source code, you can download it from here:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;https://github.com/bazelbuild/bazel/archive/0.11.1.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Building it depends on a bunch of stuffs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/google/protobuf&#34;&gt;protobuf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://netty.io/wiki/forked-tomcat-native.html#wiki-h2-5&#34;&gt;netty-tcnative&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/grpc/grpc-java/blob/master/COMPILING.md&#34;&gt;grpc-java&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;step3-build-tensorflow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#step3-build-tensorflow&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Step3: Build tensorflow
+&lt;/div&gt;
+&lt;/h3&gt;
+&lt;p&gt;Install python 2.7 dependencies:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo apt-get install python-numpy python-dev python-pip python-wheel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install python 3.x dependencies:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ sudo apt-get install python3-numpy python3-dev python3-pip python3-wheel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Download source:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;wget https://github.com/tensorflow/tensorflow/archive/v1.7.0.tar.gz
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Pre-build configure, here are the settings need to set manually:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Disable Amazon S3 File System support (I have issue of &amp;ldquo;undefined symbol: _ZN3Aws11Environment6GetEnvB5cxx11EPKc&amp;rdquo; while importing tensorflow)&lt;/li&gt;
+&lt;li&gt;Enable &amp;lsquo;CUDA&amp;rsquo; support&lt;/li&gt;
+&lt;li&gt;cuDNN library path: /usr/lib/aarch64-linux-gnu&lt;/li&gt;
+&lt;li&gt;Enable &amp;lsquo;TensorRT&amp;rsquo; and set library path: /usr/lib/aarch64-linux-gnu&lt;/li&gt;
+&lt;li&gt;CUDA compute capability: 6.2&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ./configure
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;You have bazel 0.11.1- &lt;span style=&#34;color:#ff6ac1&#34;&gt;(&lt;/span&gt;@non-git&lt;span style=&#34;color:#ff6ac1&#34;&gt;)&lt;/span&gt; installed.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location of python. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/bin/python&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Found possible Python library paths:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  /usr/local/lib/python2.7/dist-packages
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  /usr/lib/python2.7/dist-packages
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please input the desired Python library path to use.  Default is &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;/usr/local/lib/python2.7/dist-packages&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with jemalloc as malloc support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;jemalloc as malloc support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Google Cloud Platform support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Google Cloud Platform support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Hadoop File System support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Hadoop File System support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Amazon S3 File System support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Y/n&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;: n
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No Amazon S3 File System support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with Apache Kafka Platform support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No Apache Kafka Platform support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with XLA JIT support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No XLA JIT support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with GDR support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No GDR support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with VERBS support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No VERBS support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with OpenCL SYCL support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No OpenCL SYCL support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with CUDA support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;: y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;CUDA support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the CUDA SDK version you want to use, e.g. 7.0. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Leave empty to default to CUDA 9.0&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location where CUDA 9.0 toolkit is installed. Refer to README.md &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; more details. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/local/cuda&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the cuDNN version you want to use. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Leave empty to default to cuDNN 7.0&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location where cuDNN &lt;span style=&#34;color:#ff9f43&#34;&gt;7&lt;/span&gt; library is installed. Refer to README.md &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; more details. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/local/cuda&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:/usr/lib/aarch64-linux-gnu/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with TensorRT support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;: y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;TensorRT support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify the location where TensorRT is installed. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/lib/x86_64-linux-gnu&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:/usr/lib/aarch64-linux-gnu/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please note that each additional compute capability significantly increases your build &lt;span style=&#34;color:#ff5c57&#34;&gt;time&lt;/span&gt; and binary size. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is: 3.5,5.2&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;6.2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you want to use clang as CUDA compiler? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvcc will be used as CUDA compiler.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify which gcc should be used by nvcc as the host compiler. &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is /usr/bin/gcc&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Do you wish to build TensorFlow with MPI support? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;No MPI support will be enabled &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; TensorFlow.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Please specify optimization flags to use during compilation when bazel option &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;--config=opt&amp;#34;&lt;/span&gt; is specified &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;Default is -march&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;native&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Would you like to interactively configure ./WORKSPACE &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; Android builds? &lt;span style=&#34;color:#ff6ac1&#34;&gt;[&lt;/span&gt;y/N&lt;span style=&#34;color:#ff6ac1&#34;&gt;]&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Not configuring the WORKSPACE &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; Android builds.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Preconfigured Bazel build configs. You can use any of the below by adding &lt;span style=&#34;color:#5af78e&#34;&gt;&amp;#34;--config=&amp;lt;&amp;gt;&amp;#34;&lt;/span&gt; to your build command. See tools/bazel.rc &lt;span style=&#34;color:#ff6ac1&#34;&gt;for&lt;/span&gt; more details.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;mkl            &lt;span style=&#34;color:#78787e&#34;&gt;# Build with MKL support.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;monolithic     &lt;span style=&#34;color:#78787e&#34;&gt;# Config for mostly static monolithic build.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Configuration finished
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Apply patch &lt;a href=&#34;https://github.com/singleye/KnowledgeBase/blob/master/Tensorflow/Jetpack3.2/tensorrt.patch&#34;&gt;Jetpack3.2/tensorrt.patch&lt;/a&gt; if you want TensorRT support.&lt;/p&gt;
+&lt;p&gt;Start the build:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ bazel build --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;opt --local_resources 3072,4.0,1.0 --config&lt;span style=&#34;color:#ff6ac1&#34;&gt;=&lt;/span&gt;cuda //tensorflow/tools/pip_package:build_pip_package
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After compilation, generate pip package to &amp;rsquo;target&amp;rsquo; directory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ ./bazel-bin/tensorflow/tools/pip_package/build_pip_package target
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;easy-usage&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#easy-usage&#34;&gt;
+        ##
+    &lt;/a&gt;
+    Easy usage
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;I&amp;rsquo;ve build out the pip &lt;a href=&#34;https://pan.baidu.com/s/1ORp_FCb-ZR-ZAZoGd8CuRw&#34;&gt;package&lt;/a&gt;, feel free to use it to save some time ;-)&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用Nvidia Jetson TX2挖以太币</title>
+      <link>/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</link>
+      <pubDate>Sun, 11 Mar 2018 10:34:02 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。&lt;/p&gt;
+&lt;p&gt;进行挖矿大概需要几个步骤：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;注册钱包&lt;/li&gt;
+&lt;li&gt;加入矿池&lt;/li&gt;
+&lt;li&gt;准备挖矿工具&lt;/li&gt;
+&lt;li&gt;开挖&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下面详细介绍一下如何进行挖矿。&lt;/p&gt;
+&lt;h1 id=&#34;获取以太币钱包地址&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%8e%b7%e5%8f%96%e4%bb%a5%e5%a4%aa%e5%b8%81%e9%92%b1%e5%8c%85%e5%9c%b0%e5%9d%80&#34;&gt;
+        ##
+    &lt;/a&gt;
+    获取以太币钱包地址
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;使用myetherwallet&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8myetherwallet&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用myetherwallet
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;挖矿前首先需要创建自己的钱包，可以到“&lt;strong&gt;myetherwallet&lt;/strong&gt;”(&lt;a href=&#34;https://www.myetherwallet.com&#34;&gt;https://www.myetherwallet.com&lt;/a&gt;)进行创建。&lt;/p&gt;
+&lt;p&gt;第一步：输入密码，点击“Create New Wallet”：
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myetherwallet.jpg&#34; alt=&#34;myetherwallet&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第二步：保存&amp;quot;Keystore&amp;quot;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/savewallet.jpg&#34; alt=&#34;保存钱包密钥文件&#34;&gt;&lt;/p&gt;
+&lt;p&gt;之后为了方便管理可以使用chrome浏览器的&amp;quot;&amp;ldquo;插件进行创建。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myether-plugin.jpg&#34; alt=&#34;myetherplugin&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;使用metamask&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8metamask&#34;&gt;
+        #
+    &lt;/a&gt;
+    使用MetaMask
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&amp;quot;MetaMask&amp;quot;插件进行创建和管理。
+&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/metamask-plugin.jpg&#34; alt=&#34;metamask&#34;&gt;&lt;/p&gt;
+&lt;p&gt;需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！&lt;/p&gt;
+&lt;p&gt;使用&amp;quot;MetaMask&amp;quot;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&amp;quot;MetaMask&amp;quot;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。&lt;/p&gt;
+&lt;h1 id=&#34;选择矿池&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%80%89%e6%8b%a9%e7%9f%bf%e6%b1%a0&#34;&gt;
+        ##
+    &lt;/a&gt;
+    选择矿池
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/chart.jpeg&#34; alt=&#34;矿池&#34;&gt;&lt;/p&gt;
+&lt;p&gt;（数据来自&lt;a href=&#34;https://www.etherchain.org/charts/topMiners&#34;&gt;Top Miners&lt;/a&gt;）&lt;/p&gt;
+&lt;p&gt;国内用户可以选择国内的矿池：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;矿池&lt;/th&gt;
+&lt;th&gt;地址&lt;/th&gt;
+&lt;th&gt;矿池&lt;/th&gt;
+&lt;th&gt;起付点&lt;/th&gt;
+&lt;th&gt;费率&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;f2pool&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://www.f2pool.com&#34;&gt;https://www.f2pool.com&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;eth.f2pool.com:8008&lt;/br&gt;eth.f2pool.com:8080&lt;/td&gt;
+&lt;td&gt;0.1 ETH&lt;/td&gt;
+&lt;td&gt;3%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ethfans&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://eth.ethfans.org/#/&#34;&gt;https://eth.ethfans.org/#/&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;huabei-pool.ethfans.org:3333&lt;/br&gt;huabei-pool.ethfans.org:13333&lt;/br&gt;guangdong-pool.ethfans.org:3333&lt;/br&gt;guangdong-pool.ethfans.org:13333&lt;/td&gt;
+&lt;td&gt;0.05 ETH&lt;/td&gt;
+&lt;td&gt;1%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;选择挖矿软件&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%80%89%e6%8b%a9%e6%8c%96%e7%9f%bf%e8%bd%af%e4%bb%b6&#34;&gt;
+        ##
+    &lt;/a&gt;
+    选择挖矿软件
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;现在开好户签好合同了，矿工要开始干活了 :-)&lt;/p&gt;
+&lt;p&gt;家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg&#34; alt=&#34;Jetson&#34;&gt;&lt;/p&gt;
+&lt;p&gt;常用的挖矿软件有两个：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;软件&lt;/th&gt;
+&lt;th&gt;CPU&lt;/th&gt;
+&lt;th&gt;GPU&lt;/th&gt;
+&lt;th&gt;CUDA&lt;/th&gt;
+&lt;th&gt;OpenCL&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;ethminer&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;td&gt;Yes, ver &amp;gt; 9.0&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;geth&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;我为Jetson选择了ethminer，这个工具需要在Linux上编译一下：&lt;/p&gt;
+&lt;h2 id=&#34;编译ethminer&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e8%af%91ethminer&#34;&gt;
+        #
+    &lt;/a&gt;
+    编译ethminer
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;开始前需要说一下，由于Jetson不支持OpenCL（Nvidia官方裁剪了系统 -__-凸），因此要在Jetson上使用ethminer的话就要直接使用CUDA，而且版本需要大于9.0，好在Jetpack v3.2使用了更高版本的CUDA。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Jetpack version: 3.2&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;从github下载ethminer&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/ethereum-mining/ethminer&#34;&gt;https://github.com/ethereum-mining/ethminer&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ git clone https://github.com/ethereum-mining/ethminer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;编译ethminer&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;
+$ git submodule update --init --recursive
+$ mkdir build
+$ cd build
+$ cmake .. -DETHASHCUDA=ON -DETHASHCL=OFF    # 配置CUDA，默认使用OpenCL
+$ sudo make install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;开始挖矿&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%bc%80%e5%a7%8b%e6%8c%96%e7%9f%bf&#34;&gt;
+        ##
+    &lt;/a&gt;
+    开始挖矿
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;挖矿前用先查看了下设备信息：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+$ ethminer -U --list-devices
+
+Listing CUDA devices.
+FORMAT: [deviceID] deviceName
+[0] NVIDIA Tegra X2
+        Compute version: 6.2
+        cudaDeviceProp::totalGlobalMem: 8235802624
+        Pci: 0000:00:00
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;确定可以正常看到GPU信息后就开撸吧。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+# 使用f2pool进行挖矿的命令：
+
+$ ethminer -U -S eth.f2pool.com:8080 -FS etc.f2pool.com:8118 -O 0x839c9c5d79a469ef58d13983f12b61266c373d70 -SP 1
+
+# 使用ethfans进行挖矿的命令：
+
+$ ethminer -U -S huabei-pool.ethfans.org:3333 -FS  huabei-pool.ethfans.org:13333 -O 0x839c9c5d79a469ef58d13983f12b61266c373d70 -SP 1 -SE singleye@163.com
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;参数解释：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;-U: 指定使用CUDA方法进行计算 （-G是使用OpenCL，Jetson不支持&amp;hellip;）&lt;/li&gt;
+&lt;li&gt;-S: 指定矿池地址&lt;/li&gt;
+&lt;li&gt;-FS: Failover矿池地址，当-S指定的矿池出现故障后会自动切换到这个地址&lt;/li&gt;
+&lt;li&gt;-O: 指定自己的钱包地址，否则就白费功夫啦&lt;/li&gt;
+&lt;li&gt;-SP: 指定stratum协议版本，需要跟矿池匹配，这里使用‘1’&lt;/li&gt;
+&lt;li&gt;-SE: 可以制定一个自己的邮件地址，可能后面会发送统计信息到这里&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>在 Nvidia Jetson TX2 上编译安装tensorflow</title>
+      <link>/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/</link>
+      <pubDate>Thu, 14 Sep 2017 00:22:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg&#34; alt=&#34;TX2&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;系统环境&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%b3%bb%e7%bb%9f%e7%8e%af%e5%a2%83&#34;&gt;
+        ##
+    &lt;/a&gt;
+    系统环境
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Jetpack：v3.0&lt;/li&gt;
+&lt;li&gt;CUDA：8.0&lt;/li&gt;
+&lt;li&gt;cuDNN：5.1.10&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;编译安装bazel&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85bazel&#34;&gt;
+        ##
+    &lt;/a&gt;
+    编译安装bazel
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;bazel是google开发的一套开发管理工具，功能类似makefile和maven，特点是速度快，编译tensorflow时需要用到这个工具。&lt;/p&gt;
+&lt;p&gt;在TX2上安装bazel需要对bazel源代码做一点修改以支持该平台。下载代码后修改文件 &amp;ldquo;bazel/src/main/java/com/google/devtools/build/lib/util/CPU.java&amp;rdquo;，修改如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;public enum CPU {
+  X86_32(&amp;quot;x86_32&amp;quot;, ImmutableSet.of(&amp;quot;i386&amp;quot;, &amp;quot;i486&amp;quot;, &amp;quot;i586&amp;quot;, &amp;quot;i686&amp;quot;, &amp;quot;i786&amp;quot;, &amp;quot;x86&amp;quot;)),
+  X86_64(&amp;quot;x86_64&amp;quot;, ImmutableSet.of(&amp;quot;amd64&amp;quot;, &amp;quot;x86_64&amp;quot;, &amp;quot;x64&amp;quot;)),
+  PPC(&amp;quot;ppc&amp;quot;, ImmutableSet.of(&amp;quot;ppc&amp;quot;, &amp;quot;ppc64&amp;quot;, &amp;quot;ppc64le&amp;quot;)),
+-  ARM(&amp;quot;arm&amp;quot;, ImmutableSet.of(&amp;quot;arm&amp;quot;, &amp;quot;armv7l&amp;quot;)),
++  ARM(&amp;quot;arm&amp;quot;, ImmutableSet.of(&amp;quot;arm&amp;quot;, &amp;quot;armv7l&amp;quot;, &amp;quot;aarch64&amp;quot;)),
+  S390X(&amp;quot;s390x&amp;quot;, ImmutableSet.of(&amp;quot;s390x&amp;quot;, &amp;quot;s390&amp;quot;)),
+  UNKNOWN(&amp;quot;unknown&amp;quot;, ImmutableSet.&amp;lt;String&amp;gt;of());
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;修改好之后在代码目录运行 &amp;ldquo;compile.sh&amp;rdquo; 进行编译，编译好后将程序拷贝到执行环境：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ sudo cp output/bazel /usr/local/bin
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;安装tensorflow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%ae%89%e8%a3%85tensorflow&#34;&gt;
+        ##
+    &lt;/a&gt;
+    安装tensorflow
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;下载tensorflow源码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%8b%e8%bd%bdtensorflow%e6%ba%90%e7%a0%81&#34;&gt;
+        #
+    &lt;/a&gt;
+    下载tensorflow源码
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;p&gt;写这篇文章的时候tensorflow已经发展到了v1.3，下载release版本代码：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ wget https://github.com/tensorflow/tensorflow/archive/v1.3.0.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;编译tensorflow&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%bc%96%e8%af%91tensorflow&#34;&gt;
+        #
+    &lt;/a&gt;
+    编译tensorflow
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;配置configure&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;首先configure编译环境：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/tensorflow/tensorflow-1.3.0$ ./configure
+You have bazel 0.4.5- installed.
+Please specify the location of python. [Default is /usr/bin/python]:
+Found possible Python library paths:
+  /usr/local/lib/python2.7/dist-packages
+  /usr/lib/python2.7/dist-packages
+Please input the desired Python library path to use.  Default is [/usr/local/lib/python2.7/dist-packages]
+
+Using python library path: /usr/local/lib/python2.7/dist-packages
+Do you wish to build TensorFlow with MKL support? [y/N]
+No MKL support will be enabled for TensorFlow
+Please specify optimization flags to use during compilation when bazel option &amp;quot;--config=opt&amp;quot; is specified [Default is -march=native]:
+Do you wish to use jemalloc as the malloc implementation? [Y/n]
+jemalloc enabled
+Do you wish to build TensorFlow with Google Cloud Platform support? [y/N]
+No Google Cloud Platform support will be enabled for TensorFlow
+Do you wish to build TensorFlow with Hadoop File System support? [y/N]
+No Hadoop File System support will be enabled for TensorFlow
+Do you wish to build TensorFlow with the XLA just-in-time compiler (experimental)? [y/N]
+No XLA support will be enabled for TensorFlow
+Do you wish to build TensorFlow with VERBS support? [y/N]
+No VERBS support will be enabled for TensorFlow
+Do you wish to build TensorFlow with OpenCL support? [y/N]
+No OpenCL support will be enabled for TensorFlow
+Do you wish to build TensorFlow with CUDA support? [y/N] y
+CUDA support will be enabled for TensorFlow
+Do you want to use clang as CUDA compiler? [y/N]
+nvcc will be used as CUDA compiler
+Please specify the CUDA SDK version you want to use, e.g. 7.0. [Leave empty to default to CUDA 8.0]: 8.0
+Please specify the location where CUDA 8.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]:
+Please specify the cuDNN version you want to use. [Leave empty to default to cuDNN 6.0]: 5.1.10
+Please specify the location where cuDNN 5.1.10 library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:
+./configure: line 669: /usr/local/cuda/extras/demo_suite/deviceQuery: No such file or directory
+Please specify a list of comma-separated Cuda compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus.
+Please note that each additional compute capability significantly increases your build time and binary size.
+[Default is: &amp;quot;3.5,5.2&amp;quot;]: 6.2
+Do you wish to build TensorFlow with MPI support? [y/N]
+MPI support will not be enabled for TensorFlow
+Configuration finished
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这里主要说一下配置&amp;quot;compute capability&amp;quot;的方法，默认值为&amp;quot;3.5,5.2&amp;quot;，但到底该填写什么值可以通过一个jetpack自带的程序查询出来：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/NVIDIA_CUDA-8.0_Samples/1_Utilities/deviceQuery$ ./deviceQuery
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: &amp;quot;GP10B&amp;quot;
+  CUDA Driver Version / Runtime Version          8.5 / 8.0
+  CUDA Capability Major/Minor version number:    6.2
+  Total amount of global memory:                 7854 MBytes (8235577344 bytes)
+  ( 2) Multiprocessors, (128) CUDA Cores/MP:     256 CUDA Cores
+  GPU Max Clock rate:                            1301 MHz (1.30 GHz)
+  Memory Clock rate:                             13 Mhz
+  Memory Bus Width:                              64-bit
+  L2 Cache Size:                                 524288 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 32768
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            Yes
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
+  Compute Mode:
+     &amp;lt; Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) &amp;gt;
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 8.5, CUDA Runtime Version = 8.0, NumDevs = 1, Device0 = GP10B
+Result = PASS
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;主意上面的内容中有下面一行内容，这行的内容就是&amp;quot;compute capability&amp;quot;：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;CUDA Capability Major/Minor version number:    6.2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;编译tensorflow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行下面的命令进行编译，并指定使用cuda&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/tensorflow$ bazel build --config=opt --config=cuda //tensorflow/tools/pip_package:build_pip_package
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;生成pip安装包&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行完之后会生成pip包生成脚本 &amp;ldquo;./bazel-bin/tensorflow/tools/pip_package/build_pip_package&amp;rdquo;，可以执行这个脚本生成pip安装包：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nvidia@tegra-ubuntu:~/tensorflow/tensorflow-1.3.0$ ./bazel-bin/tensorflow/tools/pip_package/build_pip_package ~/tensorflow
+Wed Sep 13 14:41:13 UTC 2017 : === Using tmpdir: /tmp/tmp.F109O2nAzd
+~/tensorflow/tensorflow-1.3.0/bazel-bin/tensorflow/tools/pip_package/build_pip_package.runfiles ~/tensorflow/tensorflow-1.3.0
+~/tensorflow/tensorflow-1.3.0
+/tmp/tmp.F109O2nAzd ~/tensorflow/tensorflow-1.3.0
+Wed Sep 13 14:41:20 UTC 2017 : === Building wheel
+warning: no files found matching &#39;*.dll&#39; under directory &#39;*&#39;
+warning: no files found matching &#39;*.lib&#39; under directory &#39;*&#39;
+warning: no files found matching &#39;*.h&#39; under directory &#39;tensorflow/include/tensorflow&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/Eigen&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/external&#39;
+warning: no files found matching &#39;*.h&#39; under directory &#39;tensorflow/include/google&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/third_party&#39;
+warning: no files found matching &#39;*&#39; under directory &#39;tensorflow/include/unsupported&#39;
+~/tensorflow/tensorflow-1.3.0
+Wed Sep 13 14:41:52 UTC 2017 : === Output wheel file is in: /home/nvidia/tensorflow
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;安装tensorflow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;执行下面的命令安装：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ pip install tensorflow-1.3.0-cp27-cp27mu-linux_aarch64.whl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;eigen导致编译错误处理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#eigen%e5%af%bc%e8%87%b4%e7%bc%96%e8%af%91%e9%94%99%e8%af%af%e5%a4%84%e7%90%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    eigen导致编译错误处理
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;在编译tensorflow的过程中碰到了几个问题，主要是由于eigen引起。&lt;/p&gt;
+&lt;h2 id=&#34;错误1-jacobih-has-no-member-named-pmul&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%94%99%e8%af%af1-jacobih-has-no-member-named-pmul&#34;&gt;
+        #
+    &lt;/a&gt;
+    错误1: Jacobi.h has no member named &amp;lsquo;pmul&amp;rsquo;
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;...
+
+In file included from external/eigen_archive/Eigen/Jacobi:27:0,
+                 from external/eigen_archive/Eigen/Eigenvalues:16,
+                 from ./third_party/eigen3/Eigen/Eigenvalues:1,
+                 from tensorflow/core/kernels/self_adjoint_eig_v2_op.cc:19:
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h: In instantiation of &#39;void Eigen::internal::apply_rotation_in_the_plane(Eigen::DenseBase&amp;lt;Derived&amp;gt;&amp;amp;, Eigen::DenseBase&amp;lt;Derived&amp;gt;&amp;amp;, const Eigen::J
+acobiRotation&amp;lt;OtherScalar&amp;gt;&amp;amp;) [with VectorX = Eigen::Block&amp;lt;Eigen::Map&amp;lt;Eigen::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;, 0, Eigen::Stride&amp;lt;0, 0&amp;gt; &amp;gt;, -1, 1, true&amp;gt;; VectorY = Eigen::Block&amp;lt;Eigen::Map&amp;lt;Eige
+n::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;, 0, Eigen::Stride&amp;lt;0, 0&amp;gt; &amp;gt;, -1, 1, true&amp;gt;; OtherScalar = float]&#39;:
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:297:40:   required from &#39;void Eigen::MatrixBase&amp;lt;Derived&amp;gt;::applyOnTheRight(Eigen::Index, Eigen::Index, const Eigen::JacobiRotation&amp;lt;OtherScalar&amp;gt;
+&amp;amp;) [with OtherScalar = float; Derived = Eigen::Map&amp;lt;Eigen::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;, 0, Eigen::Stride&amp;lt;0, 0&amp;gt; &amp;gt;; Eigen::Index = long int]&#39;
+external/eigen_archive/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:861:7:   required from &#39;void Eigen::internal::tridiagonal_qr_step(RealScalar*, RealScalar*, Index, Index, Scalar*, Index)
+ [with int StorageOrder = 0; RealScalar = float; Scalar = std::complex&amp;lt;float&amp;gt;; Index = long int]&#39;
+external/eigen_archive/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h:520:87:   required from &#39;Eigen::ComputationInfo Eigen::internal::computeFromTridiagonal_impl(DiagType&amp;amp;, SubDiagType&amp;amp;, Eig
+en::Index, bool, MatrixType&amp;amp;) [with MatrixType = Eigen::Matrix&amp;lt;std::complex&amp;lt;float&amp;gt;, -1, -1&amp;gt;; DiagType = Eigen::Matrix&amp;lt;float, -1, 1&amp;gt;; SubDiagType = Eigen::Matrix&amp;lt;float, -1, 1&amp;gt;; Eigen::Index =
+long int]&#39;
+
+....
+
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:386:35: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:415:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+       pstore(px, padd(pm.pmul(pc,xi),pcj.pmul(ps,yi)));
+                      ^
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:415:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:416:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+       pstore(py, psub(pcj.pmul(pc,yi),pm.pmul(ps,xi)));
+                      ^
+external/eigen_archive/Eigen/src/Jacobi/Jacobi.h:416:22: error: &#39;struct Eigen::internal::conj_helper&amp;lt;__vector(4) float, Eigen::internal::Packet2cf, false, false&amp;gt;&#39; has no member named &#39;pmul&#39;
+Target //tensorflow/tools/pip_package:build_pip_package failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 2366.425s, Critical Path: 2221.96s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;错误2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl参数错误&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e9%94%99%e8%af%af2-tensorflowcorelibcorethreadpoolcc-nonblockingthreadpooltempl%e5%8f%82%e6%95%b0%e9%94%99%e8%af%af&#34;&gt;
+        #
+    &lt;/a&gt;
+    错误2: tensorflow/core/lib/core/threadpool.cc NonBlockingThreadPoolTempl()参数错误
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;ERROR: /home/nvidia/tensorflow/tensorflow-1.3.0/tensorflow/core/BUILD:1244:1: C++ compilation of rule &#39;//tensorflow/core:lib_internal&#39; failed: crosstool_wrapper_driver_is_not_gcc failed: error executing command external/              local_config_cuda/crosstool/clang/bin/crosstool_wrapper_driver_is_not_gcc -U_FORTIFY_SOURCE &#39;-D_FORTIFY_SOURCE=1&#39; -fstack-protector -fPIE -Wall -Wunused-but-set-parameter ... (remaining 115 argument(s) skipped): com.google.devtools.build.lib.shell.BadExitStatusException: Process exited with status 1.
+tensorflow/core/lib/core/threadpool.cc: In constructor &#39;tensorflow::thread::ThreadPool::Impl::Impl(tensorflow::Env*, const tensorflow::ThreadOptions&amp;amp;, const string&amp;amp;, int, bool)&#39;:
+tensorflow/core/lib/core/threadpool.cc:91:56: error: no matching function for call to &#39;Eigen::NonBlockingThreadPoolTempl&amp;lt;tensorflow::thread::EigenEnvironment&amp;gt;::NonBlockingThreadPoolTempl(int&amp;amp;, bool&amp;amp;, tensorflow::thread::              EigenEnvironment)&#39;
+             EigenEnvironment(env, thread_options, name)) {}
+                                                        ^
+In file included from external/eigen_archive/unsupported/Eigen/CXX11/ThreadPool:58:0,
+                 from external/eigen_archive/unsupported/Eigen/CXX11/Tensor:72,
+                 from ./third_party/eigen3/unsupported/Eigen/CXX11/Tensor:1,
+                 from tensorflow/core/lib/core/threadpool.cc:19:
+external/eigen_archive/unsupported/Eigen/CXX11/src/ThreadPool/NonBlockingThreadPool.h:22:3: note: candidate: Eigen::NonBlockingThreadPoolTempl&amp;lt;Environment&amp;gt;::NonBlockingThreadPoolTempl(int, Environment) [with Environment = tensorflow::thread::EigenEnvironment]
+   NonBlockingThreadPoolTempl(int num_threads, Environment env = Environment())
+   ^
+external/eigen_archive/unsupported/Eigen/CXX11/src/ThreadPool/NonBlockingThreadPool.h:22:3: note:   candidate expects 2 arguments, 3 provided
+Target //tensorflow/tools/pip_package:build_pip_package failed to build
+Use --verbose_failures to see the command lines of failed build steps.
+INFO: Elapsed time: 292.433s, Critical Path: 68.80s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;解决方法是使用正确版本的eigen，其中“问题一”是用v3.3.4的eigen可以解决，“问题二”需要使用最新的eigen：&lt;/p&gt;
+&lt;p&gt;修复的方法是编辑&amp;quot;tensorflow/workspace.bzl&amp;quot;，并指定最新的eigen：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  native.new_http_archive(
+      name = &amp;quot;eigen_archive&amp;quot;,
+      #urls = [
+      #    &amp;quot;http://mirror.bazel.build/bitbucket.org/eigen/eigen/get/f3a22f35b044.tar.gz&amp;quot;,
+      #    &amp;quot;https://bitbucket.org/eigen/eigen/get/f3a22f35b044.tar.gz&amp;quot;,
+      #],
+      #sha256 = &amp;quot;ca7beac153d4059c02c8fc59816c82d54ea47fe58365e8aded4082ded0b820c4&amp;quot;,
+      #strip_prefix = &amp;quot;eigen-eigen-f3a22f35b044&amp;quot;,
+      urls = [
+          &amp;quot;https://bitbucket.org/eigen/eigen/get/tip.tar.gz&amp;quot;,
+      ],
+      sha256 = &amp;quot;6fe7af8244ab5d9c314a26bc8615adc61269896cfd66f1ae2cce3d6ee91a5b88&amp;quot;,
+      strip_prefix = &amp;quot;eigen-eigen-034fba127699&amp;quot;,
+      build_file = str(Label(&amp;quot;//third_party:eigen.BUILD&amp;quot;)),
+  )
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;其中“sha256”和“strip_prefix”需要根据新的eigen修正。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Proxy on singleye</title>
+    <link>/tags/proxy/</link>
+    <description>singleye (Proxy)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sun, 01 Sep 2019 15:28:41 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/proxy/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>ssh代理方法</title>
+      <link>/2019/09/ssh%E4%BB%A3%E7%90%86%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Sun, 01 Sep 2019 15:28:41 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2019/09/ssh%E4%BB%A3%E7%90%86%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;h1 id=&#34;socks-代理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#socks-%e4%bb%a3%e7%90%86&#34;&gt;
+        ##
+    &lt;/a&gt;
+    SOCKS 代理
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;在本地打开 11087 端口，通过该端口可以使用 socks4/socks5 协议连接到目标机（1.2.3.4）&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;alias proxy=&amp;#39;ssh -D 11087 -fnqN user@1.2.3.4&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;ssh-反向连接&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#ssh-%e5%8f%8d%e5%90%91%e8%bf%9e%e6%8e%a5&#34;&gt;
+        ##
+    &lt;/a&gt;
+    ssh 反向连接
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;当不方便从外连接到内部网络的机器时可以在内部机器上使用反向连接的方式连接到的方式打通外部机器到内部机器的 ssh 通道&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ssh -p 22 -qngNTR 10000:localhost:22 proxyuser@proxynode
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;ssh-反向连接时建立-socks-代理&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#ssh-%e5%8f%8d%e5%90%91%e8%bf%9e%e6%8e%a5%e6%97%b6%e5%bb%ba%e7%ab%8b-socks-%e4%bb%a3%e7%90%86&#34;&gt;
+        #
+    &lt;/a&gt;
+    ssh 反向连接时建立 SOCKS 代理
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ssh -p 10000 -qngfNTD 6767 nodeuser@localhost
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;ssh-传递连接&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#ssh-%e4%bc%a0%e9%80%92%e8%bf%9e%e6%8e%a5&#34;&gt;
+        #
+    &lt;/a&gt;
+    ssh 传递连接
+&lt;/div&gt;
+&lt;/h2&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ssh -qngfNT -L localhost:6868:localhost:6767 proxyuser@proxynode
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将本机的 6868 端口接收到的数据发送到 proxynode 机器所在的 localhost:6767 端口，因为 6767 是 SOCK5 反向连接到了另一台机器，因此 6868 的流量实际被发到了另外的那一台机器上。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

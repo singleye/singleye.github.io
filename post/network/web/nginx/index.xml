@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nginx on singleye</title>
+    <link>/post/network/web/nginx/</link>
+    <description>singleye (nginx)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sat, 23 Dec 2017 19:41:39 +0800</lastBuildDate>
+    
+    <atom:link href="/post/network/web/nginx/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Nginx Static</title>
+      <link>/2017/12/nginx-static/</link>
+      <pubDate>Sat, 23 Dec 2017 19:41:39 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/12/nginx-static/</guid>
+      <description>&lt;p&gt;nginx配置静态文件服务器&lt;/p&gt;
+&lt;h1 id=&#34;搭建文件服务器&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e6%90%ad%e5%bb%ba%e6%96%87%e4%bb%b6%e6%9c%8d%e5%8a%a1%e5%99%a8&#34;&gt;
+        ##
+    &lt;/a&gt;
+    搭建文件服务器
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;要点就是root目录,会自动指向索引文件 如： index, index.html等&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;server {
+        client_max_body_size 4G;
+        listen  80;  ## listen for ipv4; this line is default and implied
+        server_name static.test.sdk.iwplay.com.tw;
+        root /home/mini/Sync;
+        location / {
+        }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;建立索引&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%bb%ba%e7%ab%8b%e7%b4%a2%e5%bc%95&#34;&gt;
+        ##
+    &lt;/a&gt;
+    建立索引
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;建立目录索引也同样如此，不要带索引名称之类的文件，否则会直接显示文件，而不是目录&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;server {
+        client_max_body_size 4G;
+        listen  80;  ## listen for ipv4; this line is default and implied
+        server_name static.test.sdk.iwplay.com.tw;
+        root /home/mini/Sync;
+     location / {
+         autoindex on; //显示索引
+         autoindex_exact_size on; //显示大小
+         autoindex_localtime on;   //显示时间
+        }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;设置密码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e8%ae%be%e7%bd%ae%e5%af%86%e7%a0%81&#34;&gt;
+        ##
+    &lt;/a&gt;
+    设置密码
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;搭建文件服务器有时候不想让别人任意访问，想做成一个私有的该怎么办呢，这个时候我们可以用到nginx自带的认证模块。 同样关键的是auth_basic/auth_basic_user_file字段&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;server {
+        client_max_body_size 4G;
+        listen  80;  ## listen for ipv4; this line is default and implied
+        server_name static.test.sdk.iwplay.com.tw;
+    root /home/mini/Sync;
+     location / {
+              auth_basic   &amp;quot;Restricted&amp;quot;;  
+              auth_basic_user_file /etc/nginx/pass_file;
+              autoindex on;
+              autoindex_exact_size on;
+              autoindex_localtime on;  
+        }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;auth_basic表示的输入密码时的提示语&lt;/li&gt;
+&lt;li&gt;auth_basic_user_file则显示认证时的用户密码文件存放路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;生成用户密码&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%94%9f%e6%88%90%e7%94%a8%e6%88%b7%e5%af%86%e7%a0%81&#34;&gt;
+        ##
+    &lt;/a&gt;
+    生成用户密码
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;上文实现了用户认证，那么如何添加用户呢。nginx自带了一个功能，如下&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;htpasswd -c -d /etc/nginx/pass_file username
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这样就在/etc/nginx/pass_file 中添加了了一个用户&lt;/p&gt;
+&lt;h1 id=&#34;开启压缩&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%bc%80%e5%90%af%e5%8e%8b%e7%bc%a9&#34;&gt;
+        ##
+    &lt;/a&gt;
+    开启压缩
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;pre&gt;&lt;code&gt;server {
+  client_max_body_size 4G;
+  listen  80;  ## listen for ipv4; this line is default and implied
+  server_name static.test.sdk.iwplay.com.tw;
+  root /home/mini/Sync;
+  
+  # new config lines for gzip
+  gzip on;
+  gzip_min_length 1k;
+  gzip_buffers 4 8k;
+  gzip_http_version 1.1;
+  gzip_types text/plain application/javascript application/x-javascript text/javascript text/css application/xml;
+   
+   location / {
+       auth_basic   &amp;quot;Restricted&amp;quot;;  
+       auth_basic_user_file /etc/nginx/pass_file;
+       autoindex on;
+       autoindex_exact_size on;
+       autoindex_localtime on;  
+   }
+}&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

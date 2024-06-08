@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>softmax输出层公式推导及代码实验 - singleye</title>
+
+<meta name="description" content="sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，softmax输出层提供了一种解决这些问题比较有效的方法，本文对softmax输出层进行一些推导体会。">
+
+
+    <meta name="keywords" content="NeuralNetwork,softmax,sigmoid,python,numpy,matploblib">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">softmax输出层公式推导及代码实验</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-10-02">2017-10-02</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/">/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
+                
+                    
+                    <li><a href="/categories/neural-network/">Neural Network</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/neuralnetwork/">#NeuralNetwork</a></li>
+                
+                    
+                    <li><a href="/tags/softmax/">#Softmax</a></li>
+                
+                    
+                    <li><a href="/tags/sigmoid/">#Sigmoid</a></li>
+                
+                    
+                    <li><a href="/tags/python/">#Python</a></li>
+                
+                    
+                    <li><a href="/tags/numpy/">#Numpy</a></li>
+                
+                    
+                    <li><a href="/tags/matploblib/">#Matploblib</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#代价函数c">代价函数C</a></li>
+    <li><a href="#用反向传播进行梯度下降">用反向传播进行梯度下降</a>
+      <ul>
+        <li><a href="#求解-delta_il--a_il---y_i-">求解$ \delta_i^L = ({a_i^L} - y_i) $</a></li>
+        <li><a href="#求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程">求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：</a></li>
+        <li><a href="#求-frac-partial-cpartial-b_il--a_il---y_i-的过程">求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：</a></li>
+      </ul>
+    </li>
+    <li><a href="#sigmoid隐藏层与softmax输出层网络">sigmoid隐藏层与softmax输出层网络</a>
+      <ul>
+        <li><a href="#前馈网络计算步骤">前馈网络计算步骤：</a></li>
+        <li><a href="#反向传播计算步骤">反向传播计算步骤：</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- more /-->
+<p>sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：</p>
+<ol>
+<li>在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：
+<ul>
+<li>使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i + (1-y_i) \ln (1-a_i)] $</li>
+<li>使用softmax和log-likelyhood代价函数作为输出层</li>
+</ul>
+</li>
+<li>sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &hellip; y_n | X) $，其中y1, &hellip; yn之间相互关联，且总和为1。</li>
+</ol>
+<p>这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。</p>
+<h1 id="softmax定义" >
+<div>
+    <a href="#softmax%e5%ae%9a%e4%b9%89">
+        ##
+    </a>
+    softmax定义：
+</div>
+</h1>
+<div>
+$$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$
+</div>
+<p>将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：</p>
+<ul>
+<li>每个神经元的输出为正数，并且输出数值介于0-1之间。</li>
+<li>所有神经元的输出总和为1。</li>
+<li>某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。</li>
+<li>softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。</li>
+</ul>
+<p>下图展示了softmax层工作的基本原理。</p>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/how_softmax_works.png?x-oss-process=style/png2jpg" alt=""></p>
+<h1 id="应用场景" >
+<div>
+    <a href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af">
+        ##
+    </a>
+    应用场景：
+</div>
+</h1>
+<p>从softmax的定义知道所有输出神经元的总和为1，因此softmax可以用在预测在多种可能性中只有一个结果的场景，比如mnist手写判定。</p>
+<h1 id="softmax输出层组成的神经网络" >
+<div>
+    <a href="#softmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bb%84%e6%88%90%e7%9a%84%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c">
+        ##
+    </a>
+    softmax输出层组成的神经网络
+</div>
+</h1>
+<p>下面的图展示了一个简单的softmax输出层神经网络，中间层依然使用sigmoid。</p>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg" alt="softmax NN"></p>
+<h2 id="代价函数c" >
+<div>
+    <a href="#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0c">
+        #
+    </a>
+    代价函数C
+</div>
+</h2>
+<p>为了解决在学习过程中出现的速度问题使用log-likelihood代价函数，函数定义为：</p>
+$$ C=-\sum_i^m y_i \ln a_i $$
+<p>关于实际应用这个等式需要解释一下。假设softmax输出层有4个输出，预测a值为(0.1, 0.2, 0.3, 0.4)，实际结果y为(0, 1, 0, 0)，那么这个等式为 $C = -(0\ln(0.1) + 1\ln(0.2) + 0\ln(0.3) + 0\ln(0.4))$，可以看出来因为0的存在可以让这个等式只保留实际结果为真（1）的项。这时可以把等式简化为：</p>
+$$ C=-\ln a_i | y_i=1 $$
+<h2 id="用反向传播进行梯度下降" >
+<div>
+    <a href="#%e7%94%a8%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%bf%9b%e8%a1%8c%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d">
+        #
+    </a>
+    用反向传播进行梯度下降
+</div>
+</h2>
+<p>反向传播算法要求几个关键值：</p>
+<ul>
+<li>$ \delta_i^L $</li>
+<li>$ \frac {\partial C}{\partial w_{ij}^L} $</li>
+<li>$ \frac {\partial C}{\partial b_{i}^L} $</li>
+</ul>
+<p>如果输出层使用softmax时，最后一层（L层）的相应值与使用sigmoid的情况有些不同，下面对使用softmax是的这3个值进行推导。</p>
+<h3 id="求解-delta_il--a_il---y_i-" >
+<div>
+    <a href="#%e6%b1%82%e8%a7%a3-delta_il--a_il---y_i-">
+        ##
+    </a>
+    求解$ \delta_i^L = ({a_i^L} - y_i) $
+</div>
+</h3>
+<p>过程如下：</p>
+<div>
+$$ {\delta_i^L} = {\frac {\partial C}{\partial z_{i}^L}} = {\frac {\partial }{\partial z_{i}^L}} (-\sum_k^m y_k \ln {a_k^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(\sum_k^m y_k {1 \over {a_k^L}} {\frac {\partial {a_k^L}}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = -(y_i {1 \over a_i^L} \frac {\partial a_i^L}{\partial z_{i}^L} + \sum_{k \neq i}^m y_k {1 \over a_k^L} {\frac {\partial a_k^L}{\partial z_{i}^L}})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i {1 \over a_i^L} {a_i^L(1-a_i^L)} + \sum_{k \neq i}^m y_k {1 \over a_k^L} (-{a_i^L}{a_k^L}) )$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i (1-a_i^L) - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {y_i a_i^L} - \sum_{k \neq i}^m y_k {a_i^L})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {a_i^L}{\sum_{k=1}^m y_k})$$
+$$ {\frac {\partial C}{\partial z_{i}^L}} = ({a_i^L} - y_i)$$
+</div>
+<h3 id="求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程" >
+<div>
+    <a href="#%e6%b1%82-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-%e7%9a%84%e8%bf%87%e7%a8%8b">
+        ##
+    </a>
+    求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：
+</div>
+</h3>
+<div>
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial w_{ij}^L}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = {\delta_i^L} {a_j^{L-1}}$$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}}$$
+</div>
+<h3 id="求-frac-partial-cpartial-b_il--a_il---y_i-的过程" >
+<div>
+    <a href="#%e6%b1%82-frac-partial-cpartial-b_il--a_il---y_i-%e7%9a%84%e8%bf%87%e7%a8%8b">
+        ##
+    </a>
+    求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：
+</div>
+</h3>
+<div>
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial b_{i}^L}}$$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = {\delta_i^L} = ({a_i^L} - y_i) $$
+</div>
+<p>以上求解过程中用了两个重要的计算等式:</p>
+<ul>
+<li>$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $</li>
+<li>$ \frac {\partial a_j} {\partial {z_i}} = -{a_i \cdot a_j} | i \neq j$</li>
+</ul>
+<p>下面对这两个等式进行推导：</p>
+<h4 id="求导情况1--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-" >
+<div>
+    <a href="#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b51--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-">
+        ###
+    </a>
+    求导情况1: $ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $
+</div>
+</h4>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-acaf14aac554ab61ff6f32845fd5128e_b.png" alt="i==j"></p>
+<ul>
+<li>结论：</li>
+</ul>
+$$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $$
+<ul>
+<li>推导过程：</li>
+</ul>
+<div>
+$$ \frac {\partial a_i} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_i}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1){\frac {\partial}{\partial z_i}({e^{z_i}})} \cdot {e^{z_i}}$$
+$$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }})^2$$
+$$ = a_i - (a_i)^2 $$
+$$ = a_i \cdot (1- a_i) $$
+</div>
+<h4 id="求导情况2--frac-partial-a_j-partial-z_i---a_i-cdot-a_j" >
+<div>
+    <a href="#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b52--frac-partial-a_j-partial-z_i---a_i-cdot-a_j">
+        ###
+    </a>
+    求导情况2: $ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$
+</div>
+</h4>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-f09fb0c50194f6cc0828fc285eb9bc1c_b.png" alt="i neq j"></p>
+<ul>
+<li>结论：</li>
+</ul>
+$$ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$$
+<ul>
+<li>推导过程：</li>
+</ul>
+<div>
+$$ \frac {\partial a_j} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_j} \over {\sum_{k=1}^m e^{z_k} }}) $$
+$$ = \frac {\partial}{\partial {z_i}} (e^{z_j}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_j}}$$
+$$ = 0 \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1) \cdot \frac {\partial}{\partial z_i}e^{z_i} \cdot {e^{z_j}}$$
+$$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot e^{z_i} \cdot {e^{z_j}}$$
+$$ = - {e^{z_i} \over {\sum_{k=1}^m e^{z_k}}} \cdot {{e^{z_j}} \over {\sum_{k=1}^m e^{z_k}}}$$
+$$ = -a_i \cdot a_j$$
+</div>
+<h2 id="sigmoid隐藏层与softmax输出层网络" >
+<div>
+    <a href="#sigmoid%e9%9a%90%e8%97%8f%e5%b1%82%e4%b8%8esoftmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bd%91%e7%bb%9c">
+        #
+    </a>
+    sigmoid隐藏层与softmax输出层网络
+</div>
+</h2>
+<p>按照下图的拓扑构成的网络使用sigmoid进行隐藏层计算，使用softmax进行输出层计算，那么怎么进行网络训练呢？其实方法一样都是按照前馈网络计算代价值进行评估，使用反向传播算法进行梯度下降。</p>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg" alt="softmax NN"></p>
+<h3 id="前馈网络计算步骤" >
+<div>
+    <a href="#%e5%89%8d%e9%a6%88%e7%bd%91%e7%bb%9c%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4">
+        ##
+    </a>
+    前馈网络计算步骤：
+</div>
+</h3>
+<ol>
+<li>在隐藏层的计算时使用sigmoid</li>
+<li>在最后输出层使用softmax</li>
+</ol>
+<h3 id="反向传播计算步骤" >
+<div>
+    <a href="#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4">
+        ##
+    </a>
+    反向传播计算步骤：
+</div>
+</h3>
+<ul>
+<li>计算输出层，计算最后一层softmax输出层的下列值：</li>
+</ul>
+<div>
+$$ \delta_i^L = ({a_i^L} - y_i) $$
+$$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} = \delta_i^L \cdot a_j^{L-1} $$
+$$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) =\delta_i^L $$
+</div>
+<ul>
+<li>计算隐藏层，反向一层一层计算sigmoid隐藏层的下列值：</li>
+</ul>
+<div>
+$$ \delta_j^{l-1} = (\sum_{k=1}^m {\delta_k^l \cdot w_{kj}}) \cdot { a_j^{l-1} (1 - a_j^{l-1}) } $$
+$$ \frac {\partial C}{\partial w_{ij}^l} = \delta_i^{l} \cdot a_j^{l-1} $$
+$$ \frac {\partial C}{\partial b_{i}^l} = \delta_i^{l} $$
+</div>
+<p>计算过程中可以发现只有最后一层的$ \delta_i^L$计算较为特殊，计算权重和偏置的方法与之前的sigmoid构成的网络一致。</p>
+<h1 id="代码实例" >
+<div>
+    <a href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e4%be%8b">
+        ##
+    </a>
+    代码实例
+</div>
+</h1>
+<p>下面的例子实验一个输入层有4个输入，隐藏层有5个神经元并且使用sigmoid激活函数，输出层有2个神经元并使用softmax激活函数的网络，拓扑如下：</p>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/experiment-softmax.jpg" alt="拓扑"></p>
+<pre><code># construct the network
+
+# input layer: 4 inputs
+# hidden layer: 5 neurons with sigmoid as activate function
+# * weight: 4x5 matrices
+# * bias: 1x5 matrices
+# output layer: 2 neurons with softmax as activate function
+# * weight: 5x2 matrices
+# * bias: 1x2 matrices
+
+# initialize the weight/bias of the hidden layer (2nd layer)
+w2 = np.random.rand(4, 5)
+b2 = np.random.rand(1, 5)
+
+# initialize the weight/bias of the output layer (3rd layer) 
+w3 = np.random.rand(5, 2)
+b3 = np.random.rand(1, 2)
+num_epochs = 10000
+eta = 0.1
+
+x=[]
+y=[]
+
+# training process
+for i in xrange(num_epochs):
+    # feed forward
+    z2 = np.dot(input, w2) + b2
+    a2 = sigmoid(z2)
+
+    z3 = np.dot(a2, w3) + b3
+    #z3 = np.dot(a2, w3)
+    a3 = softmax(z3)
+    
+    if i%1000 == 0:
+        print &quot;Perception&quot;, a3
+        print &quot;W2&quot;, w2
+        print &quot;B2&quot;, b2
+        print &quot;W3&quot;, w3
+        print &quot;B3&quot;, b3
+
+    x.append(i)
+    y.append(cost(a3, output))
+
+    delta_l3 = a3 - output
+    deriv_w3 = np.dot(a2.T, delta_l3)
+    deriv_b3 = delta_l3
+    w3 -= eta*deriv_w3
+    b3 -= eta*np.mean(deriv_b3, 0)
+    
+    delta_l2 = np.dot(delta_l3, w3.T)*(a2*(1-a2))
+    deriv_w2 = np.dot(input.T, delta_l2)
+    deriv_b2 = delta_l2
+    w2 -= eta*deriv_w2
+    b2 -= eta*np.mean(deriv_b2, 0)
+</code></pre>
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-cost.png" alt="训练代价"></p>
+<p><a href="https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/Softmax/experiment-softmax.ipynb">完整代码</a></p>
+<h1 id="参考" >
+<div>
+    <a href="#%e5%8f%82%e8%80%83">
+        ##
+    </a>
+    参考
+</div>
+</h1>
+<ul>
+<li><a href="http://neuralnetworksanddeeplearning.com/chap3.html#softmax">http://neuralnetworksanddeeplearning.com/chap3.html#softmax</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/25723112">https://zhuanlan.zhihu.com/p/25723112</a></li>
+<li><a href="http://colah.github.io/posts/2015-09-Visual-Information/">http://colah.github.io/posts/2015-09-Visual-Information/</a></li>
+</ul>
+
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/2017/08/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/">神经网络实践：自动驾驶</a></li>
+                
+                <li><a href="/2017/07/%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF%E5%AE%9E%E8%B7%B5/">图像卷积实践</a></li>
+                
+                <li><a href="/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/">python中__main__的作用域及变量使用</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

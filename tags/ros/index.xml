@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ROS on singleye</title>
+    <link>/tags/ros/</link>
+    <description>singleye (ROS)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sat, 23 Mar 2024 11:43:22 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/ros/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</title>
+      <link>/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 23 Mar 2024 11:43:22 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>&lt;!--toc--&gt;
+&lt;p&gt;最近用 &lt;a href=&#34;http://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning&#34;&gt;AsyncSpinner&lt;/a&gt; 做了一个独立 callback queue 的 ROS 程序，其中使用了 dynamic_reconfigure 的的方法进行动态配置修改，但程序跑起来之后发现只有在刚刚跑起来的初始化 dynamic_reconfigure::Server 的时候进行了一次配置加载和更新，后面无论用 rqt_configure 设置都无法成功调用到程序的配置更新 callback。这段代码参考了 &lt;a href=&#34;http://wiki.ros.org/roscpp/Overview/Callbacks%20and%20Spinning&#34;&gt;AsyncSpinner&lt;/a&gt; 中的一段例子代码：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ros::AsyncSpinner spinner(4); // Use 4 threads
+spinner.start();
+ros::waitForShutdown();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;阅读 ROS 代码后发现了问题出在了使用 &amp;ldquo;ros::waitForShutdown()&amp;rdquo; 上面。&amp;ldquo;waitForShutdown()&amp;rdquo; 只是一个检查 ROS 是否正常的循环，并不作任何 spinner 处理。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void waitForShutdown()
+{
+  while (ok())
+  {
+    WallDuration(0.05).sleep();
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;而 dynamic_reconfigure::Server 默认会创建一个 NodeHandle，默认情况下 NodeHandle 需要使用 spinner 进行消息循环的处理，显然 waitForShutdown() 并没有这么处理。&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  Server(const ros::NodeHandle &amp;amp;nh = ros::NodeHandle(&amp;#34;~&amp;#34;)) :
+    node_handle_(nh),
+    mutex_(own_mutex_),
+    own_mutex_warn_(true)
+  {
+    init();
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;解决方法就是把 &amp;ldquo;ros::waitForShutdown()&amp;rdquo; 用 &amp;ldquo;ros::spin()&amp;rdquo; 替代就可以解决。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Convolution on singleye</title>
+    <link>/tags/convolution/</link>
+    <description>singleye (Convolution)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Sun, 30 Jul 2017 18:30:50 +0800</lastBuildDate>
+    
+    <atom:link href="/tags/convolution/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>图像卷积实践</title>
+      <link>/2017/07/%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Sun, 30 Jul 2017 18:30:50 +0800</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/07/%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF%E5%AE%9E%E8%B7%B5/</guid>
+      <description>&lt;p&gt;最近对图像识别技术很感兴趣，了解到在这个领域中CNN的应用可以比较有效的解决问题，这里对卷积（convolution）相关的知识进行一下记录说明。&lt;/p&gt;
+&lt;h1 id=&#34;图像卷积是什么&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e5%9b%be%e5%83%8f%e5%8d%b7%e7%a7%af%e6%98%af%e4%bb%80%e4%b9%88&#34;&gt;
+        ##
+    &lt;/a&gt;
+    图像卷积是什么？
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;将一张图片看作一张像素的矩阵的话，卷积就是把另一个矩阵（卷积核）在这张图片上移动，在移动的过程中取图片上对应大小的矩阵与卷积核进行运算，每次矩阵运算得出的结果保存成一个新的像素，这个过程就是图像的卷积运算。&lt;/p&gt;
+&lt;p&gt;卷积的过程可以用下面的示意图展示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ujwlkarn.files.wordpress.com/2016/07/convolution_schematic.gif?w=536&amp;amp;h=392&#34; alt=&#34;图像卷积过程&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/convolution-001.png&#34; alt=&#34;卷积计算&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;为什么做卷积&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e4%b8%ba%e4%bb%80%e4%b9%88%e5%81%9a%e5%8d%b7%e7%a7%af&#34;&gt;
+        ##
+    &lt;/a&gt;
+    为什么做卷积？
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;一张原始图像包含了大量的噪音信息，这些噪音信息会干扰后续的运算过程。如果将一张图像看作一个输入信号的话，如果找到一种过滤器将噪音信息过滤掉就可以提高后续运算的准确度。卷积就是这么一个过滤器，这个过滤器的正式称呼是卷积核。&lt;/p&gt;
+&lt;p&gt;那么这个过滤器可以做些什么呢？其实常见的图像处理软件早已经在使用卷积进行图片处理了，比如图像锐化、模糊、浮雕效果等等&amp;hellip;&lt;/p&gt;
+&lt;p&gt;下面收集了一些常用的过滤器，对这张图片处理后可以看一下效果。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/mini.png?x-oss-process=style/png2jpg&#34; alt=&#34;原图&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图像边界检测&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+\left[
+\begin{matrix}
+-1 &amp; -1 &amp; -1 \\
+-1 &amp; 8 &amp; -1 \\
+-1 &amp; -1 &amp; -1
+\end{matrix}
+\right]
+$$
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/edge.png?x-oss-process=style/png2jpg&#34; alt=&#34;边界检测&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图像模糊&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+\left[
+\begin{matrix}
+0 &amp; 1 &amp; 0 \\
+1 &amp; 1 &amp; 1 \\
+0 &amp; 1 &amp; 0
+\end{matrix}
+\right]
+$$
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/blur.png?x-oss-process=style/png2jpg&#34; alt=&#34;模糊&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图像锐化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+\left[
+\begin{matrix}
+-1 &amp; -1 &amp; -1 \\
+-1 &amp; 9 &amp; -1 \\
+-1 &amp; -1 &amp; -1
+\end{matrix}
+\right]
+$$
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/sharpen.png?x-oss-process=style/png2jpg&#34; alt=&#34;锐化&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;浮雕&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;
+$$
+\left[
+\begin{matrix}
+-1 &amp; -1 &amp; 0 \\
+-1 &amp; 0 &amp; 1 \\
+0 &amp; 1 &amp; 1
+\end{matrix}
+\right]
+$$
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/07/emboss.png?x-oss-process=style/png2jpg&#34; alt=&#34;浮雕&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;用numpy进行卷积计算&#34; &gt;
+&lt;div&gt;
+    &lt;a href=&#34;#%e7%94%a8numpy%e8%bf%9b%e8%a1%8c%e5%8d%b7%e7%a7%af%e8%ae%a1%e7%ae%97&#34;&gt;
+        ##
+    &lt;/a&gt;
+    用numpy进行卷积计算
+&lt;/div&gt;
+&lt;/h1&gt;
+&lt;p&gt;以上的图片使用下面的算法生成，主要使用了numpy的array进行的计算。通过该算法生成的图片效果还不够理想：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;比如锐化及浮雕效果，锐化的边缘有些益处而其他部分亮度有些降低&lt;/li&gt;
+&lt;li&gt;浮雕的效果感觉也不够明显&lt;/li&gt;
+&lt;li&gt;程序执行速度有些慢&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;    def convolution(self, kernel):
+        &amp;#34;&amp;#34;&amp;#34;
+        Create a new Image instance by applying the kernel
+        &amp;#34;&amp;#34;&amp;#34;
+        print &amp;#34;Run convolution transform&amp;#34;
+        print &amp;#34;Start: %s&amp;#34; % time.ctime()
+
+        k_height, k_width = kernel.shape
+        n_width = self.width - k_width + 1
+        n_height = self.height - k_height + 1
+
+        if self.color_space == COLOR_SPACE_BW:
+            new_img_data = np.zeros((n_height, n_width), dtype=self.img.dtype)
+            channel_kernel = kernel
+        elif self.color_space == COLOR_SPACE_RGB:
+            new_img_data = np.zeros((n_height, n_width, 3), dtype=self.img.dtype)
+            channel_kernel = np.zeros((k_height, k_width, 3))
+            for c in range(3):
+                channel_kernel[:,:,c] = kernel
+        elif self.color_space == COLOR_SPACE_RGBA:
+            # drop the alpha channel
+            new_img_data = np.zeros((n_height, n_width, 3), dtype=self.img.dtype)
+            channel_kernel = np.zeros((k_height, k_width, 3))
+            for c in range(3):
+                channel_kernel[:,:,c] = kernel
+        else:
+            print &amp;#34;Unknow color space&amp;#34;
+            return None
+
+        for y in range(n_height):
+            for x in range(n_width):
+                if self.color_space == COLOR_SPACE_RGBA:
+                    new_img_data[y][x] = sum(sum(self.img[y:y+k_height, x:x+k_width,:3]*channel_kernel))
+                else:
+                    new_img_data[y][x] = sum(sum(self.img[y:y+k_height, x:x+k_width]*channel_kernel))
+
+        imax = np.max(self.img)
+        nmax = np.max(new_img_data)
+        scale = 1.0*imax/nmax
+        print &amp;#34;imax[{0}], nmax[{1}]&amp;#34;.format(imax, nmax)
+        print &amp;#34;Scale:&amp;#34;, scale
+        new_img_data = (new_img_data * scale).astype(self.img.dtype)
+
+        print &amp;#34;End: %s&amp;#34; % time.ctime()
+
+        new_image = Image()
+        new_image.load_data(new_img_data)
+
+        return new_image
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;完整的程序可以在&lt;a href=&#34;https://github.com/singleye/MachineLearning/blob/master/convolution/convolution.py&#34;&gt;GitHub&lt;/a&gt;上找到。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>哈希计算图片相似性 - singleye</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="tech">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">哈希计算图片相似性</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2019-06-03">2019-06-03</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2019/06/%E5%93%88%E5%B8%8C%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%89%87%E7%9B%B8%E4%BC%BC%E6%80%A7/">/2019/06/%E5%93%88%E5%B8%8C%E8%AE%A1%E7%AE%97%E5%9B%BE%E7%89%87%E7%9B%B8%E4%BC%BC%E6%80%A7/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
+                
+                    
+                    <li><a href="/categories/cv/">CV</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="">#ahash, dhash, phash</a></li>
+                
+                    
+                    <li><a href="/tags/tag2/">#Tag2</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#大津法">大津法</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!--toc-->
+<h1 id="ahash平均哈希" >
+<div>
+    <a href="#ahash%e5%b9%b3%e5%9d%87%e5%93%88%e5%b8%8c">
+        ##
+    </a>
+    aHash（平均哈希）
+</div>
+</h1>
+<ol>
+<li>将图片缩小到8x8的尺寸</li>
+<li>将缩小后的图片转换成灰度图</li>
+<li>计算8x8图片所有像素灰度值的平均值</li>
+<li>创建一个新的8x8矩阵，矩阵的每个值取值为0或1，计算方法是将原矩阵中对应像素的的灰度值与平均值进行对比，当大于等于平均值时记1，小于平均值时记0</li>
+</ol>
+<pre tabindex="0"><code>def ahash(filepath):
+    img = cv2.imread(filepath)
+    small = cv2.resize(img, (8, 8), interpolation=cv2.INTER_AREA)
+    gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+    fp = 0
+    mean = gray.mean()
+    w, h = gray.shape
+    for x in range(w):
+        for y in range(h):
+            if gray[x][y] &gt;= mean:
+                fp += ((fp &lt;&lt; 1) + 1)
+            else:
+                fp += ((fp &lt;&lt; 1) + 0)
+    return fp
+</code></pre><h1 id="dhash差值哈希" >
+<div>
+    <a href="#dhash%e5%b7%ae%e5%80%bc%e5%93%88%e5%b8%8c">
+        ##
+    </a>
+    dHash（差值哈希）
+</div>
+</h1>
+<pre tabindex="0"><code>def dhash(filepath):
+    img = cv2.imread(filepath)
+    small = cv2.resize(img, (9, 8), interpolation=cv2.INTER_AREA)
+    gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+    fp = 0
+    mean = gray.mean()
+    w, h = gray.shape
+    for x in range(w-1):
+        for y in range(h):
+            # if the pixel on the left is brighter mark it as 1
+            if gray[x][y] &gt; gray[x+1][y]:
+                fp += ((fp &lt;&lt; 1) + 1)
+            else:
+                fp += ((fp &lt;&lt; 1) + 0)
+</code></pre><h1 id="phash感知哈希" >
+<div>
+    <a href="#phash%e6%84%9f%e7%9f%a5%e5%93%88%e5%b8%8c">
+        ##
+    </a>
+    pHash（感知哈希）
+</div>
+</h1>
+<p>pHash算法主要是使用了离散余弦变换（DCT）进行转换。</p>
+<p>利用感知哈希算法计算图片相似度
+计算步骤：</p>
+<p>缩放图片：一般大小为32*32，这样方便DCT计算</p>
+<p>简化色彩，转化为灰度图：可以使用Image的convert(&lsquo;L&rsquo;)方法</p>
+<p>计算DCT（离散余弦变换）:</p>
+<p>获得图像的二维数据矩阵f(x,y)</p>
+<p>求离散余弦变换的系数矩阵[A]</p>
+<p>求系数矩阵对应的转置矩阵[A]T</p>
+<p>根据公式[F(u,v)]=[A][f(x,y)][A]T 计算离散余弦变换
+缩小DCT：DCT计算后的矩阵是32<em>32，保留左上角的8</em>8，这些代表的图片的最低频率</p>
+<p>计算平均值：计算缩小DCT后的所有像素点的平均</p>
+<p>进一步减小DCT：大于平均值记录为1，否则为0</p>
+<p>得到64位信息指纹</p>
+<p>记录两张图片的图像指纹的汉明距离，计算图片相似度</p>
+<pre tabindex="0"><code>def phash(filepath, shape=(1, 1)):
+    fp = np.zeros(shape, dtype=np.ulonglong)
+    try:
+        img = cv2.imread(filepath)
+        resize = cv2.resize(img, (32, 32))
+        gray = cv2.cvtColor(resize, cv2.COLOR_BGR2GRAY)
+    except Exception as e:
+        print(&#39;-&#39;*80)
+        print(&#39;Exception: image [%s]&#39; % filepath)
+        print(e)
+        print(&#39;-&#39;*80)
+        return fp
+
+    left_upper = cv2.dct(gray.astype(float))[:8, :8]
+    mean = left_upper.mean()
+    h, w = left_upper.shape
+    for x in range(w):
+        for y in range(h):
+            val = int(fp[y//8, x//8])
+            if left_upper[y, x] &gt;= mean:
+                fp[y//8, x//8] = ((val &lt;&lt; 1) | 1)
+            else:
+                fp[y//8, x//8] = ((val &lt;&lt; 1) | 0)
+    return fp
+</code></pre><h1 id="直方图" >
+<div>
+    <a href="#%e7%9b%b4%e6%96%b9%e5%9b%be">
+        ##
+    </a>
+    直方图
+</div>
+</h1>
+<p><a href="https://github.com/nivance/image-similarity">https://github.com/nivance/image-similarity</a></p>
+<p><a href="https://github.com/nivance/image-similarity/blob/master/src/main/java/image/similarity/ImageHistogram.java">https://github.com/nivance/image-similarity/blob/master/src/main/java/image/similarity/ImageHistogram.java</a></p>
+<p>直方图算法是对源图像与要筛选的图像进行直方图数据采集，对采集的各自图像直方图进行归一化再使用巴氏系数算法对直方图数据进行计算，最终得出图像相似度值，其值范围在[0, 1]之间0表示极其不同，1表示极其相似（相同）。</p>
+<p>算法步骤大致可以分为两步，根据源图像与候选图像的像素数据，生成各自直方图数据。第二步：使用第一步输出的直方图结果，运用巴氏系数（Bhattacharyya coefficient）算法，计算出相似程度值。</p>
+<p>第一步：直方图计算 直方图分为灰度直方图与RGB直方图，对于灰度图像直方图计算十分简单，只要初始化一个大小为256的直方图数组H，然后根据像素值完成频率分布统计，假设像素值为124，则H[124] += 1, 而对于彩色RGB像素来说直方图表达有两种方式，一种是单一直方图，另外一种是三维直方图，三维直方图比较简单明了，分别对应RGB三种颜色，定义三个直方图HR,HG, HB, 假设某一个像素点P的RGB值为(4, 231,129), 则对于的直方图计算为HR[4] += 1,HG[231] += 1, HB[129] += 1, 如此对每个像素点完成统计以后，RGB彩色直方图数据就生成了。 而RGB像素的单一直方图SH表示稍微复杂点，每个颜色的值范围为0 ~ 255之间的，假设可以分为一定范围等份，当8等份时，每个等份的值范围为32， 16等份时，每个等份值范围为16，当4等份时候，每个等份值的范围为64，假设RGB值为(14, 68, 221), 16等份之后，它对应直方图索引值(index)分别为: (0, 4, 13), 根据计算索引值公式:index = R + G * 16 + B * 16 * 16 对应的直方图index = 0 + 4 * 16 + 13 * 16 * 16， SH[3392] += 1如此遍历所有RGB像素值，完成直方图数据计算。</p>
+<p>第二步：巴氏系数计算，计算公式如下：$\sum_{i=1}^N\sqrt{p(i)p^{&rsquo;}(i)}$ 。其中p, p&rsquo;分别代表源与候选的图像直方图数据，对每个相同i的数据点乘积开平方以后相加得出的结果即为图像相似度值（巴氏系数因子值），范围为0到1之间。</p>
+<ul>
+<li><a href="http://www.cse.yorku.ca/~kosta/CompVis_Notes/bhattacharyya.pdf">Bhattacharyya Coefficient</a></li>
+</ul>
+<h1 id="其他思想" >
+<div>
+    <a href="#%e5%85%b6%e4%bb%96%e6%80%9d%e6%83%b3">
+        ##
+    </a>
+    其他思想
+</div>
+</h1>
+<h2 id="大津法" >
+<div>
+    <a href="#%e5%a4%a7%e6%b4%a5%e6%b3%95">
+        #
+    </a>
+    大津法
+</div>
+</h2>
+<ul>
+<li><a href="http://www.labbookpages.co.uk/software/imgProc/otsuThreshold.html">Otsu Thresholding</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2013/03/similar_image_search_part_ii.html">阮一峰blog</a></li>
+</ul>
+<p>1979年，日本学者大津展之证明了，&ldquo;类内差异最小&quot;与&quot;类间差异最大&quot;是同一件事，即对应同一个阈值。他提出一种简单的算法，可以求出这个阈值，这被称为&quot;大津法&rdquo;（Otsu&rsquo;s method）。下面就是他的计算方法。</p>
+<p>假定一张图片共有n个像素，其中灰度值小于阈值的像素为 n1 个，大于等于阈值的像素为 n2 个（ n1 + n2 = n ）。w1 和 w2 表示这两种像素各自的比重。
+　　w1 = n1 / n
+　　w2 = n2 / n
+再假定，所有灰度值小于阈值的像素的平均值和方差分别为 μ1 和 σ1，所有灰度值大于等于阈值的像素的平均值和方差分别为 μ2 和 σ2。于是，可以得到
+　　类内差异 = w1(σ1的平方) + w2(σ2的平方)
+　　类间差异 = w1w2(μ1-μ2)^2
+可以证明，这两个式子是等价的：得到&quot;类内差异&quot;的最小值，等同于得到&quot;类间差异&quot;的最大值。不过，从计算难度看，后者的计算要容易一些。</p>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+            <h3 class="read-next-title noselect">Read next</h3>
+            <ul class="read-next-posts noselect">
+                
+                <li><a href="/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/">解决flask_restful无法对Decimal类型数据进行序列化问题</a></li>
+                
+                <li><a href="/2017/09/%E6%95%B0%E5%AD%A6%E6%9C%9F%E6%9C%9B%E6%96%B9%E5%B7%AE%E6%A0%87%E5%87%86%E5%B7%AE%E5%8D%8F%E6%96%B9%E5%B7%AE/">数学期望、方差、标准差、协方差</a></li>
+                
+            </ul>
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

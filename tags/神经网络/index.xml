@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>神经网络 on singleye</title>
+    <link>/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/</link>
+    <description>singleye (神经网络)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 17 Aug 2017 20:01:00 +0000</lastBuildDate>
+    
+    <atom:link href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>神经网络实践：自动驾驶</title>
+      <link>/2017/08/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/</link>
+      <pubDate>Thu, 17 Aug 2017 20:01:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/08/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;最近学习了下神经网络，于是写了一个开车的小游戏，然后训练了一个6层神经网络自己驾驶练练手。&lt;/p&gt;
+&lt;p&gt;代码实现主要用了pygame和numpy，网络有7个输入分别对应小车前面的7个距离探头数据，2个输出进行转向输出。&lt;/p&gt;
+&lt;embed&gt;
+&lt;div class=&#34;td-player&#34;&gt;&lt;object type=&#34;application/x-shockwave-flash&#34; id=&#34;CustomPlayer&#34; data=&#34;http://static.youku.com/v20170420.0/v/custom/upsplayer/player.swf&#34; width=&#34;480&#34; height=&#34;400&#34;&gt;&lt;param name=&#34;menu&#34; value=&#34;false&#34;&gt;&lt;param name=&#34;scale&#34; value=&#34;noScale&#34;&gt;&lt;param name=&#34;allowFullscreen&#34; value=&#34;true&#34;&gt;&lt;param name=&#34;allowFullScreenInteractive&#34; value=&#34;true&#34;&gt;&lt;param name=&#34;allownetworking&#34; value=&#34;all&#34;&gt;&lt;param name=&#34;allowScriptAccess&#34; value=&#34;always&#34;&gt;&lt;param name=&#34;bgcolor&#34; value=&#34;#000000&#34;&gt;&lt;param name=&#34;wmode&#34; value=&#34;transparent&#34;&gt;&lt;param name=&#34;flashvars&#34; value=&#34;playerId=tdnws&amp;amp;autoPlay=true&amp;amp;skin=http://static.youku.com/v20170420.0/v/custom/upsplayer/skin/tdnws.swf&amp;amp;lang=td&amp;amp;vcode=XMjk3NjU0MTcwNA==&amp;amp;cna=JUIjEjtGCjoCAWVQ1%2BAkCtoY&amp;amp;ytid=-1&amp;amp;winType=interior&amp;amp;adext=&#34;&gt;&lt;/object&gt;&lt;div class=&#34;td-player__html5&#34; id=&#34;player_noflash&#34;&gt;&lt;div class=&#34;td-player__html5__skin&#34;&gt;&lt;div class=&#34;td-player__html5__con&#34;&gt;&lt;span class=&#34;td-player__html5__txt&#34;&gt;您还没有安装flash播放器,请点击 &lt;a href=&#34;//www.adobe.com/go/getflash&#34; target=&#34;_blank&#34;&gt;这里&lt;/a&gt; 安装&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/embed&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

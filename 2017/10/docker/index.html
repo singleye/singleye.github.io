@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>Docker - singleye</title>
+
+<meta name="description" content="## 1. 配置docker repository ## 2. Docker image image（镜像）保存docker中的可运行系统的数据，当运行时docker把image加载到container（容器）中运行。
+# 2.1 获取docker image 命令： docker pull Docker Registry: 地址的格式一般是 &lt;域名/IP&gt; :端口号 ，默认是docker hub。 仓库名：格式&lt;用户名&gt;/&lt;软件名&gt;，默认是Docker hub的&quot;Library&quot;。 docker pull [选项] [Docker Registry地址]&lt;仓库名&gt;:&lt;标签&gt; # 2.">
+
+
+    <meta name="keywords" content="Docker">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">Docker</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2017-10-31">2017-10-31</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2017/10/docker/">/2017/10/docker/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/docker/">Docker</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/docker/">#Docker</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#21-获取docker-image">2.1 获取docker image</a></li>
+    <li><a href="#22-查询image">2.2 查询image</a></li>
+    <li><a href="#23-删除镜像">2.3 删除镜像</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#31-创建一个容器">3.1 创建一个容器</a></li>
+    <li><a href="#32-直接启动一个conainer容器并运行指定的image镜像">3.2 直接启动一个Conainer(容器)并运行指定的image(镜像)</a></li>
+    <li><a href="#33-在运行的容器内执行命令">3.3 在运行的容器内执行命令</a></li>
+    <li><a href="#33-查询容器">3.3 查询容器</a></li>
+    <li><a href="#34-停止运行一个容器">3.4 停止/运行一个容器</a></li>
+    <li><a href="#35-暂停继续运行一个容器">3.5 暂停/继续运行一个容器</a></li>
+    <li><a href="#36-重启一个容器">3.6 重启一个容器</a></li>
+    <li><a href="#37-杀死容器">3.7 杀死容器</a></li>
+    <li><a href="#37-删除容器">3.7 删除容器</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#51-修改提交镜像">5.1 修改/提交镜像</a></li>
+    <li><a href="#52-网络">5.2 网络</a></li>
+    <li><a href="#53-资源限制">5.3 资源限制</a></li>
+    <li><a href="#54-添加设备">5.4 添加设备</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!-- more /-->
+<h1 id="1-配置docker-repository" >
+<div>
+    <a href="#1-%e9%85%8d%e7%bd%aedocker-repository">
+        ##
+    </a>
+    1. 配置docker repository
+</div>
+</h1>
+<p><img src="/media/2017/10/docker/preference-repository.png" alt="preference"></p>
+<h1 id="2-docker-image" >
+<div>
+    <a href="#2-docker-image">
+        ##
+    </a>
+    2. Docker image
+</div>
+</h1>
+<p>image（镜像）保存docker中的可运行系统的数据，当运行时docker把image加载到container（容器）中运行。</p>
+<h2 id="21-获取docker-image" >
+<div>
+    <a href="#21-%e8%8e%b7%e5%8f%96docker-image">
+        #
+    </a>
+    2.1 获取docker image
+</div>
+</h2>
+<ul>
+<li>命令： docker pull
+<ul>
+<li>Docker Registry: 地址的格式一般是 &lt;域名/IP&gt; :端口号 ，默认是docker hub。</li>
+<li>仓库名：格式&lt;用户名&gt;/&lt;软件名&gt;，默认是Docker hub的&quot;Library&quot;。</li>
+</ul>
+</li>
+</ul>
+<pre><code>
+docker pull [选项] [Docker Registry地址]<仓库名>:<标签>
+</code></pre>
+<h2 id="22-查询image" >
+<div>
+    <a href="#22-%e6%9f%a5%e8%af%a2image">
+        #
+    </a>
+    2.2 查询image
+</div>
+</h2>
+<ul>
+<li>命令：docker images</li>
+</ul>
+<pre><code>
+$ docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              14.04               dea1945146b9        6 weeks ago         188MB
+</code></pre>
+<h2 id="23-删除镜像" >
+<div>
+    <a href="#23-%e5%88%a0%e9%99%a4%e9%95%9c%e5%83%8f">
+        #
+    </a>
+    2.3 删除镜像
+</div>
+</h2>
+<p>命令： docker rmi</p>
+<pre><code>
+# 先查询镜像列表
+$ docker images
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+ubuntu-mydev                      latest              0cbd01981d7e        7 weeks ago         761MB
+hyperledger/composer-playground   0.15.0              10c6824e69dd        8 weeks ago         251MB
+hyperledger/composer-playground   latest              10c6824e69dd        8 weeks ago         251MB
+ubuntu                            latest              dd6f76d9cc90        2 months ago        122MB
+
+# 使用rmi删除镜像
+$ docker rmi dea1945146b9
+Untagged: ubuntu:14.04
+Untagged: ubuntu@sha256:6e3e3f3c5c36a91ba17ea002f63e5607ed6a8c8e5fbbddb31ad3e15638b51ebc
+Deleted: sha256:dea1945146b96542e6e20642830c78df702d524a113605a906397db1db022703
+Deleted: sha256:6401e3024b4d4ef4c981cde2e830858eb790ee84284e1401cf569a6db8df51d9
+Deleted: sha256:f12ee38eb7aa0ffdd43c657b433d91ac4c2930887c02eb638fd1518f374bc738
+Deleted: sha256:9ac64e2751425199591402799079940629829c7c2fc0e083fb714e5dd94d70a9
+Deleted: sha256:12a6279e654d2f23c2fa086bf2dcd82e1a2c82b01028379bbf2cde061d9235e6
+Deleted: sha256:c47d9b229ca4eaf5d3b85b6fa7f794d00910a42634dd0fd5107a9a937b13b20f 
+</code></pre>
+<p>但有时候会发现无法删除，原因可能是因为这个镜像可能被某个容器使用，即使是这个容器处于停止的状态也无法删除，这种时候可以先查询所有的容器信息，然后删除对应的容器再删除镜像，例如下面的例子：</p>
+<pre><code>
+$ docker images
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+ubuntu-mydev                      latest              0cbd01981d7e        7 weeks ago         761MB
+hyperledger/composer-playground   0.15.0              10c6824e69dd        8 weeks ago         251MB
+ubuntu                            latest              dd6f76d9cc90        2 months ago        122MB
+hyperledger/fabric-ca             x86_64-1.0.4        8e691b3509bf        2 months ago        238MB
+hyperledger/fabric-couchdb        x86_64-1.0.4        cf24b91dfeb1        2 months ago        1.5GB
+hyperledger/fabric-orderer        x86_64-1.0.4        b17741e7b036        2 months ago        151MB
+hyperledger/fabric-peer           x86_64-1.0.4        1ce935adc397        2 months ago        154MB
+hyperledger/fabric-ccenv          x86_64-1.0.4        856061b1fed7        2 months ago        1.28GB
+
+# 想删除'hyperledger/composer-playground'/1ce935adc397这个镜像
+$ docker rmi 1ce935adc397
+Error response from daemon: conflict: unable to delete 1ce935adc397 (must be forced) - image is being used by stopped container ebf84b524cd1
+
+# 使用ps -a查询所有的容器发现这个镜像正在被使用
+$ docker ps -a
+CONTAINER ID        IMAGE                                     COMMAND                  CREATED             STATUS                     PORTS                                            NAMES
+5f023623d725        10c6824e69dd                              "pm2-docker compos..."   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:8080->8080/tcp                           composer
+ebf84b524cd1        hyperledger/fabric-peer:x86_64-1.0.4      "peer node start -..."   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7051->7051/tcp, 0.0.0.0:7053->7053/tcp   peer0.org1.example.com
+8c1ec47087ed        hyperledger/fabric-ca:x86_64-1.0.4        "sh -c 'fabric-ca-..."   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7054->7054/tcp                           ca.org1.example.com
+626a1425e63b        hyperledger/fabric-orderer:x86_64-1.0.4   "orderer"                7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7050->7050/tcp                           orderer.example.com
+88d33e9fb79b        hyperledger/fabric-couchdb:x86_64-1.0.4   "tini -- /docker-e..."   7 weeks ago         Exited (255) 7 weeks ago   4369/tcp, 9100/tcp, 0.0.0.0:5984->5984/tcp       couchdb
+
+# 先删除容器
+$ docker rm 5f023623d725
+5f023623d725
+
+# 删除使用的容器后就可以成功删除镜像了
+$ docker rmi 10c6824e69dd
+Untagged: hyperledger/composer-playground:0.15.0
+Untagged: hyperledger/composer-playground@sha256:99e9085d3ba41756346c2cbd1b742ee47e3711ef80beffd7c3f213b12d0ab742
+Deleted: sha256:10c6824e69dda798c9e410022f98e611588d6329d971dd3dd820222b8f7bc262
+Deleted: sha256:c1a2d861f0a7ceb3522aae14766378f43ecce9f2fc7cf8378c717c87706c9858
+Deleted: sha256:a0cd8928aca4f0f2bb928c87708b8567cb24943ebc90087d11e731d18e057fe7
+Deleted: sha256:739201d02a774f402f04caed742be27d05b662df6dacb7cb3443230ebcfc8533
+Deleted: sha256:18b9f03395a2502b91191724608944527109d92cde1835dc4bfc566a441d9d80
+Deleted: sha256:5c95c8934a297dd3bc9e748edad7f00040c7be218f81b7e0488712c30829d407
+Deleted: sha256:2aebd096e0e237b447781353379722157e6c2d434b9ec5a0d63f2a6f07cf90c2
+</code></pre>
+<h1 id="3-container容器" >
+<div>
+    <a href="#3-container%e5%ae%b9%e5%99%a8">
+        ##
+    </a>
+    3. Container（容器）
+</div>
+</h1>
+<p>首先了解一下容器的生命周期：</p>
+<p><img src="http://7xpbnt.com1.z0.glb.clouddn.com/docker-architecture-v12-15-638.jpg" alt="container life-cycle"></p>
+<h2 id="31-创建一个容器" >
+<div>
+    <a href="#31-%e5%88%9b%e5%bb%ba%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.1 创建一个容器
+</div>
+</h2>
+<p>create命令用来创建一个容器，但不运行：</p>
+<pre><code>
+docker create [OPTIONS] IMAGE [COMMAND] [ARG...]
+</code></pre>
+<h2 id="32-直接启动一个conainer容器并运行指定的image镜像" >
+<div>
+    <a href="#32-%e7%9b%b4%e6%8e%a5%e5%90%af%e5%8a%a8%e4%b8%80%e4%b8%aaconainer%e5%ae%b9%e5%99%a8%e5%b9%b6%e8%bf%90%e8%a1%8c%e6%8c%87%e5%ae%9a%e7%9a%84image%e9%95%9c%e5%83%8f">
+        #
+    </a>
+    3.2 直接启动一个Conainer(容器)并运行指定的image(镜像)
+</div>
+</h2>
+<p>命令：docker run</p>
+<pre><code>docker run &lt;仓库名&gt;:&lt;标签&gt;
+或 docker run &lt;Image ID&gt;
+</code></pre>
+<p>例子：</p>
+<pre><code>
+$ docker run -it --rm dea1945146b9 bash
+root@dc13a33ffc94:/#
+</code></pre>
+<ul>
+<li>-d：后台运行</li>
+<li>-p：指定端口：
+<ul>
+<li>-p port：把容器的port端口发布到host的随机端口</li>
+<li>-p host_port:port：把容器的port发布到host的host_port端口</li>
+<li>-p host_ip:host_port:port：把容器的port端口发布到主机的host_ip:host_port上</li>
+<li>-P：发布容器的所有端口到主机的随机端口上</li>
+</ul>
+</li>
+<li>-it：这是两个参数，一个是 -i：交互式操作，一个是 -t 终端。我们这里打算进入 bash 执行一些命令并查看返回结果，因此我们需要交互式终端。</li>
+<li>-v：指定卷
+<ul>
+<li>-v volume_path：启动容器并指定volume_path为卷</li>
+<li>-v host_path:volume_path：启动容器并将volume_path映射到host的host_path上</li>
+</ul>
+</li>
+<li>&ndash;volume-from：从别的容器中加载卷</li>
+</ul>
+<pre><code>
+# 启动容器db
+$ docker run -v /var/lib/postgresql/data --name mydb postgres
+# 启动backup容器，从mydb容器中挂载卷
+$ docker run --volumes-from mydb backup
+</code></pre>
+<ul>
+<li>
+<p>&ndash;rm：这个参数是说容器退出后随之将其删除。默认情况下，为了排障需求，退出的容器并不会立即删除，除非手动 docker rm。我们这里只是随便执行个命令，看看结果，不需要排障和保留结果，因此使用 &ndash;rm 可以避免浪费空间。</p>
+</li>
+<li>
+<p>前台(Foreground)/后台(Detached)</p>
+</li>
+</ul>
+<p>默认情况下容器再前台运行，如果需要后台运行可以指定&rsquo;-d&rsquo;参数，这时容器不再使用&rsquo;docker run&rsquo;这个终端作为I/O界面，只能通过网络或共享卷与这个容器通讯。</p>
+<p>如果一个容器处于后台状态可以用&rsquo;attach&rsquo;命令重新恢复前台状态。</p>
+<h2 id="33-在运行的容器内执行命令" >
+<div>
+    <a href="#33-%e5%9c%a8%e8%bf%90%e8%a1%8c%e7%9a%84%e5%ae%b9%e5%99%a8%e5%86%85%e6%89%a7%e8%a1%8c%e5%91%bd%e4%bb%a4">
+        #
+    </a>
+    3.3 在运行的容器内执行命令
+</div>
+</h2>
+<p>命令：docker exec</p>
+<p>例子：</p>
+<pre><code>
+docker exec -it webserver bash
+</code></pre>
+<h2 id="33-查询容器" >
+<div>
+    <a href="#33-%e6%9f%a5%e8%af%a2%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.3 查询容器
+</div>
+</h2>
+<p>一个运行状态的容器可以使用docker ps进行查询，但如果一个容器处于停止状态时则需要通过docker ps -a来进行查询了</p>
+<pre><code>
+# 查询运行状态的容器
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+# 查询所有包括停止的容器
+$ docker ps -a
+CONTAINER ID        IMAGE                                     COMMAND                  CREATED             STATUS                     PORTS                                            NAMES
+ebf84b524cd1        hyperledger/fabric-peer:x86_64-1.0.4      "peer node start -..."   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7051->7051/tcp, 0.0.0.0:7053->7053/tcp   peer0.org1.example.com
+8c1ec47087ed        hyperledger/fabric-ca:x86_64-1.0.4        "sh -c 'fabric-ca-..."   7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7054->7054/tcp                           ca.org1.example.com
+626a1425e63b        hyperledger/fabric-orderer:x86_64-1.0.4   "orderer"                7 weeks ago         Exited (255) 7 weeks ago   0.0.0.0:7050->7050/tcp                           orderer.example.com
+88d33e9fb79b        hyperledger/fabric-couchdb:x86_64-1.0.4   "tini -- /docker-e..."   7 weeks ago         Exited (255) 7 weeks ago   4369/tcp, 9100/tcp, 0.0.0.0:5984->5984/tcp       couchdb
+</code></pre>
+<h2 id="34-停止运行一个容器" >
+<div>
+    <a href="#34-%e5%81%9c%e6%ad%a2%e8%bf%90%e8%a1%8c%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.4 停止/运行一个容器
+</div>
+</h2>
+<pre><code>
+# 启动一个或多个停止的容器
+docker start [OPTIONS] CONTAINER [CONTAINER...]
+
+# 停止一个或多个运行的容器
+docker stop [OPTIONS] CONTAINER [CONTAINER...]
+</code></pre>
+<h2 id="35-暂停继续运行一个容器" >
+<div>
+    <a href="#35-%e6%9a%82%e5%81%9c%e7%bb%a7%e7%bb%ad%e8%bf%90%e8%a1%8c%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.5 暂停/继续运行一个容器
+</div>
+</h2>
+<pre><code>
+# 暂停一个或多个容器
+docker pause CONTAINER [CONTAINER...]
+
+# 继续运行一个或多个容器
+docker unpause CONTAINER [CONTAINER...]
+</code></pre>
+<h2 id="36-重启一个容器" >
+<div>
+    <a href="#36-%e9%87%8d%e5%90%af%e4%b8%80%e4%b8%aa%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.6 重启一个容器
+</div>
+</h2>
+<pre><code>
+docker restart [OPTIONS] CONTAINER [CONTAINER...]
+
+# 可以指定参数'-t'
+-t, --time int   Seconds to wait for stop before killing the container (default 10)
+</code></pre>
+<h2 id="37-杀死容器" >
+<div>
+    <a href="#37-%e6%9d%80%e6%ad%bb%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.7 杀死容器
+</div>
+</h2>
+<pre><code>
+docker kill [OPTIONS] CONTAINER [CONTAINER...]
+</code></pre>
+<h2 id="37-删除容器" >
+<div>
+    <a href="#37-%e5%88%a0%e9%99%a4%e5%ae%b9%e5%99%a8">
+        #
+    </a>
+    3.7 删除容器
+</div>
+</h2>
+<p>删除指定容器：</p>
+<pre><code>
+$ docker rm 5f023623d725
+5f023623d725
+</code></pre>
+<p>删除所有的容器：</p>
+<pre><code>
+$ docker rm `docker ps -a -q`
+ebf84b524cd1
+8c1ec47087ed
+626a1425e63b
+88d33e9fb79b
+</code></pre>
+<h1 id="4-其他命令" >
+<div>
+    <a href="#4-%e5%85%b6%e4%bb%96%e5%91%bd%e4%bb%a4">
+        ##
+    </a>
+    4. 其他命令
+</div>
+</h1>
+<pre><code>
+$ docker create  # 创建一个容器，但不启动它
+$ docker run     #  创建并启动一个容器
+$ docker stop    # 停止容器
+$ docker start   #  启动容器
+$ docker restart # 重启容器
+$ docker rm      # 删除容器
+$ docker kill    #  给容器发送kill信号
+$ docker attach  # 连接到正在运行的容器中
+$ docker wait    # 阻塞直到容器停止为止
+$ docker exec    # 在运行的容器中执行一条命令
+
+# 检查容器
+$ docker ps      # 显示运行的容器
+$ docker inspect # 显示容器信息（包括ip地址）
+$ docker logs    # 获取容器中的日志
+$ docker events  # 获取容器事件
+$ docker port    # 显示容器的公开端口
+$ docker top     # 显示容器中运行的进程
+$ docker diff    # 查看容器文件系统中改变的文件
+$ docker stats   # 查看各种纬度数据、内存、CPU、文件系统等
+</code></pre>
+<h1 id="5-高级使用" >
+<div>
+    <a href="#5-%e9%ab%98%e7%ba%a7%e4%bd%bf%e7%94%a8">
+        ##
+    </a>
+    5. 高级使用
+</div>
+</h1>
+<h2 id="51-修改提交镜像" >
+<div>
+    <a href="#51-%e4%bf%ae%e6%94%b9%e6%8f%90%e4%ba%a4%e9%95%9c%e5%83%8f">
+        #
+    </a>
+    5.1 修改/提交镜像
+</div>
+</h2>
+<p>当镜像在容器中运行起来之后可以像一般的系统使用一样对镜像中的文件进行修改，镜像修改过之后可以通过commit命令提交保存。</p>
+<pre><code>
+# 启动容器
+docker run -it  <image ID> /bin/bash
+
+# 在容器内做一些改动...
+
+# 获取容器ID
+docker ps -a
+
+# 在容器外进行提交
+docker commit -m "Did some changes..." CONTAINER [REPOSITORY[:TAG]]
+</code></pre>
+<h2 id="52-网络" >
+<div>
+    <a href="#52-%e7%bd%91%e7%bb%9c">
+        #
+    </a>
+    5.2 网络
+</div>
+</h2>
+<p>docker run有下面几个参数可以配置容器的网络参数：</p>
+<pre><code>
+--dns=[]         : Set custom dns servers for the container
+--net="bridge"   : Set the Network mode for the container
+                              'bridge': creates a new network stack for the container on the docker bridge
+                              'none': no networking for this container
+                              'container:<name|id>': reuses another container network stack
+                              'host': use the host network stack inside the container
+--add-host=""    : Add a line to /etc/hosts (host:IP)
+--mac-address="" : Sets the container's Ethernet device's MAC address
+</code></pre>
+<ul>
+<li>
+<p>None：</p>
+<p>将网络模式设置为none时，这个container将不允许访问任何外部router。这个container内部只会有一个loopback接口，而且不存在任何可以访问外部网络的router。</p>
+</li>
+<li>
+<p>Bridge：</p>
+<p>Docker默认是将container设置为bridge模式。此时在host上面讲存在一个docker0的网络接口，同时会针对container创建一对veth接口。其中一个veth接口是在host充当网卡桥接作用，另外一个veth接口存在于container的命名空间中，并且指向container的loopback。Docker会自动给这个container分配一个IP，并且将container内的数据通过桥接转发到外部。</p>
+</li>
+<li>
+<p>Host：</p>
+<p>当网络模式设置为host时，这个container将完全共享host的网络堆栈。host所有的网络接口将完全对container开放。container的主机名也会存在于host的hostname中。这时，container所有对外暴露的port和对其它container的link，将完全失效。</p>
+</li>
+<li>
+<p>Container：</p>
+<p>当网络模式设置为Container时，这个container将完全复用另外一个container的网络堆栈。同时使用时这个container的名称必须要符合下面的格式：&ndash;net container:.</p>
+<p>比如当前有一个绑定了本地地址localhost的redis container。如果另外一个container需要复用这个网络堆栈，则需要如下操作：</p>
+  <pre><code>
+  $ sudo docker run -d --name redis example/redis --bind 127.0.0.1
+  $ # use the redis container's network stack to access localhost
+  $ sudo docker run --rm -ti --net container:redis example/redis-cli -h 127.0.0.1
+  </code></pre>
+</li>
+</ul>
+<p>管理/etc/hosts：</p>
+<pre><code>
+$ /docker run -ti --add-host db-static:86.75.30.9 ubuntu cat /etc/hosts
+172.17.0.22     09d03f76bf2c
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+86.75.30.9      db-static
+</code></pre>
+<h2 id="53-资源限制" >
+<div>
+    <a href="#53-%e8%b5%84%e6%ba%90%e9%99%90%e5%88%b6">
+        #
+    </a>
+    5.3 资源限制
+</div>
+</h2>
+<pre><code>
+-m="": Memory limit (format: <number><optional unit>, where unit = b, k, m or g)
+-c=0 : CPU shares (relative weight)
+</code></pre>
+<h2 id="54-添加设备" >
+<div>
+    <a href="#54-%e6%b7%bb%e5%8a%a0%e8%ae%be%e5%a4%87">
+        #
+    </a>
+    5.4 添加设备
+</div>
+</h2>
+<p>docker run可以将host中的设备映射到container中，并控制container对设备的访问权限：</p>
+<pre><code>
+--device list                    Add a host device to the container
+</code></pre>
+<pre><code>
+$ sudo docker run --device=/dev/sda:/dev/xvdc --rm -it ubuntu fdisk  /dev/xvdc
+Command (m for help): q
+</code></pre>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

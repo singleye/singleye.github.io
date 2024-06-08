@@ -1,0 +1,58 @@
+
+{
+    
+    
+    
+    
+    
+    
+    
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+        
+        
+        
+    
+    "articles": [{"date":"2017-07-30","image":"","imageAlt":"","link":"http://localhost:1313/post/cv/convolution/","summary":"最近对图像识别技术很感兴趣，了解到在这个领域中CNN的应用可以比较有效的解决问题，这里对卷积（convolution）相关的知识进行一下记录说明。","tags":["convolution","numpy","卷积"],"title":"图像卷积实践"},{"date":"2017-06-10","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/python/python_main_global/","summary":"今天使用python写一段小程序时发现了一个容易忽略掉的变量作用域的细节。先看一下问题。","tags":["__main__","python","作用域"],"title":"python中__main__的作用域及变量使用"},{"date":"2017-06-04","image":"","imageAlt":"","link":"http://localhost:1313/post/network/nmap/","summary":"周末写了一个简单的nmap的NSE脚本，脚本使用的host,port数据结构记录。","tags":["nmap","NSE"],"title":"nmap NSE脚本中host/port的内容"},{"date":"2017-05-12","image":"","imageAlt":"","link":"http://localhost:1313/post/hardware/8266/esp8266_sprint_float/","summary":"用C语言进行字符串格式化操作的时候经常会使用sprintf/snprintf这两个函数，但这两天在使用Arduino IDE进行8266开发的时候却碰到了一个浮点数字符串打印小问题。\n问题代码\nchar buffer[128]; float num = 1.0; ... memset(buffer, 0, sizeof(buffer)); snprintf(buffer, sizeof(buffer), “%f”, num); Serial.println(buffer); 实际运行并没有按照以往认为的方式将浮点数输出出来\nsnprintf(buffer, sizeof(buffer), \u0026#34;%d.\u0026#34;); ","tags":[],"title":"esp8266_sprint_float"},{"date":"2017-05-08","image":"","imageAlt":"","link":"http://localhost:1313/post/hardware/8266/esp8266_modes/","summary":"8266模块启动或者出现问题后重启时会输出类似**\u0026lsquo;rst cause:2, boot mode:(3,6)\u0026rsquo;**的消息，这个模块的启动消息可以看出启动的原因和模式。","tags":["Arduino","boot mode","Embeded","ESP8266","nodeMCU","rst cause","8266"],"title":"esp8266启动模式 - 如何理解'rst cause:2, boot mode:(3,6)'"},{"date":"2017-05-07","image":"","imageAlt":"","link":"http://localhost:1313/post/hardware/8266/esp8266_mqtt/","summary":"自动接触nodeMCU后发现8266是一个非常好的物联网开发Wi-Fi模块，因此就想把MQTT通讯协议在上面运行起来做些简单的事情。","tags":["Arduino","Embeded","ESP8266","MQTT","nodeMCU","PubSubClient","8266"],"title":"在ESP 8266 nodeMCU上运行MQTT"},{"date":"2017-05-01","image":"","imageAlt":"","link":"http://localhost:1313/post/network/setup_shadowsocks_server/","summary":"shadowsocks是目前较流行的一种科学上网服务。他的工作原理也比较简单，shadowsocks本质上是socks5代理技术，然而架构方式上将单服务节点拆分成两个子服务：SS Local和SS Server。","tags":["DevOps","Technology"],"title":"如何在CentOS上部署shadowsocks服务"},{"date":"2017-04-12","image":"","imageAlt":"","link":"http://localhost:1313/post/hardware/8266/nodemcu_devenv_on_arduino_ide/","summary":"这两天发现使用Arduino IDE开发nodeMCU(ESP 8266)非常方便，写出来分享一下。","tags":["ESP8266","nodeMCU","8266"],"title":"使用Arduino IDE进行nodeMCU开发"},{"date":"2017-04-08","image":"","imageAlt":"","link":"http://localhost:1313/post/hardware/8266/setup_esp8266_devenv_on_mac_os/","summary":"做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P","tags":["esp-open-sdk","ESP8266","8266"],"title":"在Mac OS上设置ESP 8266开发环境"},{"date":"2017-03-16","image":"","imageAlt":"","link":"http://localhost:1313/post/programming/python/numpy/","summary":"numpy基本函数\ntile\n功能：将数组的“秩”在（行，列）方向上进行堆叠扩展","tags":["numpy"],"title":"numpy学习笔记[1]"}],
+    "test": "基于 Kalman filter 的目标跟踪   在 Apple silicon (M3 Max) 上对 Llama2 进行微调   tmux AI 助手   使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题   django-rest-framework 和 simplejwt 的类关系   PCL 点云数据过滤处理   Python 内存管理   Wechat_development   左乘/右乘旋转   多媒体格式标准、H264 编码与 MP4 格式简要介绍   摄像机模型及实现   旋转矩阵   NLP 资源整理   ssh代理方法   机器学习笔记 - 贝叶斯分类法推导   VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑   Firefox cache2 数据结构解析   哈希计算图片相似性   机器学习 - 决策树   模型评估指标   机器学习资料收集   阿里ECS服务器使用腾讯企业邮箱发送SMTP邮件的问题   解决flask_restful无法对Decimal类型数据进行序列化问题   Build Tensorflow v1.7 on NVIDIA Jetson tx2   说一说反弹shell   使用Python的Selenium驱动浏览器行为   自动饮水机   使用Nvidia Jetson TX2挖以太币   python2 和 python3 的一些区别   Mysql charset/collation字符编码设置   在区块链上存储信息   Spark开发   Hive Intro   Hcatalog简介   Yarn Config   Sqoop介绍及使用   Nginx Static   Horwonworks HDP 2.6安装过程   golang UDP中Read()/ReadFromUDP()/Write()/WriteToUDP()的使用   GO语言依赖管理那些事儿   Beego开发入门   Git Submodule使用方法   Vim 8 Mac   Hyperledger Intro   Django静态文件配置   Go语言编程陷阱   GO开发技巧   Temp Sensor Comparasion   使用vim进行16进制编辑   Go语言中new与make的比较   GO语言中array与slice的比较   Docker   Macbook Air换电池记   softmax输出层公式推导及代码实验   神经网络之反向传播算法   在 Nvidia Jetson TX2 上编译安装tensorflow   数学期望、方差、标准差、协方差   The Current State of Machine Intelligence (from Shivon Zilis)   用scrapy爬取京东商品信息   神经网络实践：自动驾驶   图像卷积实践   python中__main__的作用域及变量使用   nmap NSE脚本中host/port的内容   esp8266_sprint_float   esp8266启动模式 - 如何理解'rst cause:2, boot mode:(3,6)'   在ESP 8266 nodeMCU上运行MQTT   如何在CentOS上部署shadowsocks服务   使用Arduino IDE进行nodeMCU开发   在Mac OS上设置ESP 8266开发环境   numpy学习笔记[1]   postgres数据库使用指南   tensorflow playground   玩转阿波罗11号飞船导航计算机模拟器   阿里云ECS EIP服务进行IPv6改造的方法   一行代码让你的字符终端下起雪来！   搭建SoftEther VPN 服务   使用nginx搭建hugo静态blog服务         Manifest   Search   SearchEngine   ",
+    "page": "7",
+    "next": 
+        "http://localhost:1313/page/8/index.json"
+    
+}
+

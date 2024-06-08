@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ollama on singleye</title>
+    <link>/tags/ollama/</link>
+    <description>singleye (Ollama)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Thu, 04 Apr 2024 17:06:50 +0000</lastBuildDate>
+    
+    <atom:link href="/tags/ollama/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>tmux AI 助手</title>
+      <link>/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/</link>
+      <pubDate>Thu, 04 Apr 2024 17:06:50 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/MachineLearning/tmux_ai_helper/demo.gif&#34; alt=&#34;demo&#34;&gt;&lt;/p&gt;
+&lt;p&gt;日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。&lt;/p&gt;
+&lt;p&gt;使用方法： &lt;prefix&gt; + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。&lt;/p&gt;
+&lt;p&gt;项目链接： &lt;a href=&#34;https://github.com/singleye/tmux-ai-helper&#34;&gt;https://github.com/singleye/tmux-ai-helper&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

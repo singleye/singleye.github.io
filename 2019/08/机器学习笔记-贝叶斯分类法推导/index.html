@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-cn" data-theme="">
+<head>
+    
+        
+<meta charset="utf-8">
+<meta name="HandheldFriendly" content="True">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer-when-downgrade">
+
+<title>机器学习笔记 - 贝叶斯分类法推导 - singleye</title>
+
+<meta name="description" content="">
+
+
+    <meta name="keywords" content="Bayes,贝叶斯,分类">
+
+
+
+
+<link rel="icon" type="image/x-icon" href="http://www.singleye.net/favicon.ico">
+<link rel="apple-touch-icon-precomposed" href="http://www.singleye.net/favicon.png">
+
+
+
+
+
+
+
+
+    
+
+
+
+<style>
+  body {
+    visibility: hidden;
+    opacity: 0;
+  }
+</style>
+
+<noscript>
+  <style>
+    body {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</noscript>
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
+    
+
+
+
+
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+
+
+
+
+    
+    
+        
+    
+    
+
+    
+        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body>
+    <a class="skip-main" href="#main">Skip to main content</a>
+    <div class="container">
+        <header class="common-header">
+            
+                <div class="header-top">
+    <div class="header-top-left">
+        <h1 class="site-title noselect">
+    <a href="/">singleye</a>
+</h1>
+
+        
+
+
+
+
+
+
+
+    
+        <div class="theme-switcher">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
+
+
+</span>
+
+        </div>
+    
+
+    <script>
+        const STORAGE_KEY = 'user-color-scheme'
+        const defaultTheme = "light"
+
+        let currentTheme
+        let switchButton
+        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
+
+        function switchTheme(e) {
+            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        const autoChangeScheme = e => {
+            currentTheme = e.matches ? 'dark' : 'light'
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            changeGiscusTheme(currentTheme);
+            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            switchButton = document.querySelector('.theme-switcher')
+            currentTheme = detectCurrentScheme()
+
+            if (currentTheme === 'auto') {
+                autoChangeScheme(autoDefinedScheme);
+                autoDefinedScheme.addListener(autoChangeScheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', currentTheme)
+            }
+
+            if (switchButton) {
+                switchButton.addEventListener('click', switchTheme, false)
+            }
+
+            showContent();
+        })
+
+        function detectCurrentScheme() {
+            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
+                return localStorage.getItem(STORAGE_KEY)
+            }
+            if (defaultTheme) {
+                return defaultTheme
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function showContent() {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = 1;
+        }
+
+        function changeGiscusTheme (theme) {
+            function sendMessage(message) {
+              const iframe = document.querySelector('iframe.giscus-frame');
+              if (!iframe) return;
+              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+            }
+
+            sendMessage({
+              setConfig: {
+                theme: theme
+              }
+            });
+        }
+    </script>
+
+
+        <ul class="social-icons noselect">
+
+
+
+
+
+
+
+    <li>
+            <a href="/index.xml" title="RSS" rel="me">
+            <span class="inline-svg">
+
+    
+
+
+    
+    
+    
+    
+    
+
+    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
+
+
+</span>
+
+            </a>
+        </li>
+    
+
+</ul>
+
+    </div>
+    <div class="header-top-right">
+
+    </div>
+</div>
+
+
+    <nav class="noselect">
+        
+        
+        <a class="" href="http://www.singleye.net/" title="">Home</a>
+        
+        <a class="" href="http://www.singleye.net/categories" title="">Categories</a>
+        
+        <a class="" href="http://www.singleye.net/tags" title="">Tags</a>
+        
+        <a class="" href="http://www.singleye.net/archives" title="">Archives</a>
+        
+        <a class="" href="http://www.singleye.net/#about" title="">About</a>
+        
+        <a class="" href="http://www.singleye.net/posts/" title="">Posts</a>
+        
+        <a class="" href="https://github.com/singleye" title="">GitHub</a>
+        
+    </nav>
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+
+  window.addEventListener('load', (event) => {
+      document.querySelectorAll("mjx-container").forEach(function(x){
+        x.parentElement.classList += 'has-jax'})
+    });
+
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+            
+        </header>
+        <main id="main" tabindex="-1">
+            
+    
+
+    <article class="post h-entry">
+        <div class="post-header">
+            <header>
+                <h1 class="p-name post-title">机器学习笔记 - 贝叶斯分类法推导</h1>
+                
+
+            </header>
+            
+
+
+
+<div class="post-info noselect">
+    
+        <div class="post-date dt-published">
+            <time datetime="2019-08-09">2019-08-09</time>
+            
+        </div>
+    
+
+    <a class="post-hidden-url u-url" href="/2019/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E6%B3%95%E6%8E%A8%E5%AF%BC/">/2019/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E6%B3%95%E6%8E%A8%E5%AF%BC/</a>
+    <a href="http://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+
+
+    <div class="post-taxonomies">
+        
+            <ul class="post-categories">
+                
+                    
+                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
+                
+                    
+                    <li><a href="/categories/classification/">Classification</a></li>
+                
+            </ul>
+        
+        
+            <ul class="post-tags">
+                
+                    
+                    <li><a href="/tags/bayes/">#Bayes</a></li>
+                
+                    
+                    <li><a href="">#贝叶斯</a></li>
+                
+                    
+                    <li><a href="">#分类</a></li>
+                
+            </ul>
+        
+        
+    </div>
+</div>
+
+        </div>
+        
+
+  
+  
+
+
+
+
+  
+  
+  
+  <details class="toc noselect">
+    <summary>Table of Contents</summary>
+    <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#11概率">1.1.概率：</a></li>
+    <li><a href="#12事件的分类">1.2.事件的分类：</a></li>
+    <li><a href="#13独立事件的概率">1.3.独立事件的概率：</a></li>
+    <li><a href="#14条件概率">1.4.条件概率：</a>
+      <ul>
+        <li><a href="#141-尝试计算下面的概率">1.4.1. 尝试计算下面的概率</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#第一步加载已分类数据并创建词典">第一步：加载已分类数据，并创建词典</a></li>
+    <li><a href="#第二步将词典数据转换成可计算的向量">第二步：将词典数据转换成可计算的向量</a></li>
+    <li><a href="#第三步训练模型">第三步：训练模型</a></li>
+    <li><a href="#最后测试模型">最后：测试模型</a></li>
+  </ul>
+</nav></div>
+  </details>
+  
+
+
+
+<script>
+  var toc = document.querySelector(".toc");
+  if (toc) {
+    toc.addEventListener("click", function () {
+      if (event.target.tagName !== "A") {
+        event.preventDefault();
+        if (this.open) {
+          this.open = false;
+          this.classList.remove("expanded");
+        } else {
+          this.open = true;
+          this.classList.add("expanded");
+        }
+      }
+    });
+  }
+</script>
+
+        <div class="content e-content">
+            <!--toc-->
+<p>这篇笔记记录了最近对贝叶斯分类法的学习和理解。</p>
+<h1 id="1概率基本概念回顾" >
+<div>
+    <a href="#1%e6%a6%82%e7%8e%87%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5%e5%9b%9e%e9%a1%be">
+        ##
+    </a>
+    1.概率基本概念回顾
+</div>
+</h1>
+<h2 id="11概率" >
+<div>
+    <a href="#11%e6%a6%82%e7%8e%87">
+        #
+    </a>
+    1.1.概率：
+</div>
+</h2>
+<p>事件发生的概率 = $ \dfrac{事件可能发生的个数} {结果的总数} $</p>
+<h2 id="12事件的分类" >
+<div>
+    <a href="#12%e4%ba%8b%e4%bb%b6%e7%9a%84%e5%88%86%e7%b1%bb">
+        #
+    </a>
+    1.2.事件的分类：
+</div>
+</h2>
+<ul>
+<li>独立事件：每个事件的发生是独立的，不受其他事件的影响，例如：抛硬币，掷骰子。</li>
+<li>相关事件：当前事件受之前发生事件的影响，例如：抽扑克牌。</li>
+<li>互斥事件：事件发生只能是其一，不能同时发生，例如：一枚硬币不能同时为正面和反面。</li>
+</ul>
+<h2 id="13独立事件的概率" >
+<div>
+    <a href="#13%e7%8b%ac%e7%ab%8b%e4%ba%8b%e4%bb%b6%e7%9a%84%e6%a6%82%e7%8e%87">
+        #
+    </a>
+    1.3.独立事件的概率：
+</div>
+</h2>
+<ul>
+<li>单个独立事件的概率： P(A) = $ \dfrac{事件可能发生的个数} {结果的总数} $</li>
+<li>事件A和B发生的概率（多个独立事件的概率）： P(A B) = P(A) * P(B)</li>
+</ul>
+<h2 id="14条件概率" >
+<div>
+    <a href="#14%e6%9d%a1%e4%bb%b6%e6%a6%82%e7%8e%87">
+        #
+    </a>
+    1.4.条件概率：
+</div>
+</h2>
+<p>在相关事件的情况中应用条件概率，用 P(B|A) 表示在事件 A 发生的条件下事件 B 发生的概率。</p>
+<ul>
+<li>
+<p>事件A和B发生的概率： P(A B) = P(A) * P(B|A)</p>
+<p>另外一个有用的公式转换： P(B|A) = $ \dfrac{P(A B)} {P(A)} $</p>
+<p>在事件 A 发生的情况下 B 发生的概率等于事件 A 和 B 的概率除以事件 A 的概率</p>
+<p>例子：冰淇淋</p>
+<pre><code>  在你的社交群组里，70% 喜欢巧克力冰淇淋，35% 喜欢巧克力和草莓。
+
+  在喜欢巧克力的人里，也喜欢草莓的百分比是多少？
+
+  P(草莓|巧克力) = P(巧克力 与 草莓) / P(巧克力)
+
+  0.35 / 0.7 = 50%
+
+  在喜欢巧克力的人里，50% 也喜欢草莓
+</code></pre>
+</li>
+</ul>
+<h3 id="141-尝试计算下面的概率" >
+<div>
+    <a href="#141-%e5%b0%9d%e8%af%95%e8%ae%a1%e7%ae%97%e4%b8%8b%e9%9d%a2%e7%9a%84%e6%a6%82%e7%8e%87">
+        ##
+    </a>
+    1.4.1. 尝试计算下面的概率
+</div>
+</h3>
+<p>4个人在5个数字中各选一个数字，请问任何两个人选重的概率是多少？</p>
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/08/bayes-classification/events-dependent-ex-3.svg" alt="events-dependent-ex-3.svg"></p>
+<h1 id="2贝叶斯定理" >
+<div>
+    <a href="#2%e8%b4%9d%e5%8f%b6%e6%96%af%e5%ae%9a%e7%90%86">
+        ##
+    </a>
+    2.贝叶斯定理
+</div>
+</h1>
+<p>$ P(A|B) = \dfrac {P(A)*P(B|A)} {P(B)} $</p>
+<p>在 B 发生的情况下发生 A 事件的概率 P(A|B) 可以通过已知 A 发生情况下 B 发生的概率和 A 与 B 的独自发生的概率求出来。</p>
+<ul>
+<li>P(A|B)：在 B 发生的情况下 A 发生的概率</li>
+<li>P(A)：A 发生的概率</li>
+<li>P(B)：B 发生的概率</li>
+<li>P(B|A)：在 A 发生的情况下 B 发生的概率</li>
+</ul>
+<p>**例子1：**计算天气有云时下雨的概率：</p>
+<p>$ P(雨|云) = \dfrac {P(雨)*P(云|雨)} {P(云)} $</p>
+<ul>
+<li>P(雨)：下雨的概率 = 10%</li>
+<li>P(云|雨)：下雨时有云的概率 = 50%</li>
+<li>P(云)：有云的概率 = 40%</li>
+</ul>
+<p>$ P(雨|云) = \dfrac {0.1 * 0.5} {0.4} = 0.125 $</p>
+<p><strong>例子2：</strong></p>
+<p>有一种疾病检测手段，但是这种检测手段并不准确</p>
+<ol>
+<li>在真正有这种疾病的人中有 80% 的人可以被检测出</li>
+<li>对于没有这种疾病的人有 10% 的概率会被错误检测出</li>
+<li>以往的统计数据表明人群中有 1% 的人得了这种疾病，99% 的人没有得过</li>
+</ol>
+<p>请问，当有一个人被检测出有该疾病时他真正有这种病的概率是多少？</p>
+<p>$ P(真有病|检测有病) = \dfrac {P(真有病) * P(检测有病|真有病)} {P(检测有病)} $</p>
+<table>
+<thead>
+<tr>
+<th>真实情况 \ 检测结果</th>
+<th>检测有病</th>
+<th>检测没病</th>
+<th>得病统计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>真有病</td>
+<td>80%</td>
+<td>20%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>真没病</td>
+<td>10%</td>
+<td>90%</td>
+<td>99%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>P(真有病)：1%</li>
+<li>P(检测有病|真有病)：80%</li>
+<li>P(检测有病)：P(没有病的人被检测出有病的概率) + P(真有病的人被检测出有病的概率)
+<ul>
+<li>P(没有病的人被检测出有病的概率) = P(真没病) * P(检测有病|真没病) = 99% * 10% = 0.099</li>
+<li>P(真有病的人被检测出有病的概率) = P(真有病) * P(检测有病|真有病) = 1% * 80% = 0.008</li>
+</ul>
+</li>
+</ul>
+<p>$ P(真有病|检测有病) = \dfrac {1% * 80%} { 99% * 10% + 1% * 80%} =  7.48% $</p>
+<p>示意图：</p>
+<img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/08/bayes-classification/disease_1.jpeg" style="width:400px"/>
+<p>计算方法：</p>
+<img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/08/bayes-classification/disease_2.jpeg" style="width:600px"/>
+<p>那么怎么评估这个方法是否有效呢？可以使用准确度（Precision）和召回（Recall）两个指标来评估。</p>
+<p>$ Precision = \dfrac {TP} {TP + FP} = \dfrac {P(真有病) * P(检测有病|真有病)} {P(检测有病)} = \dfrac {1% * 80%} {1% * 80% + 99% * 10%} = 7.48%$</p>
+<p>$ Recall = \dfrac {TP} {TP + FN} = \dfrac {P(真有病) * P(检测有病|真有病)} {P(真有病)} = \dfrac {1% * 80%} {1%} = 80% $</p>
+<h1 id="3贝叶斯定理在机器学习中的应用---文本分类" >
+<div>
+    <a href="#3%e8%b4%9d%e5%8f%b6%e6%96%af%e5%ae%9a%e7%90%86%e5%9c%a8%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e4%b8%ad%e7%9a%84%e5%ba%94%e7%94%a8---%e6%96%87%e6%9c%ac%e5%88%86%e7%b1%bb">
+        ##
+    </a>
+    3.贝叶斯定理在机器学习中的应用 - 文本分类
+</div>
+</h1>
+<p>**任务目标：**通过利用一批分好类（2类：正常/非正常）的文本信息，训练一个模型来识别一段给定文字，判断是不是正常言论。</p>
+<p>$ P(类别|数据) = \dfrac {P(类别) * P(数据|类别)} {P(数据)} $</p>
+<ul>
+<li>当 P(正常|数据) &gt; P(不正常|数据) 时认为文本为“正常”</li>
+<li>当 P(正常|数据) &lt; P(不正常|数据) 时认为文本为“不正常”</li>
+</ul>
+<p>算法推导：</p>
+<p>进一步把问题转换成下面的表达方式：</p>
+<p>$ P(class|words) = \dfrac {P(words|class) * P(class)} {P(words)} $</p>
+<ul>
+<li>class：代表类别</li>
+<li>words：代表一句话，它是由一组单词构成的，记做：w0, w1, w2, &hellip;, wn</li>
+</ul>
+<p>$ P(class|w0, w0, w1, w2, &hellip;, wn) = \dfrac {P(w0, w1, w2, &hellip;, wn|class) * P(class)} {P(w0, w1, w2, &hellip;, wn)} $</p>
+<p>由于 P(w0, w1, w2, &hellip;, wn|class) 非常难于计算因此通过条件独立性假设把这个概率进行简化计算，最终转换成计算 P(w0|class)P(w1|class)P(w2|class)&hellip;P(wn|class)。</p>
+<p>$ P(class|w0, w0, w1, w2, &hellip;, wn) = \dfrac {P(w0|class)*P(w1|class)*P(w2|class)&hellip;P(wn|class) * P(class)} {P(w0, w1, w2, &hellip;, wn)} $</p>
+<p>训练方法就转换成根据已提供的数据计算下列概率值得过程：</p>
+<ul>
+<li>每个类别中出现某个单词的概率 P(w0|class), P(w1|class), P(w2|class)&hellip;P(wn|class)</li>
+<li>训练数据中某个类别的概率 P(class)</li>
+</ul>
+<p>比较 P(class1|w0, w0, w1, w2, &hellip;, wn) P(class2|w0, w0, w1, w2, &hellip;, wn) 可以简化成比较</p>
+<p>$ P(w0|class1)*P(w1|class1)*P(w2|class1)&hellip;P(wn|class1) * P(class1) $</p>
+<p>$ P(w0|class2)*P(w1|class2)*P(w2|class2)&hellip;P(wn|class2) * P(class2) $</p>
+<p>**注意：**实际计算中很少直接使用这样的乘法进行计算，主要原因是：</p>
+<ol>
+<li>乘法运算计算量相对加法来说是复杂很多的</li>
+<li>由于每一项 P(wn|class1) 值很小或者为0（有时为了避免所有项为0会把每一项给一个初始化很小的数字），因此容易导致计算结果直接为0或者由于太小造成下溢出</li>
+</ol>
+<p>所以，在实际情况下多使用 log 运算，根据 log 的性质可以进一步简化成比较：</p>
+<p>$ log(P(w0|class1)*P(w1|class1)*P(w2|class1)&hellip;P(wn|class1) * P(class1)) = log(P(w0|class1) + log(P(w1|class1) + log(P(w2|class1) + &hellip;  + log(P(wn|class1) + log(class1)$</p>
+<p>$ log(P(w0|class2)*P(w1|class2)*P(w2|class2)&hellip;P(wn|class2) * P(class2)) = log(P(w0|class2) + log(P(w1|class2) + log(P(w2|class2) + &hellip;  + log(P(wn|class2) + log(class2)$</p>
+<p><strong>另外使用 log 进行计算还有额外的好处：</strong></p>
+<ol>
+<li>首先是直接将乘法运算转换成了加法，计算速度得到提升</li>
+<li>每一项 log(P(wn|class) 都可以在训练阶段固化，操作中可以直接用查表法解决进一步减少运算量</li>
+</ol>
+<p>最后，引用一下来自《机器学习实战》的例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff6ac1">from</span> numpy <span style="color:#ff6ac1">import</span> <span style="color:#ff6ac1">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">def</span> <span style="color:#57c7ff">loadDataSet</span>():
+</span></span><span style="display:flex;"><span>    postingList<span style="color:#ff6ac1">=</span>[[<span style="color:#5af78e">&#39;my&#39;</span>, <span style="color:#5af78e">&#39;dog&#39;</span>, <span style="color:#5af78e">&#39;has&#39;</span>, <span style="color:#5af78e">&#39;flea&#39;</span>, <span style="color:#5af78e">&#39;problems&#39;</span>, <span style="color:#5af78e">&#39;help&#39;</span>, <span style="color:#5af78e">&#39;please&#39;</span>],
+</span></span><span style="display:flex;"><span>                 [<span style="color:#5af78e">&#39;maybe&#39;</span>, <span style="color:#5af78e">&#39;not&#39;</span>, <span style="color:#5af78e">&#39;take&#39;</span>, <span style="color:#5af78e">&#39;him&#39;</span>, <span style="color:#5af78e">&#39;to&#39;</span>, <span style="color:#5af78e">&#39;dog&#39;</span>, <span style="color:#5af78e">&#39;park&#39;</span>, <span style="color:#5af78e">&#39;stupid&#39;</span>],
+</span></span><span style="display:flex;"><span>                 [<span style="color:#5af78e">&#39;my&#39;</span>, <span style="color:#5af78e">&#39;dalmation&#39;</span>, <span style="color:#5af78e">&#39;is&#39;</span>, <span style="color:#5af78e">&#39;so&#39;</span>, <span style="color:#5af78e">&#39;cute&#39;</span>, <span style="color:#5af78e">&#39;I&#39;</span>, <span style="color:#5af78e">&#39;love&#39;</span>, <span style="color:#5af78e">&#39;him&#39;</span>],
+</span></span><span style="display:flex;"><span>                 [<span style="color:#5af78e">&#39;stop&#39;</span>, <span style="color:#5af78e">&#39;posting&#39;</span>, <span style="color:#5af78e">&#39;stupid&#39;</span>, <span style="color:#5af78e">&#39;worthless&#39;</span>, <span style="color:#5af78e">&#39;garbage&#39;</span>],
+</span></span><span style="display:flex;"><span>                 [<span style="color:#5af78e">&#39;mr&#39;</span>, <span style="color:#5af78e">&#39;licks&#39;</span>, <span style="color:#5af78e">&#39;ate&#39;</span>, <span style="color:#5af78e">&#39;my&#39;</span>, <span style="color:#5af78e">&#39;steak&#39;</span>, <span style="color:#5af78e">&#39;how&#39;</span>, <span style="color:#5af78e">&#39;to&#39;</span>, <span style="color:#5af78e">&#39;stop&#39;</span>, <span style="color:#5af78e">&#39;him&#39;</span>],
+</span></span><span style="display:flex;"><span>                 [<span style="color:#5af78e">&#39;quit&#39;</span>, <span style="color:#5af78e">&#39;buying&#39;</span>, <span style="color:#5af78e">&#39;worthless&#39;</span>, <span style="color:#5af78e">&#39;dog&#39;</span>, <span style="color:#5af78e">&#39;food&#39;</span>, <span style="color:#5af78e">&#39;stupid&#39;</span>]]
+</span></span><span style="display:flex;"><span>    classVec <span style="color:#ff6ac1">=</span> [<span style="color:#ff9f43">0</span>,<span style="color:#ff9f43">1</span>,<span style="color:#ff9f43">0</span>,<span style="color:#ff9f43">1</span>,<span style="color:#ff9f43">0</span>,<span style="color:#ff9f43">1</span>]    <span style="color:#78787e">#1 is abusive, 0 not</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">return</span> postingList,classVec
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">def</span> <span style="color:#57c7ff">createVocabList</span>(dataSet):
+</span></span><span style="display:flex;"><span>    vocabSet <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">set</span>([])  <span style="color:#78787e">#create empty set</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">for</span> document <span style="color:#ff6ac1">in</span> dataSet:
+</span></span><span style="display:flex;"><span>        vocabSet <span style="color:#ff6ac1">=</span> vocabSet <span style="color:#ff6ac1">|</span> <span style="color:#ff5c57">set</span>(document) <span style="color:#78787e">#union of the two sets</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">return</span> <span style="color:#ff5c57">list</span>(vocabSet)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">def</span> <span style="color:#57c7ff">setOfWords2Vec</span>(vocabList, inputSet):
+</span></span><span style="display:flex;"><span>    returnVec <span style="color:#ff6ac1">=</span> [<span style="color:#ff9f43">0</span>]<span style="color:#ff6ac1">*</span><span style="color:#ff5c57">len</span>(vocabList)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">for</span> word <span style="color:#ff6ac1">in</span> inputSet:
+</span></span><span style="display:flex;"><span>        <span style="color:#ff6ac1">if</span> word <span style="color:#ff6ac1">in</span> vocabList:
+</span></span><span style="display:flex;"><span>            returnVec[vocabList<span style="color:#ff6ac1">.</span>index(word)] <span style="color:#ff6ac1">=</span> <span style="color:#ff9f43">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#ff6ac1">else</span>: <span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#34;the word: </span><span style="color:#5af78e">%s</span><span style="color:#5af78e"> is not in my Vocabulary!&#34;</span> <span style="color:#ff6ac1">%</span> word)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">return</span> returnVec
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">def</span> <span style="color:#57c7ff">trainNB0</span>(trainMatrix,trainCategory):
+</span></span><span style="display:flex;"><span>    numTrainDocs <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">len</span>(trainMatrix)
+</span></span><span style="display:flex;"><span>    numWords <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">len</span>(trainMatrix[<span style="color:#ff9f43">0</span>])
+</span></span><span style="display:flex;"><span>    pAbusive <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">sum</span>(trainCategory)<span style="color:#ff6ac1">/</span><span style="color:#ff5c57">float</span>(numTrainDocs)
+</span></span><span style="display:flex;"><span>    p0Num <span style="color:#ff6ac1">=</span> ones(numWords); p1Num <span style="color:#ff6ac1">=</span> ones(numWords)      <span style="color:#78787e">#change to ones()，备注：初始化成1避免该项为0的情况发生</span>
+</span></span><span style="display:flex;"><span>    p0Denom <span style="color:#ff6ac1">=</span> <span style="color:#ff9f43">2.0</span>; p1Denom <span style="color:#ff6ac1">=</span> <span style="color:#ff9f43">2.0</span>                        <span style="color:#78787e">#change to 2.0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">for</span> i <span style="color:#ff6ac1">in</span> <span style="color:#ff5c57">range</span>(numTrainDocs):
+</span></span><span style="display:flex;"><span>        <span style="color:#ff6ac1">if</span> trainCategory[i] <span style="color:#ff6ac1">==</span> <span style="color:#ff9f43">1</span>:
+</span></span><span style="display:flex;"><span>            p1Num <span style="color:#ff6ac1">+=</span> trainMatrix[i]
+</span></span><span style="display:flex;"><span>            p1Denom <span style="color:#ff6ac1">+=</span> <span style="color:#ff5c57">sum</span>(trainMatrix[i])
+</span></span><span style="display:flex;"><span>        <span style="color:#ff6ac1">else</span>:
+</span></span><span style="display:flex;"><span>            p0Num <span style="color:#ff6ac1">+=</span> trainMatrix[i]
+</span></span><span style="display:flex;"><span>            p0Denom <span style="color:#ff6ac1">+=</span> <span style="color:#ff5c57">sum</span>(trainMatrix[i])
+</span></span><span style="display:flex;"><span>    p1Vect <span style="color:#ff6ac1">=</span> log(p1Num<span style="color:#ff6ac1">/</span>p1Denom)          <span style="color:#78787e">#change to log()</span>
+</span></span><span style="display:flex;"><span>    p0Vect <span style="color:#ff6ac1">=</span> log(p0Num<span style="color:#ff6ac1">/</span>p0Denom)          <span style="color:#78787e">#change to log()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">return</span> p0Vect,p1Vect,pAbusive
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">def</span> <span style="color:#57c7ff">classifyNB</span>(vec2Classify, p0Vec, p1Vec, pClass1):
+</span></span><span style="display:flex;"><span>    p1 <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">sum</span>(vec2Classify <span style="color:#ff6ac1">*</span> p1Vec) <span style="color:#ff6ac1">+</span> log(pClass1)    <span style="color:#78787e">#element-wise mult</span>
+</span></span><span style="display:flex;"><span>    p0 <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">sum</span>(vec2Classify <span style="color:#ff6ac1">*</span> p0Vec) <span style="color:#ff6ac1">+</span> log(<span style="color:#ff9f43">1.0</span> <span style="color:#ff6ac1">-</span> pClass1)
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">if</span> p1 <span style="color:#ff6ac1">&gt;</span> p0:
+</span></span><span style="display:flex;"><span>        <span style="color:#ff6ac1">return</span> <span style="color:#ff9f43">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#ff6ac1">return</span> <span style="color:#ff9f43">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">def</span> <span style="color:#57c7ff">testingNB</span>():
+</span></span><span style="display:flex;"><span>    listOPosts,listClasses <span style="color:#ff6ac1">=</span> loadDataSet()
+</span></span><span style="display:flex;"><span>    myVocabList <span style="color:#ff6ac1">=</span> createVocabList(listOPosts)
+</span></span><span style="display:flex;"><span>    trainMat<span style="color:#ff6ac1">=</span>[]
+</span></span><span style="display:flex;"><span>    <span style="color:#ff6ac1">for</span> postinDoc <span style="color:#ff6ac1">in</span> listOPosts:
+</span></span><span style="display:flex;"><span>        trainMat<span style="color:#ff6ac1">.</span>append(setOfWords2Vec(myVocabList, postinDoc))
+</span></span><span style="display:flex;"><span>    p0V,p1V,pAb <span style="color:#ff6ac1">=</span> trainNB0(array(trainMat),array(listClasses))
+</span></span><span style="display:flex;"><span>    testEntry <span style="color:#ff6ac1">=</span> [<span style="color:#5af78e">&#39;love&#39;</span>, <span style="color:#5af78e">&#39;my&#39;</span>, <span style="color:#5af78e">&#39;dalmation&#39;</span>]
+</span></span><span style="display:flex;"><span>    thisDoc <span style="color:#ff6ac1">=</span> array(setOfWords2Vec(myVocabList, testEntry))
+</span></span><span style="display:flex;"><span>    <span style="color:#ff5c57">print</span>(testEntry,<span style="color:#5af78e">&#39;classified as: &#39;</span>,classifyNB(thisDoc,p0V,p1V,pAb))
+</span></span><span style="display:flex;"><span>    testEntry <span style="color:#ff6ac1">=</span> [<span style="color:#5af78e">&#39;stupid&#39;</span>, <span style="color:#5af78e">&#39;garbage&#39;</span>]
+</span></span><span style="display:flex;"><span>    thisDoc <span style="color:#ff6ac1">=</span> array(setOfWords2Vec(myVocabList, testEntry))
+</span></span><span style="display:flex;"><span>    <span style="color:#ff5c57">print</span>(testEntry,<span style="color:#5af78e">&#39;classified as: &#39;</span>,classifyNB(thisDoc,p0V,p1V,pAb))
+</span></span></code></pre></div><h2 id="第一步加载已分类数据并创建词典" >
+<div>
+    <a href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%8a%a0%e8%bd%bd%e5%b7%b2%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae%e5%b9%b6%e5%88%9b%e5%bb%ba%e8%af%8d%e5%85%b8">
+        #
+    </a>
+    第一步：加载已分类数据，并创建词典
+</div>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>listOPosts,listClasses <span style="color:#ff6ac1">=</span> loadDataSet()
+</span></span><span style="display:flex;"><span>myVocabList <span style="color:#ff6ac1">=</span> createVocabList(listOPosts)
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#39;All posts:&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#39;-&#39;</span><span style="color:#ff6ac1">*</span><span style="color:#ff9f43">80</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(listOPosts)
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#39;</span><span style="color:#5af78e">\n</span><span style="color:#5af78e">&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#39;Vocabulary:&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#39;-&#39;</span><span style="color:#ff6ac1">*</span><span style="color:#ff9f43">80</span>)
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(myVocabList)
+</span></span></code></pre></div><pre><code>All posts:
+--------------------------------------------------------------------------------
+[['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'], ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'], ['my', 'dalmation', 'is', 'so', 'cute', 'I', 'love', 'him'], ['stop', 'posting', 'stupid', 'worthless', 'garbage'], ['mr', 'licks', 'ate', 'my', 'steak', 'how', 'to', 'stop', 'him'], ['quit', 'buying', 'worthless', 'dog', 'food', 'stupid']]
+
+
+Vocabulary:
+--------------------------------------------------------------------------------
+['to', 'mr', 'quit', 'take', 'my', 'dalmation', 'is', 'has', 'flea', 'stop', 'worthless', 'him', 'problems', 'cute', 'maybe', 'I', 'so', 'not', 'buying', 'help', 'how', 'park', 'food', 'garbage', 'steak', 'please', 'dog', 'ate', 'licks', 'posting', 'love', 'stupid']
+</code></pre>
+<h2 id="第二步将词典数据转换成可计算的向量" >
+<div>
+    <a href="#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%b0%86%e8%af%8d%e5%85%b8%e6%95%b0%e6%8d%ae%e8%bd%ac%e6%8d%a2%e6%88%90%e5%8f%af%e8%ae%a1%e7%ae%97%e7%9a%84%e5%90%91%e9%87%8f">
+        #
+    </a>
+    第二步：将词典数据转换成可计算的向量
+</div>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>trainMat<span style="color:#ff6ac1">=</span>[]
+</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">for</span> postinDoc <span style="color:#ff6ac1">in</span> listOPosts:
+</span></span><span style="display:flex;"><span>    trainMat<span style="color:#ff6ac1">.</span>append(setOfWords2Vec(myVocabList, postinDoc))
+</span></span></code></pre></div><h2 id="第三步训练模型" >
+<div>
+    <a href="#%e7%ac%ac%e4%b8%89%e6%ad%a5%e8%ae%ad%e7%bb%83%e6%a8%a1%e5%9e%8b">
+        #
+    </a>
+    第三步：训练模型
+</div>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>p0V,p1V,pAb <span style="color:#ff6ac1">=</span> trainNB0(array(trainMat),array(listClasses))
+</span></span></code></pre></div><h2 id="最后测试模型" >
+<div>
+    <a href="#%e6%9c%80%e5%90%8e%e6%b5%8b%e8%af%95%e6%a8%a1%e5%9e%8b">
+        #
+    </a>
+    最后：测试模型
+</div>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>testEntry <span style="color:#ff6ac1">=</span> [<span style="color:#5af78e">&#39;love&#39;</span>, <span style="color:#5af78e">&#39;my&#39;</span>, <span style="color:#5af78e">&#39;dalmation&#39;</span>]
+</span></span><span style="display:flex;"><span>thisDoc <span style="color:#ff6ac1">=</span> array(setOfWords2Vec(myVocabList, testEntry))
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(testEntry,<span style="color:#5af78e">&#39;classified as: &#39;</span>,classifyNB(thisDoc,p0V,p1V,pAb))
+</span></span><span style="display:flex;"><span>testEntry <span style="color:#ff6ac1">=</span> [<span style="color:#5af78e">&#39;stupid&#39;</span>, <span style="color:#5af78e">&#39;garbage&#39;</span>]
+</span></span><span style="display:flex;"><span>thisDoc <span style="color:#ff6ac1">=</span> array(setOfWords2Vec(myVocabList, testEntry))
+</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(testEntry,<span style="color:#5af78e">&#39;classified as: &#39;</span>,classifyNB(thisDoc,p0V,p1V,pAb))
+</span></span></code></pre></div><pre><code>['love', 'my', 'dalmation'] classified as:  0
+['stupid', 'garbage'] classified as:  1</code></pre>
+        </div>
+
+    </article>
+
+    
+    
+
+    
+        
+        
+    
+
+    
+
+    
+        
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "singleye" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
+    
+
+        </main>
+        
+            <footer class="common-footer noselect">
+    
+    
+
+    <div class="common-footer-bottom">
+        
+
+        <div style="display: flex; align-items: center; gap:8px">
+            © singleye, 2024
+            
+        </div>
+        <div style="display:flex;align-items: center">
+            
+            
+            
+            
+            
+            
+        </div>
+        <div>
+            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
+            
+
+        </div>
+    </div>
+
+    <p class="h-card vcard">
+
+    <a href=http://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
+
+    
+
+    
+</p>
+
+</footer>
+
+        
+    </div>
+</body>
+</html>

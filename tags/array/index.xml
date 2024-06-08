@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Array on singleye</title>
+    <link>/tags/array/</link>
+    <description>singleye (Array)</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
+    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
+    <lastBuildDate>Tue, 07 Nov 2017 14:25:00 +0000</lastBuildDate>
+    
+    <atom:link href="/tags/array/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>GO语言中array与slice的比较</title>
+      <link>/2017/11/go%E8%AF%AD%E8%A8%80%E4%B8%ADarray%E4%B8%8Eslice%E7%9A%84%E6%AF%94%E8%BE%83/</link>
+      <pubDate>Tue, 07 Nov 2017 14:25:00 +0000</pubDate>
+      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
+      <guid>/2017/11/go%E8%AF%AD%E8%A8%80%E4%B8%ADarray%E4%B8%8Eslice%E7%9A%84%E6%AF%94%E8%BE%83/</guid>
+      <description>&lt;!-- more /--&gt;
+&lt;p&gt;go语言中array与slice的区别总结&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;数组array&lt;/th&gt;
+&lt;th&gt;切片slice&lt;/th&gt;
+&lt;th&gt;区别&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;声明定义&lt;/td&gt;
+&lt;td&gt;&lt;div&gt;var arrayName [arrayLength] dataType&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;var sliceName [] dataType&lt;/td&gt;
+&lt;td&gt;声明数组需要长度信息，定义slice时不需要&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;初始化&lt;/td&gt;
+&lt;td&gt;var arrayName = [arrayLength] dataType {Val1, &amp;hellip; Valn} &lt;/br&gt;&lt;/br&gt;var arrayName = [&amp;hellip;] dataType {Val1, &amp;hellip; Valn}&lt;/td&gt;
+&lt;td&gt;var sliceName = [] dataType {Val1, &amp;hellip; Valn}&lt;/br&gt;&lt;/br&gt;var slice [] type = make([] type, length)&lt;/br&gt;&lt;/br&gt;通过数组初始化：&lt;/br&gt;slice := array[:]&lt;/br&gt;slice := array[startIndex:endIndex]&lt;/td&gt;
+&lt;td&gt;初始化数组时需要长度信息，初始化slice时不需要&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;取值&lt;/td&gt;
+&lt;td&gt;通过索引index取相应的元素值:&lt;/br&gt;arrayName[index]&lt;/td&gt;
+&lt;td&gt;通过index取元素值：&lt;/br&gt;slice[index] &lt;/br&gt;&lt;/br&gt;返回一个新切片值:&lt;/br&gt; slice[startIndex:endIndex]&lt;/td&gt;
+&lt;td&gt;slice取值除了可以获取一个元素的值外，还可以获取一个新的切片&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;赋值&lt;/td&gt;
+&lt;td&gt;元素赋值：&lt;/br&gt;array[index] = value &lt;/br&gt;&lt;/br&gt; 数组赋值：&lt;/br&gt; var new_array = array &lt;/br&gt; new_array := array&lt;/td&gt;
+&lt;td&gt;元素赋值：&lt;/br&gt; slice[index] = value &lt;/br&gt;&lt;/br&gt;将单个单个值append()到slice中，返回的新slice长度会增加:&lt;/br&gt;slice = append(slice, v1, v2&amp;hellip;) &lt;/br&gt;&lt;/br&gt;将一个slice copy()到另一个slice中，目标slice长度不变，最多copy截止到目标元素最后一个元素：&lt;/br&gt; copy(slice1, slice2) &lt;/br&gt; copy(slice1[si:], slice2)&lt;/td&gt;
+&lt;td&gt;数组支持简单的单元素或者整体赋值，slice则支持更加精细度的赋值&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;扩展&lt;/td&gt;
+&lt;td&gt;不支持&lt;/td&gt;
+&lt;td&gt;append()，新的slice length和capacity均发生变化：&lt;/br&gt;&lt;/br&gt; var slice = []int {1, 2, 3, 4, 5}&lt;/br&gt;slice = append(slice, 1, 2)&lt;/br&gt;fmt.Printf(&amp;ldquo;length: %d, capacity: %d\n&amp;rdquo;, len(slice), cap(slice)) &lt;/br&gt;&lt;/br&gt; length: 7, capacity: 10&lt;/td&gt;
+&lt;td&gt;slice支持扩展，扩展后的新slice长度为新元素的个数，capacity是原capacity的2的指数倍&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;函数传参&lt;/td&gt;
+&lt;td&gt;值传递，被传递的array所有的值copy給形式参数，函数内对数组的改变不会传播给传入的数组&lt;/td&gt;
+&lt;td&gt;引用传递，函数内对slice的改变会反应到传入的参数中&lt;/td&gt;
+&lt;td&gt;数组是值传递，所以直接传递数组代价很高，使用slice相应代价会降低。因此go的标准库中多以slice实现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;判断长度&lt;/td&gt;
+&lt;td&gt;len()&lt;/td&gt;
+&lt;td&gt;len()&lt;/td&gt;
+&lt;td&gt;相同&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
