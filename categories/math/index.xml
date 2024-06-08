@@ -22,7 +22,7 @@
       <description>&lt;!--toc--&gt;
 &lt;p&gt;3D 设计软件和游戏中的图像经常是以一个观测者的角度展示的，可以把这个过程想象成一个人拿着一台摄像机在拍摄，在机器视觉中叫摄像机模型。&lt;/p&gt;
 &lt;p&gt;研究过程中基于 OpenCV 做了一个简单实现，项目代码可以在这里下载到 &lt;a href=&#34;https://github.com/singleye/camera-model&#34;&gt;“github 代码下载”&lt;/a&gt;，欢迎大家下载交流。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2022/05/camera-model-1.png&#34; alt=&#34;camera&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2022/05/camera-model-1.png&#34; alt=&#34;camera&#34;&gt;&lt;/p&gt;
 &lt;h1 id=&#34;摄像机模型的数学模型&#34; &gt;
 &lt;div&gt;
     &lt;a href=&#34;#%e6%91%84%e5%83%8f%e6%9c%ba%e6%a8%a1%e5%9e%8b%e7%9a%84%e6%95%b0%e5%ad%a6%e6%a8%a1%e5%9e%8b&#34;&gt;
@@ -54,7 +54,7 @@
 &lt;p&gt;这是最终观测的图像座标系，是一个 3 维座标系，在相机中是 CCD 的座标系，例如以左上角为原点，尺度为‘像素’。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2022/05/camera-model-2.png&#34; alt=&#34;coordinate&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2022/05/camera-model-2.png&#34; alt=&#34;coordinate&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;座标转换&#34; &gt;
 &lt;div&gt;
     &lt;a href=&#34;#%e5%ba%a7%e6%a0%87%e8%bd%ac%e6%8d%a2&#34;&gt;
@@ -113,8 +113,8 @@ $$
 \right)
 $$
 &lt;/div&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2022/05/camera-model-3.png&#34; alt=&#34;Step1&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;第二步&lt;/strong&gt;：旋转座标系第一步后的新座标系到摄像机座标座标系，旋转矩阵 $R$ ，关于座标旋转参见&lt;a href=&#34;http://www.singleye.net/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/&#34;&gt;旋转矩阵&lt;/a&gt;，完成旋转后得到了摄像机座标系下的座标 $O_c$&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2022/05/camera-model-3.png&#34; alt=&#34;Step1&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第二步&lt;/strong&gt;：旋转座标系第一步后的新座标系到摄像机座标座标系，旋转矩阵 $R$ ，关于座标旋转参见&lt;a href=&#34;https://www.singleye.net/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/&#34;&gt;旋转矩阵&lt;/a&gt;，完成旋转后得到了摄像机座标系下的座标 $O_c$&lt;/p&gt;
 &lt;div&gt;
 $$
 O_c =
@@ -140,7 +140,7 @@ R*
 \right)
 $$
 &lt;/div&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2022/05/camera-model-4.png&#34; alt=&#34;Step2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2022/05/camera-model-4.png&#34; alt=&#34;Step2&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;相机座标转化到像平面座标&#34; &gt;
 &lt;div&gt;
     &lt;a href=&#34;#%e7%9b%b8%e6%9c%ba%e5%ba%a7%e6%a0%87%e8%bd%ac%e5%8c%96%e5%88%b0%e5%83%8f%e5%b9%b3%e9%9d%a2%e5%ba%a7%e6%a0%87&#34;&gt;
@@ -150,9 +150,9 @@ $$
 &lt;/div&gt;
 &lt;/h3&gt;
 &lt;p&gt;先看一下小孔成像模型，使用虚拟像平面可以把座标转换简化。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2022/05/camera-model-6.png&#34; alt=&#34;虚拟像平面&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2022/05/camera-model-6.png&#34; alt=&#34;虚拟像平面&#34;&gt;&lt;/p&gt;
 &lt;p&gt;简化后的模型如下图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2022/05/camera-model-5.png&#34; alt=&#34;Step3&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2022/05/camera-model-5.png&#34; alt=&#34;Step3&#34;&gt;&lt;/p&gt;
 &lt;p&gt;摄像机座标系与虚拟像平面交于点 $(x_o, y_o)$，摄像机座标系下的点 $O_c$ 在虚拟像平面上的投影点是 $(x&amp;rsquo;, y&amp;rsquo;)$&lt;/p&gt;
 &lt;p&gt;通过相似三角形可以容易得到：$ x&amp;rsquo; \over X_c $ = $ y&amp;rsquo; \over Y_c $ = $ f \over Z_c $，也就是：&lt;/p&gt;
 $$ x‘ = f \frac {X_c} {Z_c} $$

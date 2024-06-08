@@ -33,7 +33,7 @@
 --&gt;
 &lt;p&gt;关于mAP这篇文章写得不错：&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://medium.com/@chih.sheng.huang821/&#34;&gt;https://medium.com/@chih.sheng.huang821/&lt;/a&gt;深度學習系列-什麼是ap-map-aaf089920848&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2019/03/TP-TF-FP-FN.jpg&#34; alt=&#34;TP-FP-FN-TN&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2019/03/TP-TF-FP-FN.jpg&#34; alt=&#34;TP-FP-FN-TN&#34;&gt;&lt;/p&gt;
 &lt;p&gt;mAP定义及相关概念mAP: mean Average Precision, 即各类别AP的平均值AP: PR曲线下面积，后文会详细讲解PR曲线: Precision-Recall曲线Precision: TP / (TP + FP)Recall: TP / (TP + FN)TP: IoU&amp;gt;0.5的检测框数量（同一Ground Truth只计算一次）FP: IoU&amp;lt;=0.5的检测框，或者是检测到同一个GT的多余检测框的数量FN: 没有检测到的GT的数量&lt;/p&gt;
 &lt;p&gt;mAP计算示例假设，对于Aeroplane类别，我们网络有以下输出(BB表示BoundingBox序号，IoU&amp;gt;0.5时GT=1)：&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;BB  | confidence | GT

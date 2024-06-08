@@ -1001,7 +1001,7 @@ Time taken: 3.824 seconds
       <pubDate>Fri, 29 Dec 2017 11:44:51 +0800</pubDate>
       <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
       <guid>/2017/12/yarn-config/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/yarn-config/ResourceManagement.jpg&#34; alt=&#34;Yarn config&#34;&gt;&lt;/p&gt;
+      <description>&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/yarn-config/ResourceManagement.jpg&#34; alt=&#34;Yarn config&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;Resource manager&lt;/p&gt;
@@ -1462,10 +1462,10 @@ Queue AM Resource Usage = &amp;lt;memory:1023, vCores:1&amp;gt;;&lt;/p&gt;
 &lt;p&gt;​Create the Sqoop Action to Extract Data&lt;/p&gt;
 &lt;p&gt;Command:
 import &amp;ndash;connect jdbc:mysql://192.168.1.1/iot_test_12 &amp;ndash;username iot &amp;ndash;password-file /user/admin/iot.passwd &amp;ndash;table iottest &amp;ndash;split-by rowkey &amp;ndash;hive-import -m 1&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-command.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-command.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Advanced -&amp;gt; File:&lt;/p&gt;
 &lt;p&gt;/user/oozie/share/lib/lib_20171226172323/hive/hive-site.xml
-&lt;img src=&#34;http://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-adv.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
+&lt;img src=&#34;https://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-adv.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;2&#34; &gt;
 &lt;div&gt;
     &lt;a href=&#34;#2&#34;&gt;
@@ -1593,7 +1593,7 @@ import &amp;ndash;connect jdbc:mysql://192.168.1.1/iot_test_12 &amp;ndash;userna
 &lt;p&gt;访问 http://&amp;lt;ambari-server&amp;gt;:8080&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;步骤3:&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;设置cluster名称&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-001.png&#34; alt=&#34;001&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/hdp/hdp-setup-001.png&#34; alt=&#34;001&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;步骤4:&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;配置安装源，可以使用私有源：&lt;/p&gt;
 &lt;p&gt;HDP私有源：&lt;/p&gt;
@@ -1602,19 +1602,19 @@ import &amp;ndash;connect jdbc:mysql://192.168.1.1/iot_test_12 &amp;ndash;userna
 &lt;p&gt;HDP-UTILS私有源：&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;http://hdp-repo.iwaterdata.com:7300/HDP-UTILS-1.1.0.21/repos/centos7
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-002.png&#34; alt=&#34;002&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/hdp/hdp-setup-002.png&#34; alt=&#34;002&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;步骤5:&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;安装程序检查配置节点&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-003.png&#34; alt=&#34;003&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/hdp/hdp-setup-003.png&#34; alt=&#34;003&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;步骤6:&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;选择安装软件列表&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-004.png&#34; alt=&#34;004&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/hdp/hdp-setup-004.png&#34; alt=&#34;004&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;步骤7:&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;设置各软件的配置信息&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-005.png&#34; alt=&#34;005&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/hdp/hdp-setup-005.png&#34; alt=&#34;005&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;步骤8:&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;安装完成后程序会尝试启动各服务，有可能启动会失败（比如内存不足无法启动所有程序），只要确定程序正确安装可以继续&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/hdp/hdp-setup-006.png&#34; alt=&#34;006&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/hdp/hdp-setup-006.png&#34; alt=&#34;006&#34;&gt;&lt;/p&gt;
 &lt;h1 id=&#34;misc&#34; &gt;
 &lt;div&gt;
     &lt;a href=&#34;#misc&#34;&gt;

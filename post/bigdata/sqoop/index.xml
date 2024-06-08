@@ -253,10 +253,10 @@ Queue AM Resource Usage = &amp;lt;memory:1023, vCores:1&amp;gt;;&lt;/p&gt;
 &lt;p&gt;​Create the Sqoop Action to Extract Data&lt;/p&gt;
 &lt;p&gt;Command:
 import &amp;ndash;connect jdbc:mysql://192.168.1.1/iot_test_12 &amp;ndash;username iot &amp;ndash;password-file /user/admin/iot.passwd &amp;ndash;table iottest &amp;ndash;split-by rowkey &amp;ndash;hive-import -m 1&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-command.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-command.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Advanced -&amp;gt; File:&lt;/p&gt;
 &lt;p&gt;/user/oozie/share/lib/lib_20171226172323/hive/hive-site.xml
-&lt;img src=&#34;http://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-adv.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
+&lt;img src=&#34;https://www.singleye.net/media/2017/12/sqoop/wfm-sqoop-adv.png&#34; alt=&#34;cmd&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;2&#34; &gt;
 &lt;div&gt;
     &lt;a href=&#34;#2&#34;&gt;
