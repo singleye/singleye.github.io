@@ -84,6 +84,15 @@
     </item>
     
     <item>
+      <title>Axisangle</title>
+      <link>https://www.singleye.net/tags/axisangle/</link>
+      <pubDate>Sun, 09 Jun 2024 17:01:36 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/tags/axisangle/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Backpropagation</title>
       <link>https://www.singleye.net/tags/backpropagation/</link>
       <pubDate>Mon, 25 Sep 2017 15:44:00 +0000</pubDate>
@@ -395,6 +404,15 @@
       <pubDate>Mon, 25 Dec 2017 18:11:29 +0800</pubDate>
       
       <guid>https://www.singleye.net/tags/etl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Eulerangle</title>
+      <link>https://www.singleye.net/tags/eulerangle/</link>
+      <pubDate>Sun, 09 Jun 2024 17:01:36 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/tags/eulerangle/</guid>
       <description></description>
     </item>
     
@@ -948,6 +966,15 @@
     </item>
     
     <item>
+      <title>Quaternion</title>
+      <link>https://www.singleye.net/tags/quaternion/</link>
+      <pubDate>Sun, 09 Jun 2024 17:01:36 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/tags/quaternion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Ransac</title>
       <link>https://www.singleye.net/tags/ransac/</link>
       <pubDate>Fri, 22 Dec 2023 16:40:06 +0800</pubDate>
@@ -1013,7 +1040,7 @@
     <item>
       <title>Rotation</title>
       <link>https://www.singleye.net/tags/rotation/</link>
-      <pubDate>Wed, 25 Oct 2023 14:38:55 +0800</pubDate>
+      <pubDate>Sun, 09 Jun 2024 17:01:36 +0800</pubDate>
       
       <guid>https://www.singleye.net/tags/rotation/</guid>
       <description></description>

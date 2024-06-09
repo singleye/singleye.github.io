@@ -6,10 +6,19 @@
     <description>Recent content in Robotics on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 23 Mar 2024 11:43:22 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 09 Jun 2024 17:01:36 +0800</lastBuildDate>
     
 	<atom:link href="https://www.singleye.net/categories/robotics/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>欧拉角、旋转矩阵、四元数、轴角相互转换</title>
+      <link>https://www.singleye.net/2024/06/%E6%AC%A7%E6%8B%89%E8%A7%92%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%B4%E8%A7%92%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/</link>
+      <pubDate>Sun, 09 Jun 2024 17:01:36 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/2024/06/%E6%AC%A7%E6%8B%89%E8%A7%92%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%B4%E8%A7%92%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/</guid>
+      <description>&lt;p&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</title>
