@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.singleye.net/2024/06/%E6%AC%A7%E6%8B%89%E8%A7%92%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%B4%E8%A7%92%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/</loc>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/</loc>
     <lastmod>2024-06-06T09:26:40+08:00</lastmod>
   </url>
@@ -397,6 +402,12 @@
   </url>
   
   <url>
+    <loc>https://www.singleye.net/categories/3d/</loc>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://www.singleye.net/tags/8266/</loc>
     <lastmod>2018-03-20T16:42:45+08:00</lastmod>
     <priority>0</priority>
@@ -462,6 +473,12 @@
   <url>
     <loc>https://www.singleye.net/tags/array/</loc>
     <lastmod>2017-11-07T14:25:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/tags/axisangle/</loc>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -548,7 +565,7 @@
   
   <url>
     <loc>https://www.singleye.net/categories/</loc>
-    <lastmod>2024-04-26T23:48:40+08:00</lastmod>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -781,6 +798,12 @@
   <url>
     <loc>https://www.singleye.net/tags/etl/</loc>
     <lastmod>2017-12-25T18:11:29+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/tags/eulerangle/</loc>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -1366,6 +1389,12 @@
   </url>
   
   <url>
+    <loc>https://www.singleye.net/tags/quaternion/</loc>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://www.singleye.net/tags/ransac/</loc>
     <lastmod>2023-12-22T16:40:06+08:00</lastmod>
     <priority>0</priority>
@@ -1403,13 +1432,13 @@
   
   <url>
     <loc>https://www.singleye.net/categories/robotics/</loc>
-    <lastmod>2024-03-23T11:43:22+08:00</lastmod>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://www.singleye.net/post/robotics/</loc>
-    <lastmod>2024-03-23T11:43:22+08:00</lastmod>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
   </url>
   
   <url>
@@ -1426,7 +1455,7 @@
   
   <url>
     <loc>https://www.singleye.net/tags/rotation/</loc>
-    <lastmod>2023-10-25T14:38:55+08:00</lastmod>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -1841,7 +1870,7 @@
   
   <url>
     <loc>https://www.singleye.net/</loc>
-    <lastmod>2024-06-06T09:26:40+08:00</lastmod>
+    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
