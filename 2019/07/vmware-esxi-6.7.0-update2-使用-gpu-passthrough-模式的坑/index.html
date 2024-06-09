@@ -1,571 +1,388 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="devops, vmware, nvidia, GPU, passthrough">
 
-<title>VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑 - singleye</title>
-
-<meta name="description" content="">
-
-
-    <meta name="keywords" content="devops,vmware,nvidia,GPU,passthrough">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
     
 
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
     
+    <meta name="description" content="
 
+">
+    <meta property="og:description" content="
 
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑">
+    <meta property="og:url" content="/2019/07/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="
 
-
-
-    
-    
-        
+">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
     
 
-
-
-
-
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
-
-
-
-
     
-    
-        
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
 
     
-
-
-
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-        
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
     
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
-    
-
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
-    
-
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
 </script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  </head>
 
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
     
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
     
-        <div class="post-date dt-published">
-            <time datetime="2019-07-08">2019-07-08</time>
-            
-        </div>
     
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
 
-    <a class="post-hidden-url u-url" href="/2019/07/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91/">/2019/07/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
 
 
-    <div class="post-taxonomies">
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2019-07-08T22:38:07&#43;08:00">
         
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/devops/">Devops</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="/tags/devops/">#DevOps</a></li>
-                
-                    
-                    <li><a href="/tags/vmware/">#Vmware</a></li>
-                
-                    
-                    <li><a href="/tags/nvidia/">#Nvidia</a></li>
-                
-                    
-                    <li><a href="/tags/gpu/">#GPU</a></li>
-                
-                    
-                    <li><a href="/tags/passthrough/">#Passthrough</a></li>
-                
-            </ul>
-        
-        
-    </div>
+  七月 8, 2019
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/devops">devops</a>
+    
+  
+
+  </div>
+
 </div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h1 id="table-of-contents">目录</h1><nav id="TableOfContents">
+<ul>
+<li><a href="#esxi-配置显卡直通-passthorugh-模式">ESXi 配置显卡直通（PassThorugh）模式</a></li>
+<li><a href="#安装虚拟机">安装虚拟机</a>
+<ul>
+<li><a href="#第一个坑-虚拟机类型">第一个坑：虚拟机类型</a></li>
+<li><a href="#第二个坑-内存预留">第二个坑：内存预留</a></li>
+<li><a href="#第三个坑-添加参数-hypervisor-cpuid-v0-false">第三个坑：添加参数 hypervisor.cpuid.v0 = &ldquo;FALSE&rdquo;</a></li>
+<li><a href="#第四个坑-ubuntu-18-04-虚机升级系统后重启黑屏">第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏</a></li>
+<li><a href="#第五个坑-系统自带-nouveau-驱动造成-nvidia-驱动无法加载">第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载</a></li>
+</ul></li>
+</ul>
+</nav>
 
-        </div>
-        
+<p></p>
 
-  
-  
-
-
-
-
-  
-  
-  
-  <details class="toc noselect">
-    <summary>Table of Contents</summary>
-    <div class="inner"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#第一个坑虚拟机类型">第一个坑：虚拟机类型</a></li>
-    <li><a href="#第二个坑内存预留">第二个坑：内存预留</a></li>
-    <li><a href="#第三个坑添加参数-hypervisorcpuidv0--false">第三个坑：添加参数 hypervisor.cpuid.v0 = &ldquo;FALSE&rdquo;</a></li>
-    <li><a href="#第四个坑ubuntu-1804-虚机升级系统后重启黑屏">第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏</a></li>
-    <li><a href="#第五个坑系统自带-nouveau-驱动造成-nvidia-驱动无法加载">第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载</a></li>
-  </ul>
-</nav></div>
-  </details>
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
-</script>
-
-        <div class="content e-content">
-            <!--toc-->
 <p>最近新买的服务器上安装了 ESXi v6.7.0 update 2，想把手上的一块显卡配起来在虚拟机中使用，查了官方资料发现可以使用直通（PassThrough）模式让虚拟机直接使用显卡。配置 ESXi 的过程还是基本顺利的，可是在把显卡分配给 Ubuntu 18.04 虚拟机时却碰到了意想不到的问题。</p>
-<h1 id="esxi-配置显卡直通passthorugh模式" >
-<div>
-    <a href="#esxi-%e9%85%8d%e7%bd%ae%e6%98%be%e5%8d%a1%e7%9b%b4%e9%80%9apassthorugh%e6%a8%a1%e5%bc%8f">
-        ##
-    </a>
-    ESXi 配置显卡直通（PassThorugh）模式
-</div>
-</h1>
+
+<h1 id="esxi-配置显卡直通-passthorugh-模式">ESXi 配置显卡直通（PassThorugh）模式</h1>
+
 <p>这里主要列出配置的关键点不展开说明。配置的方法过程可以参考这篇文档：</p>
+
 <p><a href="https://blogs.vmware.com/apps/2018/04/how-enable-compute-accelerators-vsphere-6-5-machine-learning-hpc-workloads.html">https://blogs.vmware.com/apps/2018/04/how-enable-compute-accelerators-vsphere-6-5-machine-learning-hpc-workloads.html</a></p>
+
 <p>如果使用 vGPU 的模式进行配置时需要在 ESXi 中安装对应的驱动，如果是NVidia显卡可以从这里下载，不过多数家用级的 GPU 本身不支持这种模式，所以安装之前最好确认一下。</p>
+
 <p><a href="https://www.nvidia.com/drivers/results/116135">https://www.nvidia.com/drivers/results/116135</a></p>
+
 <p>另外，服务器的 BIOS 需要进行正确设置，主要是查看 VT-D / IOMMU / SR-IOV 相关的设置</p>
-<h1 id="安装虚拟机" >
-<div>
-    <a href="#%e5%ae%89%e8%a3%85%e8%99%9a%e6%8b%9f%e6%9c%ba">
-        ##
-    </a>
-    安装虚拟机
-</div>
-</h1>
+
+<h1 id="安装虚拟机">安装虚拟机</h1>
+
 <p>安装完 Ubuntu 18.04 后问题就接踵而至。</p>
-<h2 id="第一个坑虚拟机类型" >
-<div>
-    <a href="#%e7%ac%ac%e4%b8%80%e4%b8%aa%e5%9d%91%e8%99%9a%e6%8b%9f%e6%9c%ba%e7%b1%bb%e5%9e%8b">
-        #
-    </a>
-    第一个坑：虚拟机类型
-</div>
-</h2>
+
+<h2 id="第一个坑-虚拟机类型">第一个坑：虚拟机类型</h2>
+
 <p>原本按照默认的 ESXi 6.7 类型创建虚拟机但无论后面怎么设置都无法让驱动跟显卡正常工作，这里一定要选择 ESXi 6.7 U2 类型的机器。</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-type-u2.png" alt="VM type U2"></p>
-<h2 id="第二个坑内存预留" >
-<div>
-    <a href="#%e7%ac%ac%e4%ba%8c%e4%b8%aa%e5%9d%91%e5%86%85%e5%ad%98%e9%a2%84%e7%95%99">
-        #
-    </a>
-    第二个坑：内存预留
-</div>
-</h2>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-type-u2.png" alt="VM type U2" /></p>
+
+<h2 id="第二个坑-内存预留">第二个坑：内存预留</h2>
+
 <p>创建虚拟机时的默认配置不会将虚拟机的内存选项设置成“预留所有客户机内存 (全部锁定)”，但在使用 GPU PassThrough 的情况下需要把这个选项打开才行。</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/07/ESXi-GPU-PassThrough/1.jpeg" alt="memory reserve"></p>
-<h2 id="第三个坑添加参数-hypervisorcpuidv0--false" >
-<div>
-    <a href="#%e7%ac%ac%e4%b8%89%e4%b8%aa%e5%9d%91%e6%b7%bb%e5%8a%a0%e5%8f%82%e6%95%b0-hypervisorcpuidv0--false">
-        #
-    </a>
-    第三个坑：添加参数 hypervisor.cpuid.v0 = &ldquo;FALSE&rdquo;
-</div>
-</h2>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/07/ESXi-GPU-PassThrough/1.jpeg" alt="memory reserve" /></p>
+
+<h2 id="第三个坑-添加参数-hypervisor-cpuid-v0-false">第三个坑：添加参数 hypervisor.cpuid.v0 = &ldquo;FALSE&rdquo;</h2>
+
 <p>一定要添加这个参数，让驱动把虚拟机当做物理机来处理。</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-param-hypervisor.png" alt="hypervisor-cpuid"></p>
-<h2 id="第四个坑ubuntu-1804-虚机升级系统后重启黑屏" >
-<div>
-    <a href="#%e7%ac%ac%e5%9b%9b%e4%b8%aa%e5%9d%91ubuntu-1804-%e8%99%9a%e6%9c%ba%e5%8d%87%e7%ba%a7%e7%b3%bb%e7%bb%9f%e5%90%8e%e9%87%8d%e5%90%af%e9%bb%91%e5%b1%8f">
-        #
-    </a>
-    第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏
-</div>
-</h2>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/11/vm-param-hypervisor.png" alt="hypervisor-cpuid" /></p>
+
+<h2 id="第四个坑-ubuntu-18-04-虚机升级系统后重启黑屏">第四个坑：Ubuntu 18.04 虚机升级系统后重启黑屏</h2>
+
 <p>这个问题折腾了很久才弄明白是由于升级 Intel CPU 的微代码固件（Meltdown安全漏洞）造成的，为了能够使用虚拟机只能放弃这个固件的升级：</p>
-<pre tabindex="0"><code>$ sudo apt-mark hold intel-microcode
-</code></pre><p>该问题的讨论可以参考这个帖子：<a href="https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system">https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system</a></p>
-<h2 id="第五个坑系统自带-nouveau-驱动造成-nvidia-驱动无法加载" >
-<div>
-    <a href="#%e7%ac%ac%e4%ba%94%e4%b8%aa%e5%9d%91%e7%b3%bb%e7%bb%9f%e8%87%aa%e5%b8%a6-nouveau-%e9%a9%b1%e5%8a%a8%e9%80%a0%e6%88%90-nvidia-%e9%a9%b1%e5%8a%a8%e6%97%a0%e6%b3%95%e5%8a%a0%e8%bd%bd">
-        #
-    </a>
-    第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载
-</div>
-</h2>
+
+<pre><code>$ sudo apt-mark hold intel-microcode
+</code></pre>
+
+<p>该问题的讨论可以参考这个帖子：<a href="https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system">https://askubuntu.com/questions/1155634/intel-microcode-package-upgrade-in-ubuntu-18-04-leads-to-unbootable-system</a></p>
+
+<h2 id="第五个坑-系统自带-nouveau-驱动造成-nvidia-驱动无法加载">第五个坑：系统自带 nouveau 驱动造成 nvidia 驱动无法加载</h2>
+
 <p>在虚拟机中安装 NVidia 驱动后重启系统后，正常情况可以看到系统正常加载 nvidia 驱动。</p>
+
 <p>安装 NVidia 驱动方法：</p>
-<pre tabindex="0"><code>$ sudo apt install gcc g++ make
+
+<pre><code>$ sudo apt install gcc g++ make
 
 $ sudo apt-get install nvidia-driver-410 xserver-xorg-video-nvidia-410 libnvidia-compute-410 libnvidia-decode-410 libnvidia-encode-410 libnvidia-ifr1-410 libnvidia-fbc1-410 libnvidia-gl-410 xorg-video-abi-23
-</code></pre><p>但重启虚拟机后会发现有时系统会正常加载 nvidia.ko 驱动，有时会加载 nouveau.ko 驱动，造成无法正常使用显卡。</p>
-<p>驱动加载的确认方法可以用 &rsquo;lsmod | grep nvidia&rsquo; 或 &rsquo;lsmod | grep nouveau&rsquo; 命令。</p>
+</code></pre>
+
+<p>但重启虚拟机后会发现有时系统会正常加载 nvidia.ko 驱动，有时会加载 nouveau.ko 驱动，造成无法正常使用显卡。</p>
+
+<p>驱动加载的确认方法可以用 &lsquo;lsmod | grep nvidia&rsquo; 或 &lsquo;lsmod | grep nouveau&rsquo; 命令。</p>
+
 <p>可以用下面这个比较暴力的方法禁用 nouveau 驱动：</p>
-<pre tabindex="0"><code>sudo mv /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko.disabled
-</code></pre><p>这里多说一些禁用 nouveau 驱动过程中碰到的坑：</p>
+
+<pre><code>sudo mv /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko /lib/modules/4.18.0-25-generic/kernel/drivers/gpu/drm/nouveau/nouveau.ko.disabled
+</code></pre>
+
+<p>这里多说一些禁用 nouveau 驱动过程中碰到的坑：</p>
+
 <p><strong>失败经历1：在 grub 及系统加载模块中禁用 nouveau</strong></p>
-<p>使用这个方法我发现在 Ubuntu 18.04 虚机启动后有时会正确加载 nvidia 驱动，有时却依然会加载 nouveau，确认的方法可以用 &rsquo;lsmod | grep nvidia&rsquo; 或 &rsquo;lsmod | grep nouveau&rsquo; 命令来确认。</p>
+
+<p>使用这个方法我发现在 Ubuntu 18.04 虚机启动后有时会正确加载 nvidia 驱动，有时却依然会加载 nouveau，确认的方法可以用 &lsquo;lsmod | grep nvidia&rsquo; 或 &lsquo;lsmod | grep nouveau&rsquo; 命令来确认。</p>
+
 <p>在此把这个方法记录下来，也可能对别的虚拟机有效。</p>
+
 <p>第一步：在 grub 中禁止 nouveau</p>
+
 <p>先把下面的配置添加到 /etc/default/grub 文件中</p>
-<pre tabindex="0"><code>GRUB_CMDLINE_LINUX=&#34;nouveau.blacklist=1&#34;
-</code></pre><p>然后更新 grub：</p>
-<pre tabindex="0"><code>$ sudo update-grub
-</code></pre><p>第二步：禁用 modprobe</p>
+
+<pre><code>GRUB_CMDLINE_LINUX=&quot;nouveau.blacklist=1&quot;
+</code></pre>
+
+<p>然后更新 grub：</p>
+
+<pre><code>$ sudo update-grub
+</code></pre>
+
+<p>第二步：禁用 modprobe</p>
+
 <p>创建文件 &lsquo;/etc/modprobe.d/nvidia-graphics-drivers.conf&rsquo;，在其中添加下面内容：</p>
-<pre tabindex="0"><code>blacklist nouveau
+
+<pre><code>blacklist nouveau
 blacklist lbm-nouveau
 alias nouveau off
 alias lbm-nouveau off
 options nouveau modeset=0
-</code></pre><p>Then update initrd:</p>
-<pre tabindex="0"><code>$ sudo update-initramfs -u
+</code></pre>
+
+<p>Then update initrd:</p>
+
+<pre><code>$ sudo update-initramfs -u
 $ sudo reboot
-</code></pre><p>**失败经历2：在 gdm 中禁用 Wayland **</p>
+</code></pre>
+
+<p>**失败经历2：在 gdm 中禁用 Wayland **</p>
+
 <p>参考了这个讨论后尝试后问题依然存在
 <a href="https://askubuntu.com/questions/1031511/cant-disable-nouveau-drivers-in-ubuntu-18-04">https://askubuntu.com/questions/1031511/cant-disable-nouveau-drivers-in-ubuntu-18-04</a></p>
+
 <p>查看 gdm 是否使用 wayland 模式的方法：</p>
-<pre tabindex="0"><code> $ loginctl
+
+<pre><code> $ loginctl
  SESSION     UID  USER     SEAT     TTY             
        2    1000  velix    seat0    tty2            
       c2    1000  velix                                             
@@ -574,10 +391,16 @@ The command loginctl show-session &lt;session-n&gt; -p Type show the session typ
 
 $ loginctl show-session c1 -p Type
 Type=Wayland
-</code></pre><p>在 gdm 配置文件 /etc/gdm3/custom.conf 中禁用的方法是添加下面一行配置后重启系统：</p>
-<pre tabindex="0"><code>WaylandEnable=false.
-</code></pre><p>趟过去上面几个坑之后就可以正常的在 Ubuntu 18.04 虚拟机中使用显卡直通模式了。</p>
-<pre tabindex="0"><code>$ nvidia-smi
+</code></pre>
+
+<p>在 gdm 配置文件 /etc/gdm3/custom.conf 中禁用的方法是添加下面一行配置后重启系统：</p>
+
+<pre><code>WaylandEnable=false.
+</code></pre>
+
+<p>趟过去上面几个坑之后就可以正常的在 Ubuntu 18.04 虚拟机中使用显卡直通模式了。</p>
+
+<pre><code>$ nvidia-smi
 Thu Aug  8 17:31:13 2019
 +-----------------------------------------------------------------------------+
 | NVIDIA-SMI 410.48                 Driver Version: 410.48                    |
@@ -600,106 +423,449 @@ Thu Aug  8 17:31:13 2019
 |    0     11826      C   /conda/envs/cudf/bin/python                  203MiB |
 +-----------------------------------------------------------------------------+
 </code></pre>
-        </div>
-
-    </article>
-
-    
-    
-
-    
-        
-        
-            <h3 class="read-next-title noselect">Read next</h3>
-            <ul class="read-next-posts noselect">
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
                 
-                <li><a href="/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/">在 Nvidia Jetson TX2 上编译安装tensorflow</a></li>
                 
-            </ul>
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/vmware/">vmware</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/nvidia/">nvidia</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/gpu/">GPU</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/passthrough/">passthrough</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/01/%E9%98%BF%E9%87%8Cecs%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BD%BF%E7%94%A8%E8%85%BE%E8%AE%AF%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E5%8F%91%E9%80%81smtp%E9%82%AE%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/" data-tooltip="阿里ECS服务器使用腾讯企业邮箱发送SMTP邮件的问题">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-    
-
-    
-
-    
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
         
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
         
-            <footer class="common-footer noselect">
-    
-    
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    <div class="common-footer-bottom">
-        
 
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
             
-        </div>
-        <div style="display:flex;align-items: center">
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/01/%E9%98%BF%E9%87%8Cecs%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BD%BF%E7%94%A8%E8%85%BE%E8%AE%AF%E4%BC%81%E4%B8%9A%E9%82%AE%E7%AE%B1%E5%8F%91%E9%80%81smtp%E9%82%AE%E4%BB%B6%E7%9A%84%E9%97%AE%E9%A2%98/" data-tooltip="阿里ECS服务器使用腾讯企业邮箱发送SMTP邮件的问题">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2019\/07\/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91\/';
+          
+            this.page.identifier = '\/2019\/07\/vmware-esxi-6.7.0-update2-%E4%BD%BF%E7%94%A8-gpu-passthrough-%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%9D%91\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

@@ -1,74 +1,30 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>JSON Decimal on singleye</title>
-    <link>/tags/json-decimal/</link>
-    <description>singleye (JSON Decimal)</description>
+    <title>Json Decimal on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/json-decimal/</link>
+    <description>Recent content in Json Decimal on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Wed, 16 Jan 2019 12:27:13 +0800</lastBuildDate>
     
-    <atom:link href="/tags/json-decimal/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/json-decimal/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>解决flask_restful无法对Decimal类型数据进行序列化问题</title>
-      <link>/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/</link>
+      <link>https://www.singleye.net/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/</link>
       <pubDate>Wed, 16 Jan 2019 12:27:13 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/</guid>
+      
+      <guid>https://www.singleye.net/2019/01/%E8%A7%A3%E5%86%B3flask_restful%E6%97%A0%E6%B3%95%E5%AF%B9decimal%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E5%BA%8F%E5%88%97%E5%8C%96%E9%97%AE%E9%A2%98/</guid>
       <description>&lt;!--toc--&gt;
+
 &lt;p&gt;在使用flask进行开发的时候发现 &lt;strong&gt;Decimal&lt;/strong&gt; 类型的数据无法在作为 JSON 通过相应消息体序列化返回，出现 &lt;strong&gt;jsonschema.exceptions.ValidationError&lt;/strong&gt; 错误：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;jsonschema.exceptions.ValidationError: &amp;#39;1000.00&amp;#39; is not of type &amp;#39;number&amp;#39;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;在使用flask进行开发的时候发现 &lt;strong&gt;Decimal&lt;/strong&gt; 类型的数据无法在作为 JSON 通过相应消息体序列化返回，出现 &lt;strong&gt;jsonschema.exceptions.ValidationError&lt;/strong&gt; 错误：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;jsonschema.exceptions.ValidationError: &amp;#39;1000.00&amp;#39; is not of type &amp;#39;number&amp;#39;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;研究 &lt;strong&gt;flask_restful/representations/json.py&lt;/strong&gt; 代码发现问题出现在 **json.dump()**中&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;       7 def output_json(data, code, headers=None):
-       8     &amp;#34;&amp;#34;&amp;#34;Makes a Flask response with a JSON encoded body&amp;#34;&amp;#34;&amp;#34;
-       9
-      10     settings = current_app.config.get(&amp;#39;RESTFUL_JSON&amp;#39;, {})
-      11
-             ...
-      21     dumped = dumps(data, **settings) + &amp;#34;\n&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过下面实验也可以对问题得到验证。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; import json
-&amp;gt;&amp;gt;&amp;gt; import decimal
-&amp;gt;&amp;gt;&amp;gt; json.dumps(decimal.Decimal(&amp;#39;99.99&amp;#39;))
-Traceback (most recent call last):
-  File &amp;#34;&amp;lt;stdin&amp;gt;&amp;#34;, line 1, in &amp;lt;module&amp;gt;
-  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/__init__.py&amp;#34;, line 231, in dumps
-    return _default_encoder.encode(obj)
-  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/encoder.py&amp;#34;, line 199, in encode
-    chunks = self.iterencode(o, _one_shot=True)
-  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/encoder.py&amp;#34;, line 257, in iterencode
-    return _iterencode(o, 0)
-  File &amp;#34;/usr/local/Cellar/python/3.6.5_1/Frameworks/Python.framework/Versions/3.6/lib/python3.6/json/encoder.py&amp;#34;, line 180, in default
-    o.__class__.__name__)
-TypeError: Object of type &amp;#39;Decimal&amp;#39; is not JSON serializable
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;查看json.dumps()的文档知道可以通过参数 &amp;lsquo;cls&amp;rsquo; 指定JSONEncoder进行序列化。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;    dumps(obj, *, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, default=None, sort_keys=False, **kw)
-        Serialize ``obj`` to a JSON formatted ``str``.
 
-        To use a custom ``JSONEncoder`` subclass (e.g. one that overrides the
-        ``.default()`` method to serialize additional types), specify it with
-        the ``cls`` kwarg; otherwise ``JSONEncoder`` is used.
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;结合flask_restful，可以自行定义从JSONEncoder继承下来的序列化类，通过在config中的&amp;rsquo;RESTFUL_JSON&amp;rsquo;进行定义。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  3 import json
-  4 import decimal
+&lt;pre&gt;&lt;code&gt;jsonschema.exceptions.ValidationError: &#39;1000.00&#39; is not of type &#39;number&#39;
+&lt;/code&gt;&lt;/pre&gt;
 
-    ...
-
-  9 class DecimalEncoder(json.JSONEncoder):
- 10     def default(self, obj):
- 11         if isinstance(obj, decimal.Decimal):
- 12             return float(obj)
- 13         return super(DecimalEncoder, self).default(obj)
- 14
- 15 class BaseConfig(object):
- 16     RESTFUL_JSON = {&amp;#39;cls&amp;#39;:DecimalEncoder}
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

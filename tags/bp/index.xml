@@ -1,251 +1,32 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>BP on singleye</title>
-    <link>/tags/bp/</link>
-    <description>singleye (BP)</description>
+    <title>Bp on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/bp/</link>
+    <description>Recent content in Bp on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Mon, 25 Sep 2017 15:44:00 +0000</lastBuildDate>
     
-    <atom:link href="/tags/bp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/bp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>神经网络之反向传播算法</title>
-      <link>/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</link>
+      <link>https://www.singleye.net/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</link>
       <pubDate>Mon, 25 Sep 2017 15:44:00 +0000</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</guid>
-      <description>&lt;!-- more /--&gt;
-&lt;p&gt;之前使用神经网络算法的时候并没有认真总结关键的算法，虽然可以用但总觉得不爽，于是这两天对神经网络算法中的反向传播（Back Propagation）进行了推导。即理解了算法的数学本质，也对神经网络算法的工程特性有了深刻体会，工程算法真的是以解决问题为驱动的，追求的是解决问题的实用性。&lt;/p&gt;
-&lt;h1 id=&#34;神经网络&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c&#34;&gt;
-        ##
-    &lt;/a&gt;
-    神经网络
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;网络拓扑&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%bd%91%e7%bb%9c%e6%8b%93%e6%89%91&#34;&gt;
-        #
-    &lt;/a&gt;
-    网络拓扑
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neural-network.jpg&#34; alt=&#34;神经网络&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;神经元&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83&#34;&gt;
-        #
-    &lt;/a&gt;
-    神经元
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;神经元是神经网络的基本构成，上图的每一个圆圈代表了一个神经元。每一个神经元有一个输入和一个输出，神经元的作用是对输入值进行计算。下图是一个神经元的简单示意图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron.jpg&#34; alt=&#34;神经元&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;该神经元的输出：$ a=f(z)=sigmoid(z) $&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;神经元输入&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83%e8%be%93%e5%85%a5&#34;&gt;
-        ##
-    &lt;/a&gt;
-    神经元输入
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;在一个复杂点的神经网络中，一个神经元接收来自多个前级神经元的激活输出，并进行加权相加后产生该神经元的输入值，这个过程示意图如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-input.jpg&#34; alt=&#34;neuron-input&#34;&gt;&lt;/p&gt;
-&lt;p&gt;定义第 $ l^{th} $ 层第 $ j^{th} $ 个神经元的输入：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-input-equation.png&#34; alt=&#34;神经元输入&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;神经元加权&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83%e5%8a%a0%e6%9d%83&#34;&gt;
-        ##
-    &lt;/a&gt;
-    神经元加权
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;神经元的加权结构可以看下面的示意图：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-weight.jpg&#34; alt=&#34;neuron-weight&#34;&gt;&lt;/p&gt;
-&lt;p&gt;注，第一层神经元的输入就是采样数据，不需要计算z值，这层采样数据直接通过权重计算输入到第二层的神经元。&lt;/p&gt;
-&lt;h1 id=&#34;反向传播算法&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e7%ae%97%e6%b3%95&#34;&gt;
-        ##
-    &lt;/a&gt;
-    反向传播算法
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;代价函数&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0&#34;&gt;
-        #
-    &lt;/a&gt;
-    代价函数
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;定义代价函数：$ cost = {1 \over 2} \sum (y^{(i)} - a^{(i)})^2 $&lt;/p&gt;
-&lt;h2 id=&#34;神经元错误量--delta_jl-&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a5%9e%e7%bb%8f%e5%85%83%e9%94%99%e8%af%af%e9%87%8f--delta_jl-&#34;&gt;
-        #
-    &lt;/a&gt;
-    神经元错误量 $ \delta_j^{(l)} $
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;每个神经元的输入记为&amp;rsquo;z&amp;rsquo;，经过激活函数&amp;rsquo;f(z)&amp;lsquo;生成激活值&amp;rsquo;a&amp;rsquo;，通常情况下激活函数使用sigmoid()。那么假设对于每个神经元的输入&amp;rsquo;z&amp;rsquo;做一点微小的改变记为 $ \Delta z $，由这个改变引起的代价变化记为这个神经元的错误量 $ \delta_j^{(l)} $，从这个定义可以看出来这是一个代价函数相对于神经元的输入&amp;rsquo;z&amp;rsquo;的偏导数。&lt;/p&gt;
-&lt;p&gt;定义 $ \delta_j^{(l)} $ 为 $ l^{th} $ 层中的第 $ j^{th} $ 个神经元的错误量，记作：$ \delta_j^{(l)} =\frac{\partial C}{\partial z_j^{(l)}} $&lt;/p&gt;
-&lt;p&gt;经过数学推导可以得出结论：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;最后一层（L层）第j个神经元的错误量：&lt;/li&gt;
-&lt;/ul&gt;
-$$ \delta_j^{(L)} = -(y-a_j^{(L)}) \bigodot [a_j^{(L)}(1-a_j^{(L)})] $$
-&lt;p&gt;简单推导若成如下：&lt;/p&gt;
-$$ \delta_j^{(L)} = \frac{\partial C}{\partial z_j^{(l)}} $$
-$$ \frac{\partial C}{\partial z_j^{(l)}} = \frac{\partial C}{\partial a_j^{(L)}} \frac{\partial a_j^{(L)}}{\partial z_j^{(L)}} $$
-$$ \frac{\partial C}{\partial a_j^{(L)}} \frac{\partial a_j^{(L)}}{\partial z_j^{(L)}} = -(y-a_j^{(L)}) \bigodot [a_j^{(L)}(1-a_j^{(L)})] $$
-&lt;p&gt;y：采样的结果&lt;/p&gt;
-&lt;p&gt;$ a_j^{(L)} $：样本输入计算的结果&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;其余各层(l层)第j个神经元的错误量：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/delta-layer-l.png&#34; alt=&#34;delta-equation&#34;&gt;&lt;/p&gt;
-&lt;p&gt;因为首先可以算出来每一层的激活量 $ a_j^{(l)} $，那么可以看出来除了最后一层外的其他层的错误量可以靠后面一层的错误量计算出来，直至推算到最后一层 $ \delta_j^{(L)} $。&lt;/p&gt;
-&lt;p&gt;因此反向传播算法也就是从最后一层往前一层一层计算的过程，与计算激活量的方向正好相反，因此得名反向传播。&lt;/p&gt;
-&lt;h2 id=&#34;权重调整及偏置调整&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%9d%83%e9%87%8d%e8%b0%83%e6%95%b4%e5%8f%8a%e5%81%8f%e7%bd%ae%e8%b0%83%e6%95%b4&#34;&gt;
-        #
-    &lt;/a&gt;
-    权重调整及偏置调整
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;观察每个神经元的输入可以发现神经网络计算过程中最重要的是要确定两个量权重w和偏置b。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/neuron-input-equation.png&#34; alt=&#34;神经元输入&#34;&gt;&lt;/p&gt;
-&lt;p&gt;仿照错误量计算方法将问题进行一下转化，是否可以计算出代价函数相对于权重和偏置的变化速率（偏微分），然后通过乘以一个小数字（学习速率）来一点一点降低代价函数的输出，从而逼近最终需要的权重及偏置值呢？&lt;/p&gt;
-&lt;p&gt;因此可以将问题转化为求 $ \frac{\partial C}{\partial w_{jk}^{(l)}} $ 和 $ \frac{\partial C}{\partial b_j^{(l)}} $&lt;/p&gt;
-&lt;p&gt;通过推导可以得出：&lt;/p&gt;
-$$ \frac{\partial C}{\partial w_{jk}^{(l)}} = \delta_j^{(l+1)} a_k^{(l)} $$
-$$ \frac{\partial C}{\partial b_{jk}^{(l)}} = \delta_j^{(l)} $$
-&lt;p&gt;基于前面对于错误量 $ \delta_j^{(l)} $ 就可以非常简单的得到相应的结果。&lt;/p&gt;
-&lt;p&gt;那么最终对于权重及偏置的调整可以这样做：&lt;/p&gt;
-$$ w = w-\eta \frac{\partial C}{\partial w_{jk}^{(l)}} $$
-$$ b = b-\eta \frac{\partial C}{\partial b_{jk}^{(l)}} $$
-&lt;p&gt;其中 $ \eta $ 是一个非常小的正数，这个数字也被叫做“学习速率”，通过这个值的调整可以控制拟合的速度。&lt;/p&gt;
-&lt;h1 id=&#34;推导过程&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%8e%a8%e5%af%bc%e8%bf%87%e7%a8%8b&#34;&gt;
-        ##
-    &lt;/a&gt;
-    推导过程
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;前面的部分直接使用了结论，实际推到过程比较啰嗦，markdown直接编写公式也不方便，索性把推到过程的草稿贴出来参考好了&lt;/p&gt;
-&lt;p&gt;:-)&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/derivation-process.JPG?x-oss-process=style/png2jpg&#34; alt=&#34;推导过程&#34;&gt;&lt;/p&gt;
-&lt;h1 id=&#34;实验代码&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%ae%9e%e9%aa%8c%e4%bb%a3%e7%a0%81&#34;&gt;
-        ##
-    &lt;/a&gt;
-    实验代码
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;做一个简单的神经网络实验，网络设计为3层，第一层对应3个输入，第二层用4个神经元，第三层为输出层使用1个神经元。&lt;/p&gt;
-&lt;p&gt;网络初始化过程如下：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# network design:
-# input(layer_1): 3 nodes
-#    weights: 3x4 matrix
-# layer_2: 4 nodes
-#    weights: 4x1 matrix
-# output: 1 node
-
-# create training data
-input = np.array([[0, 0, 1],
-                 [0, 1, 0],
-                 [0, 1, 1],
-                 [1, 0, 0],
-                 [1, 0, 1]])
-
-# create the label related with the input training data
-output = np.array([[0],
-                  [1],
-                  [0],
-                  [1],
-                  [1]])
-
-# initialize random weight
-weight_layer_1 = np.random.rand(3, 4)
-weight_layer_2 = np.random.rand(4, 1)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;训练过程主要代码：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# x/y is for drawing chart
-x=[]
-y=[]
-
-# learning rate
-eta = 0.1
-
-loop = 0
-while loop &amp;lt; 50000:
-    # feed forward calculation
-    z_layer_2 = np.dot(input, weight_layer_1)
-    a_layer_2 = sigmoid(z_layer_2)
-
-    z_layer_3 = np.dot(a_layer_2, weight_layer_2)
-    a_layer_3 = sigmoid(z_layer_3)
-    
-    if loop % 100 == 0:
-        # calculate the cost
-        c = cost(output, a_layer_3)
-        print &amp;quot;[%d] Cost: %f&amp;quot; % (loop, c)
-        print &amp;quot;Perception: &amp;quot;, a_layer_3
-        x.append(loop)
-        y.append(c)
-    loop += 1
-    
-    # back propagation
-    # calculate delta_3
-    delta_layer_3 = cost_derivative(output, a_layer_3)*deriv_z(a_layer_3)
-    
-    # calculate delta_2
-    delta_layer_2 = np.dot(delta_layer_3, weight_layer_2.T)*deriv_z(a_layer_2)
-    
-    # there is NO delta_layer_1, since layer1 is the input layer
-
-    # calculate new weight for layer 2
-    weight_layer_2 -= eta*np.dot(a_layer_2.T, delta_layer_3)
-    
-    # calculate new weight for layer 1
-    weight_layer_1 -= eta*np.dot(input.T, delta_layer_2)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;上面代码可以观察到每100次计算修正后的代价函数输出以及预测值，可以发现代价值在逐渐趋近于0，说明误差在降低，预测值越来越接近实际采样的数值。&lt;/p&gt;
-&lt;p&gt;为了更加清晰的看到这个过程，把x/y输出在图上进行查看，可以观察到拟合过程，并且可以看到拟合的速度变化情况。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;import matplotlib.pyplot as plt
-plt.plot(x, y)
-plt.xlabel(&amp;quot;Epoch&amp;quot;)
-plt.ylabel(&amp;quot;Cost&amp;quot;)
-plt.show()
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/BP-experiment/cost-epoch.png&#34; alt=&#34;拟合过程&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/BackPropagation/experiment-back-propagation.ipynb&#34;&gt;完整代码&lt;/a&gt;&lt;/p&gt;
-&lt;h1 id=&#34;参考&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
-        ##
-    &lt;/a&gt;
-    参考
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=mOmkv5SI9hU&amp;amp;list=PLLssT5z_DsK-h9vYZkQkYNWcItqhlRJLN&amp;amp;index=52&#34;&gt;https://www.youtube.com/watch?v=mOmkv5SI9hU&amp;amp;list=PLLssT5z_DsK-h9vYZkQkYNWcItqhlRJLN&amp;amp;index=52&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;http://www.cnblogs.com/charlotte77/p/5629865.html&#34;&gt;http://www.cnblogs.com/charlotte77/p/5629865.html&lt;/a&gt;&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/</guid>
+      <description>之前使用神经网络算法的时候并没有认真总结关键的算法，虽然可以用但总觉得不爽，于是这两天对神经网络算法中的反向传播（Back Propagation）进行了推导。即理解了算法的数学本质，也对神经网络算法的工程特性有了深刻体会，工程算法真的是以解决问题为驱动的，追求的是解决问题的实用性。
+神经网络 网络拓扑 神经元 神经元是神经网络的基本构成，上图的每一个圆圈代表了一个神经元。每一个神经元有一个输入和一个输出，神经元的作用是对输入值进行计算。下图是一个神经元的简单示意图：
+ 该神经元的输出：$ a=f(z)=sigmoid(z) $  神经元输入 在一个复杂点的神经网络中，一个神经元接收来自多个前级神经元的激活输出，并进行加权相加后产生该神经元的输入值，这个过程示意图如下：
+定义第 $ l^{th} $ 层第 $ j^{th} $ 个神经元的输入：
+神经元加权 神经元的加权结构可以看下面的示意图：
+注，第一层神经元的输入就是采样数据，不需要计算z值，这层采样数据直接通过权重计算输入到第二层的神经元。
+反向传播算法 代价函数 定义代价函数：$ cost = {1 \over 2} \sum (y^{(i)} - a^{(i)})^2 $
+神经元错误量 $ \delta_j^{(l)} $ 每个神经元的输入记为&amp;rsquo;z&amp;rsquo;，经过激活函数&amp;rsquo;f(z)&amp;lsquo;生成激活值&amp;rsquo;a&amp;rsquo;，通常情况下激活函数使用sigmoid()。那么假设对于每个神经元的输入&amp;rsquo;z&amp;rsquo;做一点微小的改变记为 $ \Delta z $，由这个改变引起的代价变化记为这个神经元的错误量 $ \delta_j^{(l)} $，从这个定义可以看出来这是一个代价函数相对于神经元的输入&amp;rsquo;z&amp;rsquo;的偏导数。
+定义 $ \delta_j^{(l)} $ 为 $ l^{th} $ 层中的第 $ j^{th} $ 个神经元的错误量，记作：$ \delta_j^{(l)} =\frac{\partial C}{\partial z_j^{(l)}} $
+经过数学推导可以得出结论：</description>
     </item>
     
   </channel>

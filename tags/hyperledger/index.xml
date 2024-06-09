@@ -1,101 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hyperledger on singleye</title>
-    <link>/tags/hyperledger/</link>
-    <description>singleye (Hyperledger)</description>
+    <title>Hyperledger on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/hyperledger/</link>
+    <description>Recent content in Hyperledger on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Thu, 16 Nov 2017 17:23:21 +0800</lastBuildDate>
     
-    <atom:link href="/tags/hyperledger/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/hyperledger/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Hyperledger Intro</title>
-      <link>/2017/11/hyperledger-intro/</link>
+      <link>https://www.singleye.net/2017/11/hyperledger-intro/</link>
       <pubDate>Thu, 16 Nov 2017 17:23:21 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/11/hyperledger-intro/</guid>
-      <description>&lt;p&gt;Hyperledger项目：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Hyperledger Fabric&lt;/li&gt;
-&lt;li&gt;Hyperledger Sawtooth&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://hyperledger.github.io/composer/&#34;&gt;Hyperledger Composer&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;模型：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Assets(资产)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;一般定义方式：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;	/**
-	 * A vehicle asset.
-	 */
-	asset Vehicle identified by vin {
-	  o String vin
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;继承方式：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;	/**
-	 * A car asset. A car is related to a list of parts
-	 */
-	asset Car extends Vehicle {
-	  o String model
-	  --&amp;gt; Part[] Parts
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;抽象方式：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;	/**
-	* An abstract Vehicle asset.
-	*/
-	abstract asset Vehicle identified by vin {
-	  o String vin
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Participants(参与者)&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  /**
-  * An enumerated type
-  */
-  enum ProductType {
-  o DAIRY
-  o BEEF
-  o VEGETABLES
-  }
-  participant Farmer identified by farmerId {
-      o String farmerId
-      o ProductType primaryProduct
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Transactions(事务)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Concepts(概念)&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  abstract concept Address {
-    o String street
-    o String city default =&amp;quot;Winchester&amp;quot;
-    o String country default = &amp;quot;UK&amp;quot;
-    o Integer[] counts optional
-  }
-
-  concept UnitedStatesAddress extends Address {
-    o String zipcode
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&#34;http://www.8btc.com/blockchain-poc-hyperledger&#34;&gt;http://www.8btc.com/blockchain-poc-hyperledger&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Test:&lt;/p&gt;
-&lt;p&gt;概念：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;BND: business network definition (BND)&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/11/hyperledger-intro/</guid>
+      <description>Hyperledger项目：
+ Hyperledger Fabric Hyperledger Sawtooth Hyperledger Composer  模型：
+ Assets(资产)  一般定义方式：
+ /** * A vehicle asset. */ asset Vehicle identified by vin { o String vin }  继承方式：
+ /** * A car asset. A car is related to a list of parts */ asset Car extends Vehicle { o String model --&amp;gt; Part[] Parts }  抽象方式：
+ /** * An abstract Vehicle asset. */ abstract asset Vehicle identified by vin { o String vin }   Participants(参与者)</description>
     </item>
     
   </channel>

@@ -1,790 +1,936 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>在 Apple silicon (M3 Max) 上对 Llama2 进行微调</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="llama2, AppleSilicon, M3Max, HuggingFace">
 
-<title>在 Apple silicon (M3 Max) 上对 Llama2 进行微调 - singleye</title>
-
-<meta name="description" content="">
-
-
-    <meta name="keywords" content="llama2,AppleSilicon,M3Max,HuggingFace">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
     
 
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
     
+    <meta name="description" content="
 
+">
+    <meta property="og:description" content="
 
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="在 Apple silicon (M3 Max) 上对 Llama2 进行微调">
+    <meta property="og:url" content="/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="
 
-
-
-    
-    
-        
+">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
     
 
-
-
-
-
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
-
-
-
-
     
-    
-        
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
 
     
-
-
-
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-        
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
     
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
-    
-
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
-    
-
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
-</script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-
-
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
-    
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
-    
-        <div class="post-date dt-published">
-            <time datetime="2024-04-26">2024-04-26</time>
-            
-        </div>
-    
-
-    <a class="post-hidden-url u-url" href="/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
-
-
-    <div class="post-taxonomies">
-        
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/ai/">AI</a></li>
-                
-                    
-                    <li><a href="/categories/nlp/">NLP</a></li>
-                
-                    
-                    <li><a href="/categories/llm/">LLM</a></li>
-                
-                    
-                    <li><a href="/categories/llama2/">Llama2</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="/tags/llama2/">#Llama2</a></li>
-                
-                    
-                    <li><a href="/tags/applesilicon/">#AppleSilicon</a></li>
-                
-                    
-                    <li><a href="/tags/m3max/">#M3Max</a></li>
-                
-                    
-                    <li><a href="/tags/huggingface/">#HuggingFace</a></li>
-                
-            </ul>
-        
-        
-    </div>
-</div>
-
-        </div>
-        
-
-  
-  
-
-
-
-
-  
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
 </script>
 
-        <div class="content e-content">
-            <!--toc-->
-<p>参考 <a href="https://www.datacamp.com/tutorial/fine-tuning-llama-2">https://www.datacamp.com/tutorial/fine-tuning-llama-2</a> 进行Llama2 微调训练时发现使用稳重代码无法在 Apple M3 Max 上运行起来，经过一番实验后得以顺利运行，下面把过程记录下来。</p>
-<p>相关代码： <a href="https://github.com/singleye/Llama2-finetune">https://github.com/singleye/Llama2-finetune</a></p>
-<h1 id="1-准备" >
-<div>
-    <a href="#1-%e5%87%86%e5%a4%87">
-        ##
+
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
     </a>
-    1. 准备
+  
+</header>
+
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      在 Apple silicon (M3 Max) 上对 Llama2 进行微调
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2024-04-26T23:48:40&#43;08:00">
+        
+  四月 26, 2024
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/ai">AI</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/nlp">NLP</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/llm">LLM</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/llama2">Llama2</a>
+    
+  
+
+  </div>
+
 </div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>pip install accelerate peft bitsandbytes <span style="color:#ff5c57">transformers</span><span style="color:#ff6ac1">==</span>4.38.1 trl
-</span></span></code></pre></div><p>注意：</p>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h1 id="table-of-contents">目录</h1><nav id="TableOfContents">
 <ul>
-<li>transformers 不能使用 4.38.2 版本，否则在 M3 上会碰到下面的错误</li>
+<li><a href="#1-准备">1. 准备</a></li>
+<li><a href="#2-模型配置">2. 模型配置</a></li>
+<li><a href="#3-加载数据集">3. 加载数据集</a></li>
+<li><a href="#4-qlora-4-bit-量化配置-m3-跳过">4. QLoRA 4-bit 量化配置 (M3 跳过)</a></li>
+<li><a href="#5-加载模型">5. 加载模型</a></li>
+<li><a href="#6-加载模型的-tokenizer">6. 加载模型的 tokenizer</a></li>
+<li><a href="#7-配置-peft-参数">7. 配置 PEFT 参数</a></li>
+<li><a href="#8-配置训练参数">8. 配置训练参数</a></li>
+<li><a href="#9-模型微调训练">9. 模型微调训练</a></li>
+<li><a href="#10-保存训练好的模型">10. 保存训练好的模型</a></li>
+<li><a href="#11-使用模型">11. 使用模型</a></li>
 </ul>
-<pre tabindex="0"><code>RuntimeError: User specified an unsupported autocast device_type &#39;mps&#39;
-</code></pre><ul>
+</nav>
+
+<p></p>
+
+<p>参考 <a href="https://www.datacamp.com/tutorial/fine-tuning-llama-2">https://www.datacamp.com/tutorial/fine-tuning-llama-2</a> 进行Llama2 微调训练时发现使用稳重代码无法在 Apple M3 Max 上运行起来，经过一番实验后得以顺利运行，下面把过程记录下来。</p>
+
+<p>相关代码： <a href="https://github.com/singleye/Llama2-finetune">https://github.com/singleye/Llama2-finetune</a></p>
+
+<h1 id="1-准备">1. 准备</h1>
+
+<pre><code class="language-shell">pip install accelerate peft bitsandbytes transformers==4.38.1 trl
+</code></pre>
+
+<p>注意：
+* transformers 不能使用 4.38.2 版本，否则在 M3 上会碰到下面的错误</p>
+
+<pre><code>RuntimeError: User specified an unsupported autocast device_type 'mps'
+</code></pre>
+
+<ul>
 <li>bitsandbytes 无法在 M3 上使用</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff6ac1">import</span> os
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">import</span> torch
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">from</span> datasets <span style="color:#ff6ac1">import</span> load_dataset
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">from</span> transformers <span style="color:#ff6ac1">import</span> (
-</span></span><span style="display:flex;"><span>    AutoModelForCausalLM,
-</span></span><span style="display:flex;"><span>    AutoTokenizer,
-</span></span><span style="display:flex;"><span>    BitsAndBytesConfig,
-</span></span><span style="display:flex;"><span>    TrainingArguments,
-</span></span><span style="display:flex;"><span>    pipeline,
-</span></span><span style="display:flex;"><span>    logging,
-</span></span><span style="display:flex;"><span>)
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">from</span> peft <span style="color:#ff6ac1">import</span> LoraConfig
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">from</span> trl <span style="color:#ff6ac1">import</span> SFTTrainer
-</span></span></code></pre></div><h1 id="2-模型配置" >
-<div>
-    <a href="#2-%e6%a8%a1%e5%9e%8b%e9%85%8d%e7%bd%ae">
-        ##
-    </a>
-    2. 模型配置
-</div>
-</h1>
+
+<pre><code class="language-python">import os
+import torch
+from datasets import load_dataset
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    TrainingArguments,
+    pipeline,
+    logging,
+)
+from peft import LoraConfig
+from trl import SFTTrainer
+</code></pre>
+
+<h1 id="2-模型配置">2. 模型配置</h1>
+
 <p>由于国内直接从 HuggingFace 网站下载模型速度太慢，可以使用镜像站进行下载。</p>
+
 <p>设置环境变量 HF_ENDPOINT：</p>
-<pre tabindex="0"><code>export HF_ENDPOINT=https://hf-mirror.com
-</code></pre><p>下载模型：</p>
-<pre tabindex="0"><code>huggingface-cli download --resume-download NousResearch/Llama-2-7b-chat-hf --local-dir Llama-2-7b-chat-hf
-</code></pre><p>下载数据集：</p>
-<pre tabindex="0"><code>huggingface-cli download --repo-type dataset --resume-download mlabonne/guanaco-llama2-1k --local-dir guanaco-llama2-1k
-</code></pre><div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>base_dir <span style="color:#ff6ac1">=</span> <span style="color:#5af78e">&#39;～/Llama2-finetuning&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#78787e"># Model from local directory</span>
-</span></span><span style="display:flex;"><span>base_model <span style="color:#ff6ac1">=</span> base_dir <span style="color:#ff6ac1">+</span> <span style="color:#5af78e">&#34;/Llama-2-7b-chat-hf&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#78787e"># Dataset from local directory</span>
-</span></span><span style="display:flex;"><span>guanaco_dataset <span style="color:#ff6ac1">=</span> base_dir <span style="color:#ff6ac1">+</span> <span style="color:#5af78e">&#34;/guanaco-llama2-1k&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#78787e"># Fine-tuned model</span>
-</span></span><span style="display:flex;"><span>new_model <span style="color:#ff6ac1">=</span> <span style="color:#5af78e">&#34;llama-2-7b-chat-guanaco&#34;</span>
-</span></span></code></pre></div><h1 id="3-加载数据集" >
-<div>
-    <a href="#3-%e5%8a%a0%e8%bd%bd%e6%95%b0%e6%8d%ae%e9%9b%86">
-        ##
-    </a>
-    3. 加载数据集
-</div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>dataset <span style="color:#ff6ac1">=</span> load_dataset(guanaco_dataset, split<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;train&#34;</span>)
-</span></span></code></pre></div><h1 id="4-qlora-4-bit-量化配置-m3-跳过" >
-<div>
-    <a href="#4-qlora-4-bit-%e9%87%8f%e5%8c%96%e9%85%8d%e7%bd%ae-m3-%e8%b7%b3%e8%bf%87">
-        ##
-    </a>
-    4. QLoRA 4-bit 量化配置 (M3 跳过)
-</div>
-</h1>
+
+<pre><code>export HF_ENDPOINT=https://hf-mirror.com
+</code></pre>
+
+<p>下载模型：</p>
+
+<pre><code>huggingface-cli download --resume-download NousResearch/Llama-2-7b-chat-hf --local-dir Llama-2-7b-chat-hf
+</code></pre>
+
+<p>下载数据集：</p>
+
+<pre><code>huggingface-cli download --repo-type dataset --resume-download mlabonne/guanaco-llama2-1k --local-dir guanaco-llama2-1k
+</code></pre>
+
+<pre><code class="language-python">base_dir = '～/Llama2-finetuning'
+
+# Model from local directory
+base_model = base_dir + &quot;/Llama-2-7b-chat-hf&quot;
+
+# Dataset from local directory
+guanaco_dataset = base_dir + &quot;/guanaco-llama2-1k&quot;
+
+# Fine-tuned model
+new_model = &quot;llama-2-7b-chat-guanaco&quot;
+</code></pre>
+
+<h1 id="3-加载数据集">3. 加载数据集</h1>
+
+<pre><code class="language-python">dataset = load_dataset(guanaco_dataset, split=&quot;train&quot;)
+</code></pre>
+
+<h1 id="4-qlora-4-bit-量化配置-m3-跳过">4. QLoRA 4-bit 量化配置 (M3 跳过)</h1>
+
 <p>Paper: <a href="https://arxiv.org/abs/2305.14314">&ldquo;QLoRA: Efficient Finetuning of Quantized LLMs&rdquo;</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>compute_dtype <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">getattr</span>(torch, <span style="color:#5af78e">&#34;float16&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>quant_config <span style="color:#ff6ac1">=</span> BitsAndBytesConfig(
-</span></span><span style="display:flex;"><span>    load_in_4bit<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>,
-</span></span><span style="display:flex;"><span>    bnb_4bit_quant_type<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;nf4&#34;</span>,
-</span></span><span style="display:flex;"><span>    bnb_4bit_compute_dtype<span style="color:#ff6ac1">=</span>compute_dtype,
-</span></span><span style="display:flex;"><span>    bnb_4bit_use_double_quant<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">False</span>,
-</span></span><span style="display:flex;"><span>)
-</span></span></code></pre></div><h1 id="5-加载模型" >
-<div>
-    <a href="#5-%e5%8a%a0%e8%bd%bd%e6%a8%a1%e5%9e%8b">
-        ##
-    </a>
-    5. 加载模型
-</div>
-</h1>
+
+<pre><code class="language-python">compute_dtype = getattr(torch, &quot;float16&quot;)
+
+quant_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type=&quot;nf4&quot;,
+    bnb_4bit_compute_dtype=compute_dtype,
+    bnb_4bit_use_double_quant=False,
+)
+</code></pre>
+
+<h1 id="5-加载模型">5. 加载模型</h1>
+
 <p>注意，由于 BitsAndBytesConfig 无法在 Apple Silicon (M3) 上使用，所以需要进行平台判断并做相应处理。由于无法使用量化方法进行处理，所以在 Apple Silicon (M3) 上需要使用更多的内存进行微调训练，在这个例子中大约使用了 75 GB 的内存。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>compute_dtype <span style="color:#ff6ac1">=</span> <span style="color:#ff5c57">getattr</span>(torch, <span style="color:#5af78e">&#34;float16&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>quant_config <span style="color:#ff6ac1">=</span> BitsAndBytesConfig(
-</span></span><span style="display:flex;"><span>    load_in_4bit<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>,
-</span></span><span style="display:flex;"><span>    bnb_4bit_quant_type<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;nf4&#34;</span>,
-</span></span><span style="display:flex;"><span>    bnb_4bit_compute_dtype<span style="color:#ff6ac1">=</span>compute_dtype,
-</span></span><span style="display:flex;"><span>    bnb_4bit_use_double_quant<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">False</span>,
-</span></span><span style="display:flex;"><span>)
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#ff6ac1">if</span> torch<span style="color:#ff6ac1">.</span>backends<span style="color:#ff6ac1">.</span>mps<span style="color:#ff6ac1">.</span>is_available():
-</span></span><span style="display:flex;"><span>    <span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#34;Using &#39;mps&#39; (Apple Silicon)&#34;</span>)
-</span></span><span style="display:flex;"><span>    active_device <span style="color:#ff6ac1">=</span> torch<span style="color:#ff6ac1">.</span>device(<span style="color:#5af78e">&#39;mps&#39;</span>)
-</span></span><span style="display:flex;"><span>    model <span style="color:#ff6ac1">=</span> AutoModelForCausalLM<span style="color:#ff6ac1">.</span>from_pretrained(
-</span></span><span style="display:flex;"><span>        pretrained_model_name_or_path<span style="color:#ff6ac1">=</span>base_model,
-</span></span><span style="display:flex;"><span>        trust_remote_code<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>,
-</span></span><span style="display:flex;"><span>        low_cpu_mem_usage<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>,
-</span></span><span style="display:flex;"><span>        device_map<span style="color:#ff6ac1">=</span>active_device
-</span></span><span style="display:flex;"><span>    )
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">elif</span> torch<span style="color:#ff6ac1">.</span>cuda<span style="color:#ff6ac1">.</span>is_available():
-</span></span><span style="display:flex;"><span>    <span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#34;Using GPU&#34;</span>)
-</span></span><span style="display:flex;"><span>    active_device <span style="color:#ff6ac1">=</span> torch<span style="color:#ff6ac1">.</span>device(<span style="color:#5af78e">&#39;cuda&#39;</span>)
-</span></span><span style="display:flex;"><span>    model <span style="color:#ff6ac1">=</span> AutoModelForCausalLM<span style="color:#ff6ac1">.</span>from_pretrained(
-</span></span><span style="display:flex;"><span>        base_model,
-</span></span><span style="display:flex;"><span>        quantization_config<span style="color:#ff6ac1">=</span>quant_config,
-</span></span><span style="display:flex;"><span>        device_map<span style="color:#ff6ac1">=</span>active_device
-</span></span><span style="display:flex;"><span>    )
-</span></span><span style="display:flex;"><span><span style="color:#ff6ac1">else</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#ff5c57">print</span>(<span style="color:#5af78e">&#34;Using CPU&#34;</span>)
-</span></span><span style="display:flex;"><span>    active_device <span style="color:#ff6ac1">=</span> torch<span style="color:#ff6ac1">.</span>device(<span style="color:#5af78e">&#39;cpu&#39;</span>)
-</span></span><span style="display:flex;"><span>    model <span style="color:#ff6ac1">=</span> AutoModelForCausalLM<span style="color:#ff6ac1">.</span>from_pretrained(
-</span></span><span style="display:flex;"><span>        base_model,
-</span></span><span style="display:flex;"><span>        quantization_config<span style="color:#ff6ac1">=</span>quant_config,
-</span></span><span style="display:flex;"><span>        device_map<span style="color:#ff6ac1">=</span>active_device
-</span></span><span style="display:flex;"><span>    )
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>model<span style="color:#ff6ac1">.</span>config<span style="color:#ff6ac1">.</span>use_cache <span style="color:#ff6ac1">=</span> <span style="color:#ff6ac1">False</span>
-</span></span><span style="display:flex;"><span>model<span style="color:#ff6ac1">.</span>config<span style="color:#ff6ac1">.</span>pretraining_tp <span style="color:#ff6ac1">=</span> <span style="color:#ff9f43">1</span>
-</span></span></code></pre></div><h1 id="6-加载模型的-tokenizer" >
-<div>
-    <a href="#6-%e5%8a%a0%e8%bd%bd%e6%a8%a1%e5%9e%8b%e7%9a%84-tokenizer">
-        ##
-    </a>
-    6. 加载模型的 tokenizer
-</div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>tokenizer <span style="color:#ff6ac1">=</span> AutoTokenizer<span style="color:#ff6ac1">.</span>from_pretrained(base_model, trust_remote_code<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>)
-</span></span><span style="display:flex;"><span>tokenizer<span style="color:#ff6ac1">.</span>pad_token <span style="color:#ff6ac1">=</span> tokenizer<span style="color:#ff6ac1">.</span>eos_token
-</span></span><span style="display:flex;"><span>tokenizer<span style="color:#ff6ac1">.</span>padding_side <span style="color:#ff6ac1">=</span> <span style="color:#5af78e">&#34;right&#34;</span>
-</span></span></code></pre></div><h1 id="7-配置-peft-参数" >
-<div>
-    <a href="#7-%e9%85%8d%e7%bd%ae-peft-%e5%8f%82%e6%95%b0">
-        ##
-    </a>
-    7. 配置 PEFT 参数
-</div>
-</h1>
+
+<pre><code class="language-python">compute_dtype = getattr(torch, &quot;float16&quot;)
+
+quant_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type=&quot;nf4&quot;,
+    bnb_4bit_compute_dtype=compute_dtype,
+    bnb_4bit_use_double_quant=False,
+)
+</code></pre>
+
+<pre><code class="language-python">if torch.backends.mps.is_available():
+    print(&quot;Using 'mps' (Apple Silicon)&quot;)
+    active_device = torch.device('mps')
+    model = AutoModelForCausalLM.from_pretrained(
+        pretrained_model_name_or_path=base_model,
+        trust_remote_code=True,
+        low_cpu_mem_usage=True,
+        device_map=active_device
+    )
+elif torch.cuda.is_available():
+    print(&quot;Using GPU&quot;)
+    active_device = torch.device('cuda')
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model,
+        quantization_config=quant_config,
+        device_map=active_device
+    )
+else:
+    print(&quot;Using CPU&quot;)
+    active_device = torch.device('cpu')
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model,
+        quantization_config=quant_config,
+        device_map=active_device
+    )
+
+model.config.use_cache = False
+model.config.pretraining_tp = 1
+</code></pre>
+
+<h1 id="6-加载模型的-tokenizer">6. 加载模型的 tokenizer</h1>
+
+<pre><code class="language-python">tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.padding_side = &quot;right&quot;
+</code></pre>
+
+<h1 id="7-配置-peft-参数">7. 配置 PEFT 参数</h1>
+
 <ul>
 <li><a href="https://huggingface.co/docs/peft/conceptual_guides/lora">Parameter-Efficient Fine-Tuning (PEFT) </a></li>
 <li><a href="https://arxiv.org/abs/2305.14314">&ldquo;QLoRA&rdquo;</a>
-<img src="https://images.datacamp.com/image/upload/v1697713094/image7_3e12912d0d.png" alt="QLoRA"></li>
+<img src="https://images.datacamp.com/image/upload/v1697713094/image7_3e12912d0d.png" alt="QLoRA" /></li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>peft_params <span style="color:#ff6ac1">=</span> LoraConfig(
-</span></span><span style="display:flex;"><span>    lora_alpha<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">16</span>,
-</span></span><span style="display:flex;"><span>    lora_dropout<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">0.1</span>,
-</span></span><span style="display:flex;"><span>    r<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">64</span>,
-</span></span><span style="display:flex;"><span>    bias<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;none&#34;</span>,
-</span></span><span style="display:flex;"><span>    task_type<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;CAUSAL_LM&#34;</span>,
-</span></span><span style="display:flex;"><span>)
-</span></span></code></pre></div><h1 id="8-配置训练参数" >
-<div>
-    <a href="#8-%e9%85%8d%e7%bd%ae%e8%ae%ad%e7%bb%83%e5%8f%82%e6%95%b0">
-        ##
-    </a>
-    8. 配置训练参数
-</div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>training_params <span style="color:#ff6ac1">=</span> TrainingArguments(
-</span></span><span style="display:flex;"><span>	output_dir<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;./results&#34;</span>,
-</span></span><span style="display:flex;"><span>	num_train_epochs<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">1</span>,
-</span></span><span style="display:flex;"><span>	per_device_train_batch_size<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">4</span>,
-</span></span><span style="display:flex;"><span>	gradient_accumulation_steps<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">1</span>,
-</span></span><span style="display:flex;"><span>	gradient_checkpointing <span style="color:#ff6ac1">=</span> <span style="color:#ff6ac1">True</span>,
-</span></span><span style="display:flex;"><span>	learning_rate<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">2e-4</span>,
-</span></span><span style="display:flex;"><span>	weight_decay<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">0.001</span>,
-</span></span><span style="display:flex;"><span>	lr_scheduler_type<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;constant&#34;</span>,
-</span></span><span style="display:flex;"><span>	warmup_ratio<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">0.03</span>,
-</span></span><span style="display:flex;"><span>	max_grad_norm<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">0.3</span>,
-</span></span><span style="display:flex;"><span>	max_steps<span style="color:#ff6ac1">=-</span><span style="color:#ff9f43">1</span>,
-</span></span><span style="display:flex;"><span>	save_steps<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">25</span>,
-</span></span><span style="display:flex;"><span>	logging_steps<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">25</span>,
-</span></span><span style="display:flex;"><span>	logging_dir<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;./logs&#34;</span>, 
-</span></span><span style="display:flex;"><span>	group_by_length<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>,
-</span></span><span style="display:flex;"><span>	fp16<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">False</span>,
-</span></span><span style="display:flex;"><span>	report_to<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;tensorboard&#34;</span>,
-</span></span><span style="display:flex;"><span>	adam_beta2<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">0.999</span>,
-</span></span><span style="display:flex;"><span>	do_train<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">True</span>
-</span></span><span style="display:flex;"><span>)
-</span></span></code></pre></div><h1 id="9-模型微调训练" >
-<div>
-    <a href="#9-%e6%a8%a1%e5%9e%8b%e5%be%ae%e8%b0%83%e8%ae%ad%e7%bb%83">
-        ##
-    </a>
-    9. 模型微调训练
-</div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>trainer <span style="color:#ff6ac1">=</span> SFTTrainer(
-</span></span><span style="display:flex;"><span>    model<span style="color:#ff6ac1">=</span>model,
-</span></span><span style="display:flex;"><span>    train_dataset<span style="color:#ff6ac1">=</span>dataset_train,
-</span></span><span style="display:flex;"><span>    peft_config<span style="color:#ff6ac1">=</span>peft_params,
-</span></span><span style="display:flex;"><span>    dataset_text_field<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;text&#34;</span>,
-</span></span><span style="display:flex;"><span>    max_seq_length<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">None</span>,
-</span></span><span style="display:flex;"><span>    tokenizer<span style="color:#ff6ac1">=</span>tokenizer,
-</span></span><span style="display:flex;"><span>    args<span style="color:#ff6ac1">=</span>training_params,
-</span></span><span style="display:flex;"><span>    packing<span style="color:#ff6ac1">=</span><span style="color:#ff6ac1">False</span>,
-</span></span><span style="display:flex;"><span>)
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>trainer<span style="color:#ff6ac1">.</span>train()
-</span></span></code></pre></div><h1 id="10-保存训练好的模型" >
-<div>
-    <a href="#10-%e4%bf%9d%e5%ad%98%e8%ae%ad%e7%bb%83%e5%a5%bd%e7%9a%84%e6%a8%a1%e5%9e%8b">
-        ##
-    </a>
-    10. 保存训练好的模型
-</div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>trainer<span style="color:#ff6ac1">.</span>model<span style="color:#ff6ac1">.</span>save_pretrained(new_model)
-</span></span><span style="display:flex;"><span>trainer<span style="color:#ff6ac1">.</span>tokenizer<span style="color:#ff6ac1">.</span>save_pretrained(new_model)
-</span></span></code></pre></div><h1 id="11-使用模型" >
-<div>
-    <a href="#11-%e4%bd%bf%e7%94%a8%e6%a8%a1%e5%9e%8b">
-        ##
-    </a>
-    11. 使用模型
-</div>
-</h1>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>logging<span style="color:#ff6ac1">.</span>set_verbosity(logging<span style="color:#ff6ac1">.</span>CRITICAL)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>prompt <span style="color:#ff6ac1">=</span> <span style="color:#5af78e">&#34;Who is Leonardo Da Vinci?&#34;</span>
-</span></span><span style="display:flex;"><span>pipe <span style="color:#ff6ac1">=</span> pipeline(task<span style="color:#ff6ac1">=</span><span style="color:#5af78e">&#34;text-generation&#34;</span>, model<span style="color:#ff6ac1">=</span>model, tokenizer<span style="color:#ff6ac1">=</span>tokenizer, max_length<span style="color:#ff6ac1">=</span><span style="color:#ff9f43">200</span>)
-</span></span><span style="display:flex;"><span>result <span style="color:#ff6ac1">=</span> pipe(<span style="color:#5af78e">f</span><span style="color:#5af78e">&#34;&lt;s&gt;[INST] </span><span style="color:#5af78e">{</span>prompt<span style="color:#5af78e">}</span><span style="color:#5af78e"> [/INST]&#34;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#ff5c57">print</span>(result[<span style="color:#ff9f43">0</span>][<span style="color:#5af78e">&#39;generated_text&#39;</span>])
-</span></span></code></pre></div>
-        </div>
 
-    </article>
+<pre><code class="language-python">peft_params = LoraConfig(
+    lora_alpha=16,
+    lora_dropout=0.1,
+    r=64,
+    bias=&quot;none&quot;,
+    task_type=&quot;CAUSAL_LM&quot;,
+)
+</code></pre>
 
-    
-    
+<h1 id="8-配置训练参数">8. 配置训练参数</h1>
 
-    
-        
-        
-            <h3 class="read-next-title noselect">Read next</h3>
-            <ul class="read-next-posts noselect">
+<pre><code class="language-python">training_params = TrainingArguments(
+	output_dir=&quot;./results&quot;,
+	num_train_epochs=1,
+	per_device_train_batch_size=4,
+	gradient_accumulation_steps=1,
+	gradient_checkpointing = True,
+	learning_rate=2e-4,
+	weight_decay=0.001,
+	lr_scheduler_type=&quot;constant&quot;,
+	warmup_ratio=0.03,
+	max_grad_norm=0.3,
+	max_steps=-1,
+	save_steps=25,
+	logging_steps=25,
+	logging_dir=&quot;./logs&quot;, 
+	group_by_length=True,
+	fp16=False,
+	report_to=&quot;tensorboard&quot;,
+	adam_beta2=0.999,
+	do_train=True
+)
+</code></pre>
+
+<h1 id="9-模型微调训练">9. 模型微调训练</h1>
+
+<pre><code class="language-python">trainer = SFTTrainer(
+    model=model,
+    train_dataset=dataset_train,
+    peft_config=peft_params,
+    dataset_text_field=&quot;text&quot;,
+    max_seq_length=None,
+    tokenizer=tokenizer,
+    args=training_params,
+    packing=False,
+)
+</code></pre>
+
+<pre><code class="language-python">trainer.train()
+</code></pre>
+
+<h1 id="10-保存训练好的模型">10. 保存训练好的模型</h1>
+
+<pre><code class="language-python">trainer.model.save_pretrained(new_model)
+trainer.tokenizer.save_pretrained(new_model)
+</code></pre>
+
+<h1 id="11-使用模型">11. 使用模型</h1>
+
+<pre><code class="language-python">logging.set_verbosity(logging.CRITICAL)
+
+prompt = &quot;Who is Leonardo Da Vinci?&quot;
+pipe = pipeline(task=&quot;text-generation&quot;, model=model, tokenizer=tokenizer, max_length=200)
+result = pipe(f&quot;&lt;s&gt;[INST] {prompt} [/INST]&quot;)
+print(result[0]['generated_text'])
+</code></pre>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
                 
-                <li><a href="/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">tmux AI 助手</a></li>
                 
-            </ul>
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/llama2/">llama2</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/applesilicon/">AppleSilicon</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/m3max/">M3Max</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/huggingface/">HuggingFace</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/" data-tooltip="tmux AI 助手">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-    
-
-    
-
-    
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
         
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
         
-            <footer class="common-footer noselect">
-    
-    
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    <div class="common-footer-bottom">
-        
 
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
             
-        </div>
-        <div style="display:flex;align-items: center">
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/" data-tooltip="tmux AI 助手">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2024\/04\/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83\/';
+          
+            this.page.identifier = '\/2024\/04\/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

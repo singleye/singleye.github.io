@@ -1,1010 +1,1162 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>旋转矩阵</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="rotation matrix, 旋转矩阵">
 
-<title>旋转矩阵 - singleye</title>
-
-<meta name="description" content="">
-
-
-    <meta name="keywords" content="rotation matrix,旋转矩阵">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
     
 
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
     
+    <meta name="description" content="
 
+">
+    <meta property="og:description" content="
 
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="旋转矩阵">
+    <meta property="og:url" content="/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="
 
-
-
-    
-    
-        
+">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
     
 
-
-
-
-
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
-
-
-
-
     
-    
-        
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
 
     
-
-
-
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-        
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
     
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
-    
-
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
-    
-
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
 </script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  </head>
 
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
     
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">旋转矩阵</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
     
-        <div class="post-date dt-published">
-            <time datetime="2021-01-07">2021-01-07</time>
-            
-        </div>
     
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
 
-    <a class="post-hidden-url u-url" href="/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/">/2021/01/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
 
 
-    <div class="post-taxonomies">
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      旋转矩阵
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-01-07T11:40:47&#43;08:00">
         
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/robotics/">Robotics</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="/tags/rotation-matrix/">#Rotation Matrix</a></li>
-                
-                    
-                    <li><a href="">#旋转矩阵</a></li>
-                
-            </ul>
-        
-        
-    </div>
+  一月 7, 2021
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/robotics">robotics</a>
+    
+  
+
+  </div>
+
 </div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h1 id="table-of-contents">目录</h1><nav id="TableOfContents">
+<ul>
+<li><a href="#先举个简单例子">先举个简单例子</a></li>
+<li><a href="#复杂一点的例子">复杂一点的例子</a></li>
+<li><a href="#旋转矩阵">旋转矩阵</a>
+<ul>
+<li><a href="#二维平面直角坐标系旋转矩阵推导">二维平面直角坐标系旋转矩阵推导</a></li>
+<li><a href="#二维平面之交坐标系旋绕任一点旋转">二维平面之交坐标系旋绕任一点旋转</a>
+<ul>
+<li><a href="#平移矩阵">平移矩阵</a></li>
+</ul></li>
+<li><a href="#三维旋转矩阵">三维旋转矩阵</a>
+<ul>
+<li><a href="#绕-x-轴转-theta-的旋转矩阵">绕 X 轴转 $\theta$ 的旋转矩阵：</a></li>
+<li><a href="#绕-y-轴转-theta-的旋转矩阵">绕 Y 轴转 $\theta$ 的旋转矩阵：</a></li>
+<li><a href="#绕-z-轴转-theta-的旋转矩阵">绕 Z 轴转 $\theta$ 的旋转矩阵：</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#代码实验">代码实验</a></li>
+</ul>
+</nav>
 
-        </div>
-        
+<p></p>
 
-  
-  
-
-
-
-
-  
-  
-  
-  <details class="toc noselect">
-    <summary>Table of Contents</summary>
-    <div class="inner"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#二维平面直角坐标系旋转矩阵推导">二维平面直角坐标系旋转矩阵推导</a></li>
-    <li><a href="#二维平面之交坐标系旋绕任一点旋转">二维平面之交坐标系旋绕任一点旋转</a>
-      <ul>
-        <li><a href="#平移矩阵">平移矩阵</a></li>
-      </ul>
-    </li>
-    <li><a href="#三维旋转矩阵">三维旋转矩阵</a>
-      <ul>
-        <li><a href="#绕-x-轴转-theta-的旋转矩阵">绕 X 轴转 $\theta$ 的旋转矩阵：</a></li>
-        <li><a href="#绕-y-轴转-theta-的旋转矩阵">绕 Y 轴转 $\theta$ 的旋转矩阵：</a></li>
-        <li><a href="#绕-z-轴转-theta-的旋转矩阵">绕 Z 轴转 $\theta$ 的旋转矩阵：</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-  </details>
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
-</script>
-
-        <div class="content e-content">
-            <!--toc-->
 <p>计算机图形学中的仿射变换包括平移、缩放、旋转等，在机器人位置描述的时候也需要使用到平移、旋转。这里主要介绍旋转的处理方法。</p>
-<h1 id="先举个简单例子" >
-<div>
-    <a href="#%e5%85%88%e4%b8%be%e4%b8%aa%e7%ae%80%e5%8d%95%e4%be%8b%e5%ad%90">
-        ##
-    </a>
-    先举个简单例子
-</div>
-</h1>
-<p><img src="http://www.singleye.net/media/2021/01/rotation.png" alt="rotation"></p>
+
+<h1 id="先举个简单例子">先举个简单例子</h1>
+
+<p><img src="http://www.singleye.net/media/2021/01/rotation.png" alt="rotation" /></p>
+
 <p>设想一个二维平面空间里的“一个点”状机器人的简单情况，最初机器人位于平面直角坐标系中的 (1, 0) 点，先让机器人围绕着原点旋转角度 $\phi$ ，那么机器人的新的位置坐标可以很容易的用以下方式来表示:</p>
-$$ (cos(\phi), sin(\phi)) $$
+
+<p>$$ (cos(\phi), sin(\phi)) $$</p>
+
 <p>让机器人再从刚才的位置继续旋转 $\theta$ 角，那么机器人的新的位置坐标也很直观的用下面式子表示：</p>
-$$ (cos(\phi+\theta), sin(\phi+\theta)) $$
-<h1 id="复杂一点的例子" >
-<div>
-    <a href="#%e5%a4%8d%e6%9d%82%e4%b8%80%e7%82%b9%e7%9a%84%e4%be%8b%e5%ad%90">
-        ##
-    </a>
-    复杂一点的例子
-</div>
-</h1>
+
+<p>$$ (cos(\phi+\theta), sin(\phi+\theta)) $$</p>
+
+<h1 id="复杂一点的例子">复杂一点的例子</h1>
+
 <p>在平面直角坐标系下，如果机器人不再是一个简单的点而是一个平面，那么机器人躯干中的任意一个点 (x, y) 经过旋转后在原平面直角坐标系下的新坐标是什么？</p>
-<p><img src="http://www.singleye.net/media/2021/01/example-1.png" alt="rotation"></p>
-<h1 id="旋转矩阵" >
-<div>
-    <a href="#%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5">
-        ##
-    </a>
-    旋转矩阵
-</div>
-</h1>
-<h2 id="二维平面直角坐标系旋转矩阵推导" >
-<div>
-    <a href="#%e4%ba%8c%e7%bb%b4%e5%b9%b3%e9%9d%a2%e7%9b%b4%e8%a7%92%e5%9d%90%e6%a0%87%e7%b3%bb%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5%e6%8e%a8%e5%af%bc">
-        #
-    </a>
-    二维平面直角坐标系旋转矩阵推导
-</div>
-</h2>
-<p><img src="http://www.singleye.net/media/2021/01/rotation.png" alt="rotation"></p>
+
+<p><img src="http://www.singleye.net/media/2021/01/example-1.png" alt="rotation" /></p>
+
+<h1 id="旋转矩阵">旋转矩阵</h1>
+
+<h2 id="二维平面直角坐标系旋转矩阵推导">二维平面直角坐标系旋转矩阵推导</h2>
+
+<p><img src="http://www.singleye.net/media/2021/01/rotation.png" alt="rotation" /></p>
+
 <p>机器人躯干上的任意点 (x, y) 对应向量 v，旋转 $\theta$ 后的位置计作 (x&rsquo;, y&rsquo;)对应新的向量 v&rsquo;。</p>
+
 <p>那么：</p>
+
 <div>
 $$
 \left( 
-	\begin{matrix}
-		x \\
-		y
-	\end{matrix}
+    \begin{matrix}
+        x \\
+        y
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		r*cos(\phi) \\
-		r*sin(\phi)
-	\end{matrix}
+    \begin{matrix}
+        r*cos(\phi) \\
+        r*sin(\phi)
+    \end{matrix}
 \right)
 $$
 </div>
+
 <div>
 $$
 \left( 
-	\begin{matrix}
-		x' \\
-		y'
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y'
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		r*cos(\phi+\theta) \\
-		r*sin(\phi+\theta)
-	\end{matrix}
+    \begin{matrix}
+        r*cos(\phi+\theta) \\
+        r*sin(\phi+\theta)
+    \end{matrix}
 \right)
 $$
 </div>
+
 <p>三角和差化积公式:</p>
-$$ cos(\phi+\theta) = cos(\phi)*cos(\theta) - sin(\phi)*sin(\theta) $$
-$$ sin(\phi+\theta) = sin(\phi)*cos(\theta) + cos(\phi)*sin(\theta) $$
+
+<p>$$ cos(\phi+\theta) = cos(\phi)*cos(\theta) - sin(\phi)*sin(\theta) $$</p>
+
+<p>$$ sin(\phi+\theta) = sin(\phi)*cos(\theta) + cos(\phi)*sin(\theta) $$</p>
+
 <p>带入和差化积公式后：</p>
+
 <div>
 $$
 \left( 
-	\begin{matrix}
-		x' \\
-		y'
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y'
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		r*cos(\phi)*cos(\theta) - r*sin(\phi)*sin(\theta) \\
-		r*sin(\phi)*cos(\theta) + r*cos(\phi)*sin(\theta)
-	\end{matrix}
+    \begin{matrix}
+        r*cos(\phi)*cos(\theta) - r*sin(\phi)*sin(\theta) \\
+        r*sin(\phi)*cos(\theta) + r*cos(\phi)*sin(\theta)
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		x*cos(\theta) - y*sin(\theta) \\
-		y*cos(\theta) + x*sin(\theta)
-	\end{matrix}
+    \begin{matrix}
+        x*cos(\theta) - y*sin(\theta) \\
+        y*cos(\theta) + x*sin(\theta)
+    \end{matrix}
 \right)
 $$
 </div>
+
 <p>用矩阵的方法书写上面的公式：</p>
+
 <div>
 $$
 \left( 
-	\begin{matrix}
-		x' \\
-		y'
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y'
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) \\
-		sin(\theta) & cos(\theta)
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) \\
+        sin(\theta) & cos(\theta)
+    \end{matrix}
 \right)*
 \left( 
-	\begin{matrix}
-		x \\
-		y
-	\end{matrix}
+    \begin{matrix}
+        x \\
+        y
+    \end{matrix}
 \right)
 $$
 </div>
-<p><em><strong>旋转矩阵 &lsquo;R&rsquo;：</strong></em></p>
+
+<p><strong><em>旋转矩阵 &lsquo;R&rsquo;：</em></strong></p>
+
 <div>
 $$
 R=
 \left( 
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) \\
-		sin(\theta) & cos(\theta)
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) \\
+        sin(\theta) & cos(\theta)
+    \end{matrix}
 \right)
 $$
 </div>
-<h2 id="二维平面之交坐标系旋绕任一点旋转" >
-<div>
-    <a href="#%e4%ba%8c%e7%bb%b4%e5%b9%b3%e9%9d%a2%e4%b9%8b%e4%ba%a4%e5%9d%90%e6%a0%87%e7%b3%bb%e6%97%8b%e7%bb%95%e4%bb%bb%e4%b8%80%e7%82%b9%e6%97%8b%e8%bd%ac">
-        #
-    </a>
-    二维平面之交坐标系旋绕任一点旋转
-</div>
-</h2>
-<p><img src="http://www.singleye.net/media/2021/01/example-2.png" alt="rotation"></p>
+
+<h2 id="二维平面之交坐标系旋绕任一点旋转">二维平面之交坐标系旋绕任一点旋转</h2>
+
+<p><img src="http://www.singleye.net/media/2021/01/example-2.png" alt="rotation" /></p>
+
 <p>思路如下：</p>
+
 <ul>
 <li>步骤 (a)：找到旋转点在原坐标系中的坐标 (x, y)</li>
 <li>步骤 (b)：把坐标系平移到(x,y)后重新计算新的坐标</li>
-<li>步骤 (c)：对新的坐标进行旋转</li>
+<li>步骤 &copy;：对新的坐标进行旋转</li>
 <li>步骤 (d)：把结果进行反向平移</li>
 </ul>
-<p><em><strong>思考：平移是否可以用矩阵进行计算呢，如果可以的话会有什么好处呢？</strong></em></p>
-<h3 id="平移矩阵" >
-<div>
-    <a href="#%e5%b9%b3%e7%a7%bb%e7%9f%a9%e9%98%b5">
-        ##
-    </a>
-    平移矩阵
-</div>
-</h3>
+
+<p><strong><em>思考：平移是否可以用矩阵进行计算呢，如果可以的话会有什么好处呢？</em></strong></p>
+
+<h3 id="平移矩阵">平移矩阵</h3>
+
 <ul>
 <li>平移： 把任意点 (x, y) 平移 (tx, ty) 的到新的点 (x&rsquo;, y&rsquo;)</li>
 </ul>
-$$ x' = x + tx $$
-$$ y' = y + ty $$
+
+<p>$$ x&rsquo; = x + tx $$</p>
+
+<p>$$ y&rsquo; = y + ty $$</p>
+
 <p>使用齐次坐标进行矩阵表达：</p>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		x' \\
-		y' \\
-		1
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y' \\
+        1
+    \end{matrix}
 \right) =
 \left(
-	\begin{matrix}
-		1 & 0 & tx \\
-		0 & 1 & ty \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & tx \\
+        0 & 1 & ty \\
+        0 & 0 & 1
+    \end{matrix}
 \right) *
 \left(
-	\begin{matrix}
-		x \\
-		y \\
-		1
-	\end{matrix}
+    \begin{matrix}
+        x \\
+        y \\
+        1
+    \end{matrix}
 \right)
 $$
 </div>
+
 <p>所以，平移可以通过平移矩阵来表示。</p>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		1 & 0 & tx \\
-		0 & 1 & ty \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & tx \\
+        0 & 1 & ty \\
+        0 & 0 & 1
+    \end{matrix}
 \right)
 $$
 </div>
-<p><em><strong>如何用矩阵的形式表示绕任意点旋转呢？</strong></em></p>
+
+<p><strong><em>如何用矩阵的形式表示绕任意点旋转呢？</em></strong></p>
+
 <ul>
 <li>第一步：把平面上的点平移(-tx, -ty)</li>
 </ul>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		1 & 0 & -tx \\
-		0 & 1 & -ty \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & -tx \\
+        0 & 1 & -ty \\
+        0 & 0 & 1
+    \end{matrix}
 \right)
 $$
 </div>
+
 <ul>
 <li>第二步：使用旋转矩阵进行旋转。注意，这里需要使用齐次矩阵</li>
 </ul>
+
 <div>
 $$
 R=
 \left( 
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) & 0 \\
-		sin(\theta) & cos(\theta) & 0 \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) & 0 \\
+        sin(\theta) & cos(\theta) & 0 \\
+        0 & 0 & 1
+    \end{matrix}
 \right)
 $$
 </div>
+
 <ul>
 <li>第三步：把平面上的点平移 (tx, ty)</li>
 </ul>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		1 & 0 & tx \\
-		0 & 1 & ty \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & tx \\
+        0 & 1 & ty \\
+        0 & 0 & 1
+    \end{matrix}
 \right)
 $$
 </div>
+
 <p>整体如下：</p>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		1 & 0 & tx \\
-		0 & 1 & ty \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & tx \\
+        0 & 1 & ty \\
+        0 & 0 & 1
+    \end{matrix}
 \right) *
 \left( 
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) & 0 \\
-		sin(\theta) & cos(\theta) & 0 \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) & 0 \\
+        sin(\theta) & cos(\theta) & 0 \\
+        0 & 0 & 1
+    \end{matrix}
 \right) *
 \left(
-	\begin{matrix}
-		1 & 0 & -tx \\
-		0 & 1 & -ty \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & -tx \\
+        0 & 1 & -ty \\
+        0 & 0 & 1
+    \end{matrix}
 \right)=
 \left(
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) & (1-cos(\theta))*tx + sin(\theta)*ty \\
-		sin(\theta) & cos(\theta) & (1-cos(\theta))*ty - sin(\theta)*tx \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) & (1-cos(\theta))*tx + sin(\theta)*ty \\
+        sin(\theta) & cos(\theta) & (1-cos(\theta))*ty - sin(\theta)*tx \\
+        0 & 0 & 1
+    \end{matrix}
 \right)
 $$
 </div>
-<p>利用上面的旋转平移矩阵可以很方便的计算出 x&rsquo; 和 y'</p>
+
+<p>利用上面的旋转平移矩阵可以很方便的计算出 x&rsquo; 和 y&rsquo;</p>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		x' \\
-		y' \\
-		1
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y' \\
+        1
+    \end{matrix}
 \right) =
 \left(
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) & (1-cos(\theta))*tx + sin(\theta)*ty \\
-		sin(\theta) & cos(\theta) & (1-cos(\theta))*ty - sin(\theta)*tx \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) & (1-cos(\theta))*tx + sin(\theta)*ty \\
+        sin(\theta) & cos(\theta) & (1-cos(\theta))*ty - sin(\theta)*tx \\
+        0 & 0 & 1
+    \end{matrix}
 \right) *
 \left(
-	\begin{matrix}
-		x \\
-		y \\
-		1
-	\end{matrix}
+    \begin{matrix}
+        x \\
+        y \\
+        1
+    \end{matrix}
 \right)
 $$
 </div>
+
 <div>
 $$
 \left(
-	\begin{matrix}
-		x' \\
-		y' \\
-		1
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y' \\
+        1
+    \end{matrix}
 \right) =
 \left(
-	\begin{matrix}
-		x*cos(\theta) - y*sin(\theta) + (1-cos(\theta))*tx + sin(\theta)*ty \\
-		x*sin(\theta) + y*cos(\theta) + (1-cos(\theta))*ty - sin(\theta)*tx \\
-		1
-	\end{matrix}
+    \begin{matrix}
+        x*cos(\theta) - y*sin(\theta) + (1-cos(\theta))*tx + sin(\theta)*ty \\
+        x*sin(\theta) + y*cos(\theta) + (1-cos(\theta))*ty - sin(\theta)*tx \\
+        1
+    \end{matrix}
 \right)
 $$
 </div>
-<h2 id="三维旋转矩阵" >
-<div>
-    <a href="#%e4%b8%89%e7%bb%b4%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5">
-        #
-    </a>
-    三维旋转矩阵
-</div>
-</h2>
-<p><img src="http://www.singleye.net/media/2021/01/example-3.png" alt="rotation"></p>
-<h3 id="绕-x-轴转-theta-的旋转矩阵" >
-<div>
-    <a href="#%e7%bb%95-x-%e8%bd%b4%e8%bd%ac-theta-%e7%9a%84%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5">
-        ##
-    </a>
-    绕 X 轴转 $\theta$ 的旋转矩阵：
-</div>
-</h3>
-$$ x' = x $$
+
+<h2 id="三维旋转矩阵">三维旋转矩阵</h2>
+
+<p><img src="http://www.singleye.net/media/2021/01/example-3.png" alt="rotation" /></p>
+
+<h3 id="绕-x-轴转-theta-的旋转矩阵">绕 X 轴转 $\theta$ 的旋转矩阵：</h3>
+
+<p>$$ x&rsquo; = x $$</p>
+
 <div>
 $$
 \left( 
-	\begin{matrix}
-		y' \\
-		z'
-	\end{matrix}
+    \begin{matrix}
+        y' \\
+        z'
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) \\
-		sin(\theta) & cos(\theta)
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) \\
+        sin(\theta) & cos(\theta)
+    \end{matrix}
 \right)*
 \left( 
-	\begin{matrix}
-		y \\
-		z
-	\end{matrix}
+    \begin{matrix}
+        y \\
+        z
+    \end{matrix}
 \right)
 $$
 </div>
+
 <div>
 $$
 \left( 
-	\begin{matrix}
-		x' \\
-		y' \\
-		z'
-	\end{matrix}
+    \begin{matrix}
+        x' \\
+        y' \\
+        z'
+    \end{matrix}
 \right)=
 \left( 
-	\begin{matrix}
-		1 & 0 & 0 \\
-		0 & cos(\theta) & -sin(\theta) \\
-		0 & sin(\theta) & cos(\theta)
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & 0 \\
+        0 & cos(\theta) & -sin(\theta) \\
+        0 & sin(\theta) & cos(\theta)
+    \end{matrix}
 \right)*
 \left( 
-	\begin{matrix}
-		x \\
-		y \\
-		z
-	\end{matrix}
+    \begin{matrix}
+        x \\
+        y \\
+        z
+    \end{matrix}
 \right)
 $$
 </div>
+
 <p>因此：</p>
+
 <div>
 $$
 R=
 \left(
-	\begin{matrix}
-		1 & 0 & 0 \\
-		0 & cos(\theta) & -sin(\theta) \\
-		0 & sin(\theta) & cos(\theta)
-	\end{matrix}
+    \begin{matrix}
+        1 & 0 & 0 \\
+        0 & cos(\theta) & -sin(\theta) \\
+        0 & sin(\theta) & cos(\theta)
+    \end{matrix}
 \right)
 $$
 </div>
-<h3 id="绕-y-轴转-theta-的旋转矩阵" >
-<div>
-    <a href="#%e7%bb%95-y-%e8%bd%b4%e8%bd%ac-theta-%e7%9a%84%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5">
-        ##
-    </a>
-    绕 Y 轴转 $\theta$ 的旋转矩阵：
-</div>
-</h3>
+
+<h3 id="绕-y-轴转-theta-的旋转矩阵">绕 Y 轴转 $\theta$ 的旋转矩阵：</h3>
+
 <div>
 $$
 R=
 \left(
-	\begin{matrix}
-		cos(\theta) & 0 & sin(\theta) \\
-		0 & 1 & 0 \\
-		-sin(\theta) & 0 & cos(\theta)
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & 0 & sin(\theta) \\
+        0 & 1 & 0 \\
+        -sin(\theta) & 0 & cos(\theta)
+    \end{matrix}
 \right)
 $$
 </div>
-<h3 id="绕-z-轴转-theta-的旋转矩阵" >
-<div>
-    <a href="#%e7%bb%95-z-%e8%bd%b4%e8%bd%ac-theta-%e7%9a%84%e6%97%8b%e8%bd%ac%e7%9f%a9%e9%98%b5">
-        ##
-    </a>
-    绕 Z 轴转 $\theta$ 的旋转矩阵：
-</div>
-</h3>
+
+<h3 id="绕-z-轴转-theta-的旋转矩阵">绕 Z 轴转 $\theta$ 的旋转矩阵：</h3>
+
 <div>
 $$
 R=
 \left(
-	\begin{matrix}
-		cos(\theta) & -sin(\theta) & 0 \\
-		sin(\theta) & cos(\theta) & 0 \\
-		0 & 0 & 1
-	\end{matrix}
+    \begin{matrix}
+        cos(\theta) & -sin(\theta) & 0 \\
+        sin(\theta) & cos(\theta) & 0 \\
+        0 & 0 & 1
+    \end{matrix}
 \right)
 $$
 </div>
-<h1 id="代码实验" >
-<div>
-    <a href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e9%aa%8c">
-        ##
-    </a>
-    代码实验
+
+<h1 id="代码实验">代码实验</h1>
+
+<p><img src="http://www.singleye.net/media/2021/01/code.png" alt="rotation" /></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/rotation-matrix/">rotation matrix</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/">旋转矩阵</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/" data-tooltip="左乘/右乘旋转">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-</h1>
-<p><img src="http://www.singleye.net/media/2021/01/code.png" alt="rotation"></p>
-        </div>
-
-    </article>
-
-    
-    
-
-    
-        
-        
-    
-
-    
-
-    
-        
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
-        
-            <footer class="common-footer noselect">
-    
-    
-
-    <div class="common-footer-bottom">
-        
-
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
+              
             
-        </div>
-        <div style="display:flex;align-items: center">
-            
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/" data-tooltip="左乘/右乘旋转">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2021\/01\/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5\/';
+          
+            this.page.identifier = '\/2021\/01\/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

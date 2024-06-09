@@ -1,38 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>DIY on singleye</title>
-    <link>/categories/diy/</link>
-    <description>singleye (DIY)</description>
+    <title>Diy on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/categories/diy/</link>
+    <description>Recent content in Diy on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Fri, 06 Oct 2017 01:58:00 +0000</lastBuildDate>
     
-    <atom:link href="/categories/diy/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/categories/diy/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Macbook Air换电池记</title>
-      <link>/2017/10/macbook-air%E6%8D%A2%E7%94%B5%E6%B1%A0%E8%AE%B0/</link>
+      <link>https://www.singleye.net/2017/10/macbook-air%E6%8D%A2%E7%94%B5%E6%B1%A0%E8%AE%B0/</link>
       <pubDate>Fri, 06 Oct 2017 01:58:00 +0000</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/10/macbook-air%E6%8D%A2%E7%94%B5%E6%B1%A0%E8%AE%B0/</guid>
-      <description>&lt;!-- more /--&gt;
-&lt;p&gt;家里的Macbook Air年事已高电池也充不了电了，而且最近电池鼓包已经影响到了触摸板的使用，趁着假期买了块国产电池换上去。&lt;/p&gt;
-&lt;p&gt;秀一下新电池和拆机工具：
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/01.JPG&#34; alt=&#34;新电池&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Air后盖的螺丝是特殊的5角形状必需用电池包里的黄色螺丝刀把10颗螺丝先拧下来：
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/02.JPG&#34; alt=&#34;拆背盖&#34;&gt;&lt;/p&gt;
-&lt;p&gt;拆下后盖发现鼓包的电池块了，没想到都鼓到这种程度了 -___-!
-拆电池也很简单，用附带的黑色螺丝刀把图里面标红的螺丝拆下来就搞定了，别忘记把电池跟主板连接的插销取下来：
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/03.jpg&#34; alt=&#34;拆电池&#34;&gt;&lt;/p&gt;
-&lt;p&gt;换电池之前给Air做了次内部SPA看起来清爽多了！
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/04.JPG&#34; alt=&#34;拆掉&#34;&gt;&lt;/p&gt;
-&lt;p&gt;安装电池也非常的方便，按照拆下来的顺序装回去就完成了！
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/10/MBA_change_battery/05.JPG&#34; alt=&#34;换好了&#34;&gt;&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/10/macbook-air%E6%8D%A2%E7%94%B5%E6%B1%A0%E8%AE%B0/</guid>
+      <description>家里的Macbook Air年事已高电池也充不了电了，而且最近电池鼓包已经影响到了触摸板的使用，趁着假期买了块国产电池换上去。
+秀一下新电池和拆机工具： Air后盖的螺丝是特殊的5角形状必需用电池包里的黄色螺丝刀把10颗螺丝先拧下来： 拆下后盖发现鼓包的电池块了，没想到都鼓到这种程度了 -___-! 拆电池也很简单，用附带的黑色螺丝刀把图里面标红的螺丝拆下来就搞定了，别忘记把电池跟主板连接的插销取下来： 换电池之前给Air做了次内部SPA看起来清爽多了！ 安装电池也非常的方便，按照拆下来的顺序装回去就完成了！ </description>
     </item>
     
   </channel>

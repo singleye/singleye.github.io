@@ -1,0 +1,1138 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>机器学习 - 决策树</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="Machine Learning, Decision tree, 决策树, classification">
+
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
+    
+
+    
+    <meta name="description" content="
+
+">
+    <meta property="og:description" content="
+
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="机器学习 - 决策树">
+    <meta property="og:url" content="/2019/04/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0---%E5%86%B3%E7%AD%96%E6%A0%91/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="
+
+">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
+    
+    
+
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
+    }
+  };
+</script>
+
+
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      机器学习 - 决策树
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2019-04-15T17:04:37&#43;08:00">
+        
+  四月 15, 2019
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/machine-learning">Machine Learning</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/classification">Classification</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h1 id="table-of-contents">目录</h1><nav id="TableOfContents">
+<ul>
+<li><a href="#机器学习-决策树">机器学习-决策树</a>
+<ul>
+<li><a href="#1-什么是问题树">1.什么是问题树？</a>
+<ul>
+<li><a href="#1-1-玩过猜字游戏吗">1.1.玩过猜字游戏吗？</a></li>
+<li><a href="#1-2-如何通过几个问题区分-猫狗鸡鸭">1.2.如何通过几个问题区分“猫狗鸡鸭”？</a>
+<ul>
+<li><a href="#1-2-1-他们的特征是什么">1.2.1.他们的特征是什么？</a></li>
+<li><a href="#1-2-2-以下是一种区分方法">1.2.2.以下是一种区分方法</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#2-为什么需要决策树">2.为什么需要决策树</a>
+<ul>
+<li><a href="#2-1-理论依据是什么">2.1.理论依据是什么？</a></li>
+</ul></li>
+<li><a href="#3-怎么构建决策树">3.怎么构建决策树</a></li>
+<li><a href="#决策树算法">决策树算法</a>
+<ul>
+<li>
+<ul>
+<li><a href="#算法描述">算法描述：</a></li>
+<li><a href="#伪代码">伪代码：</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><a href="#4-其他思考">4.其他思考</a></li>
+</ul>
+</nav>
+
+<p></p>
+
+<h1 id="机器学习-决策树">机器学习-决策树</h1>
+
+<h2 id="1-什么是问题树">1.什么是问题树？</h2>
+
+<p>请思考以下场景</p>
+
+<h3 id="1-1-玩过猜字游戏吗">1.1.玩过猜字游戏吗？</h3>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/1.png" alt="1" /></p>
+
+<h3 id="1-2-如何通过几个问题区分-猫狗鸡鸭">1.2.如何通过几个问题区分“猫狗鸡鸭”？</h3>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/2.png" alt="2" /></p>
+
+<h4 id="1-2-1-他们的特征是什么">1.2.1.他们的特征是什么？</h4>
+
+<table>
+<thead>
+<tr>
+<th>物种</th>
+<th>腿的数量</th>
+<th>有没有脚蹼</th>
+<th>喙的形状</th>
+<th>会不会游泳</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>猫</td>
+<td>4</td>
+<td>没有</td>
+<td>没有</td>
+<td>不会</td>
+</tr>
+
+<tr>
+<td>狗</td>
+<td>4</td>
+<td>没有</td>
+<td>没有</td>
+<td>会</td>
+</tr>
+
+<tr>
+<td>鸡</td>
+<td>2</td>
+<td>没有</td>
+<td>尖</td>
+<td>不会</td>
+</tr>
+
+<tr>
+<td>鸭</td>
+<td>2</td>
+<td>有</td>
+<td>扁</td>
+<td>会</td>
+</tr>
+</tbody>
+</table>
+
+<p>数据的表示方法：</p>
+
+<ul>
+<li>类别：猫、狗、鸡、鸭</li>
+<li>特征：腿的数量、有没有脚蹼、喙的形状，会不会游泳</li>
+</ul>
+
+<h4 id="1-2-2-以下是一种区分方法">1.2.2.以下是一种区分方法</h4>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/6.png" alt="6" /></p>
+
+<p><strong>思考1：以上是不是唯一的方法？</strong>
+<img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/7.png" alt="7" /></p>
+
+<p><strong>思考2：哪种判定方式更好？</strong></p>
+
+<p><strong>思考3：如何更有效的区分？</strong></p>
+
+<ul>
+<li>如果某个特征区分问题更有效？</li>
+<li>怎么判断问题更有效？</li>
+</ul>
+
+<h2 id="2-为什么需要决策树">2.为什么需要决策树</h2>
+
+<p>此刻你可能会想到：</p>
+
+<p><strong>1. 寻找关键性问题！</strong></p>
+
+<p><strong>2. 什么是关键性问题？</strong></p>
+
+<p><strong>3. 怎么寻找关键性问题？</strong></p>
+
+<h3 id="2-1-理论依据是什么">2.1.理论依据是什么？</h3>
+
+<p>&ldquo;香农&rdquo;提出信息论，其中对信息的度量成为香农熵，简称“熵(Entropy)”</p>
+
+<p>在分类问题中，假设存在类别集合为  $ (X_1, X_2, &hellip; X_n) $ ，将类别 $ X_i $ 的信息定义为:</p>
+
+<ul>
+<li><p>$ l(X_i) = -log(P(X_i))$ , 其中 $ P(X_i)$为 $X_i $的概率</p></li>
+
+<li><p>熵：信息的数学期望值： $ H= -\sum_{i=1}^n P(X_i) log(P(X_i))$</p></li>
+</ul>
+
+<p><strong>思考4：怎么理解熵？</strong></p>
+
+<ul>
+<li>信息量越大，熵越小</li>
+<li>信息量越小，熵越大</li>
+</ul>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/5.png" alt="5" /></p>
+
+<p><strong>思考5：为什么使用对数表示信息？</strong></p>
+
+<p>概率 vs 信息</p>
+
+<ul>
+<li>概率越大，信息量越小</li>
+<li>概率越小，信息量越大</li>
+<li>多个事件同时发生的概率是多个事件发生概率相乘，总信息量是多个事件信息量相加</li>
+</ul>
+
+<p><strong>练习1：给定以下数据集，写出熵的计算方法</strong></p>
+
+<p>$$ H= -\sum_{i=1}^n P(X_i) log(P(X_i)) $$</p>
+
+<pre><code class="language-python">from math import log
+
+def create_dataset():
+    features = ['legs', 'flippers', 'beak', 'swim']
+    dataset = [
+        [4, 0, 'No', 'No', 'cat'],
+        [4, 0, 'No', 'No', 'cat'],
+        [4, 0, 'No', 'No', 'cat'],
+        [4, 0, 'No', 'Yes', 'dog'],
+        [4, 0, 'No', 'Yes', 'dog'],
+        [2, 0, 'Sharp', 'No', 'chicken'],
+        [2, 0, 'Sharp', 'No', 'chicken'],
+        [2, 1, 'Flat', 'No', 'duck']
+    ]
+    return dataset, features
+</code></pre>
+
+<pre><code class="language-python">def calc_entropy(dataset):
+    count = len(dataset)
+    class_counter = {}
+    for vector in dataset:
+        cls = vector[-1]
+        class_counter[cls] = class_counter.get(cls, 0) + 1
+    entropy = 0.0
+    for key in class_counter.keys():
+        prob = float(class_counter[key])/count
+        entropy -= prob * log(prob)
+    return entropy
+</code></pre>
+
+<pre><code class="language-python">dataset, features = create_dataset()
+entropy = calc_entropy(dataset)
+print('Entropy: {}'.format(entropy))
+</code></pre>
+
+<pre><code>Entropy: 1.3208883431493221
+</code></pre>
+
+<h2 id="3-怎么构建决策树">3.怎么构建决策树</h2>
+
+<p><strong>核心问题：如何通过划分数据集计算信息量的提升来找到最有效的数据特征</strong></p>
+
+<p><strong>练习2：重新划分数据集，将符合指定特征值的数据提取出来组合新的数据集合</strong></p>
+
+<pre><code class="language-python">def split_dataset(dataset, feature, value):
+    new_dataset = []
+    for data in dataset:
+        if data[feature] == value:
+            new_data = data[:feature]
+            new_data.extend(data[feature+1:])
+            new_dataset.append(new_data)
+    return new_dataset
+</code></pre>
+
+<p><strong>小实验1：以下将有脚蹼和没有脚蹼的数据集划分出来</strong></p>
+
+<pre><code class="language-python">feature = features.index('flippers')
+with_flipper_dataset = split_dataset(dataset, feature, 1)
+print('Dataset with flippers:')
+print(with_flipper_dataset)
+
+print('Dataset without flippers:')
+with_flipper_dataset = split_dataset(dataset, feature, 0)
+print(with_flipper_dataset)
+</code></pre>
+
+<pre><code>Dataset with flippers:
+[[2, 'Flat', 'No', 'duck']]
+Dataset without flippers:
+[[4, 'No', 'No', 'cat'], [4, 'No', 'No', 'cat'], [4, 'No', 'No', 'cat'], [4, 'No', 'Yes', 'dog'], [4, 'No', 'Yes', 'dog'], [2, 'Sharp', 'No', 'chicken'], [2, 'Sharp', 'No', 'chicken']]
+</code></pre>
+
+<p><strong>思考6：怎么表示最好的特征？</strong></p>
+
+<ul>
+<li>信息增益：通过观察信息熵的变化求得</li>
+</ul>
+
+<pre><code class="language-python">def select_best_feature(dataset, features):
+    feature_count = len(dataset[0])-1
+    current_entropy = calc_entropy(dataset)
+    feature_selected = None
+    best_entropy_gain = 0
+    dataset_size = len(dataset)
+    sub_datasets = {}
+    sub_features = []
+    for i in range(feature_count):
+        feature_values = set([vector[i] for vector in dataset])
+        subset_entropy = 0.0
+        print('  Calculating entropy by splitting dataset with feature[{0}]'.format(features[i]))
+        subsets = {}
+        for value in feature_values:
+            print('    Splitting dataset with feature[{0}]=={1}'.format(features[i], value))
+            subset = split_dataset(dataset, i, value)
+            subsets[value] = subset
+            prob = (len(subset)*1.0)/dataset_size
+            subset_entropy += prob * calc_entropy(subset)
+            print('      Subset:', subset)
+            print('      Entropy:', subset_entropy)
+        entropy_gain = current_entropy-subset_entropy
+        print('    Entropy gain: {}'.format(entropy_gain))
+        
+        if best_entropy_gain &lt; entropy_gain:
+            best_entropy_gain = entropy_gain
+            feature_selected = i
+            sub_datasets = subsets
+            sub_features = features[:feature_selected]
+            sub_features.extend(features[feature_selected+1:])
+    return feature_selected, sub_datasets, sub_features
+</code></pre>
+
+<p><strong>小实验2：请在数据全集上运行计算出最优数据特征</strong></p>
+
+<pre><code class="language-python">best_feature, sub_datasets, sub_features = select_best_feature(dataset, features)
+print('Best feature: {}, name: {}'.format(best_feature, features[best_feature]))
+
+for feature_value in sub_datasets.keys():
+    print('Sub dataset with feature[{}]=={}'.format(features[best_feature], feature_value))
+    print(sub_datasets[feature_value])
+    print('Sub features: ', sub_features)
+</code></pre>
+
+<pre><code>  Calculating entropy by splitting dataset with feature[legs]
+    Splitting dataset with feature[legs]==2
+      Subset: [[0, 'Sharp', 'No', 'chicken'], [0, 'Sharp', 'No', 'chicken'], [1, 'Flat', 'No', 'duck']]
+      Entropy: 0.2386928131105548
+    Splitting dataset with feature[legs]==4
+      Subset: [[0, 'No', 'No', 'cat'], [0, 'No', 'No', 'cat'], [0, 'No', 'No', 'cat'], [0, 'No', 'Yes', 'dog'], [0, 'No', 'Yes', 'dog']]
+      Entropy: 0.6593251049913401
+    Entropy gain: 0.661563238157982
+  Calculating entropy by splitting dataset with feature[flippers]
+    Splitting dataset with feature[flippers]==0
+      Subset: [[4, 'No', 'No', 'cat'], [4, 'No', 'No', 'cat'], [4, 'No', 'No', 'cat'], [4, 'No', 'Yes', 'dog'], [4, 'No', 'Yes', 'dog'], [2, 'Sharp', 'No', 'chicken'], [2, 'Sharp', 'No', 'chicken']]
+      Entropy: 0.9441181818928854
+    Splitting dataset with feature[flippers]==1
+      Subset: [[2, 'Flat', 'No', 'duck']]
+      Entropy: 0.9441181818928854
+    Entropy gain: 0.3767701612564367
+  Calculating entropy by splitting dataset with feature[beak]
+    Splitting dataset with feature[beak]==No
+      Subset: [[4, 0, 'No', 'cat'], [4, 0, 'No', 'cat'], [4, 0, 'No', 'cat'], [4, 0, 'Yes', 'dog'], [4, 0, 'Yes', 'dog']]
+      Entropy: 0.4206322918807853
+    Splitting dataset with feature[beak]==Flat
+      Subset: [[2, 1, 'No', 'duck']]
+      Entropy: 0.4206322918807853
+    Splitting dataset with feature[beak]==Sharp
+      Subset: [[2, 0, 'No', 'chicken'], [2, 0, 'No', 'chicken']]
+      Entropy: 0.4206322918807853
+    Entropy gain: 0.9002560512685368
+  Calculating entropy by splitting dataset with feature[swim]
+    Splitting dataset with feature[swim]==No
+      Subset: [[4, 0, 'No', 'cat'], [4, 0, 'No', 'cat'], [4, 0, 'No', 'cat'], [2, 0, 'Sharp', 'chicken'], [2, 0, 'Sharp', 'chicken'], [2, 1, 'Flat', 'duck']]
+      Entropy: 0.7585531985305136
+    Splitting dataset with feature[swim]==Yes
+      Subset: [[4, 0, 'No', 'dog'], [4, 0, 'No', 'dog']]
+      Entropy: 0.7585531985305136
+    Entropy gain: 0.5623351446188085
+Best feature: 2, name: beak
+Sub dataset with feature[beak]==No
+[[4, 0, 'No', 'cat'], [4, 0, 'No', 'cat'], [4, 0, 'No', 'cat'], [4, 0, 'Yes', 'dog'], [4, 0, 'Yes', 'dog']]
+Sub features:  ['legs', 'flippers', 'swim']
+Sub dataset with feature[beak]==Flat
+[[2, 1, 'No', 'duck']]
+Sub features:  ['legs', 'flippers', 'swim']
+Sub dataset with feature[beak]==Sharp
+[[2, 0, 'No', 'chicken'], [2, 0, 'No', 'chicken']]
+Sub features:  ['legs', 'flippers', 'swim']
+</code></pre>
+
+<p><strong>思考7：如果改动数据集会出现什么情况？</strong></p>
+
+<h2 id="决策树算法">决策树算法</h2>
+
+<h4 id="算法描述">算法描述：</h4>
+
+<ol>
+<li>当前数据集是否是确定的某个类型的数据，如果是则不用再对该数据集进行分类</li>
+<li>在当前数据集上选择最好的特征，通过使用这个特征区分的子数据集拥有最好的信息</li>
+<li>对各子数据集重复进行上述计算</li>
+</ol>
+
+<h4 id="伪代码">伪代码：</h4>
+
+<pre><code>Function CreateTree
+    IF 数据集不用再分割 THEN return 该数据集类别
+    ELSE
+        寻找待分类数据的最好特征
+        划分子数据集
+        创建分支节点
+        for 每个划分的子数据集
+            branchPoint = CreateTree
+        return 分支节点
+</code></pre>
+
+<p><strong>大家动手实现上面的算法，输出一棵树</strong></p>
+
+<h1 id="4-其他思考">4.其他思考</h1>
+
+<p><strong>思考8：数据集有什么样的影响？</strong></p>
+
+<p><strong>思考9：数据特征有什么样的影响？</strong></p>
+
+<p>例如：</p>
+
+<pre><code># 'meow':0, 'wong':1, 'googooda':2, 'ga':3
+
+def create_dataset():
+    features = ['legs', 'flippers', 'voice']
+    dataset = [
+        [4, 0, 0, 'cat'],
+        [4, 0, 0, 'cat'],
+        [4, 0, 0, 'cat'],
+        [4, 0, 1, 'dog'],
+        [4, 0, 1, 'dog'],
+        [2, 0, 2, 'chicken'],
+        [2, 0, 2, 'chicken'],
+        [2, 1, 3, 'duck']
+    ]
+    return dataset, features
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>物种</th>
+<th>腿的数量</th>
+<th>有没有脚蹼</th>
+<th>叫声</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>猫</td>
+<td>4</td>
+<td>没有</td>
+<td>喵喵</td>
+</tr>
+
+<tr>
+<td>狗</td>
+<td>4</td>
+<td>没有</td>
+<td>旺旺</td>
+</tr>
+
+<tr>
+<td>鸡</td>
+<td>2</td>
+<td>没有</td>
+<td>咯咯哒</td>
+</tr>
+
+<tr>
+<td>鸭</td>
+<td>2</td>
+<td>有</td>
+<td>嘎嘎</td>
+</tr>
+</tbody>
+</table>
+
+<p>一种区分方法</p>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/3.png" alt="3" /></p>
+
+<p><strong>思考10：有没有其他方法？</strong>
+<img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2019/04/decision-tree/4.png" alt="4" /></p>
+
+<p><strong>思考11：如果使用前面的算法会得出什么样的结果呢？</strong></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/machine-learning/">Machine Learning</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/decision-tree/">Decision tree</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/%E5%86%B3%E7%AD%96%E6%A0%91/">决策树</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/classification/">classification</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0---%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E6%B3%95%E6%8E%A8%E5%AF%BC/" data-tooltip="机器学习笔记 - 贝叶斯分类法推导">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/03/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/" data-tooltip="模型评估指标">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0---%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E6%B3%95%E6%8E%A8%E5%AF%BC/" data-tooltip="机器学习笔记 - 贝叶斯分类法推导">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/03/%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/" data-tooltip="模型评估指标">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2019\/04\/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0---%E5%86%B3%E7%AD%96%E6%A0%91\/';
+          
+            this.page.identifier = '\/2019\/04\/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0---%E5%86%B3%E7%AD%96%E6%A0%91\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+

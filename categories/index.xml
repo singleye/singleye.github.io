@@ -1,17 +1,510 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on singleye</title>
-    <link>/categories/</link>
-    <description>singleye (Categories)</description>
+    <title>Categories on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/categories/</link>
+    <description>Recent content in Categories on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
-    <lastBuildDate>Thu, 06 Jun 2024 09:26:40 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 26 Apr 2024 23:48:40 +0800</lastBuildDate>
     
-    <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ai</title>
+      <link>https://www.singleye.net/categories/ai/</link>
+      <pubDate>Fri, 26 Apr 2024 23:48:40 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/ai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bigdata</title>
+      <link>https://www.singleye.net/categories/bigdata/</link>
+      <pubDate>Thu, 11 Jan 2018 23:10:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/bigdata/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Blockchain</title>
+      <link>https://www.singleye.net/categories/blockchain/</link>
+      <pubDate>Sun, 11 Mar 2018 10:34:02 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/blockchain/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Category</title>
+      <link>https://www.singleye.net/categories/category/</link>
+      <pubDate>Thu, 19 Sep 2019 12:18:54 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/category/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Classification</title>
+      <link>https://www.singleye.net/categories/classification/</link>
+      <pubDate>Fri, 09 Aug 2019 10:57:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/classification/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cnn</title>
+      <link>https://www.singleye.net/categories/cnn/</link>
+      <pubDate>Sun, 30 Jul 2017 18:30:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/cnn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Crawler</title>
+      <link>https://www.singleye.net/categories/crawler/</link>
+      <pubDate>Thu, 31 Aug 2017 09:46:00 +0000</pubDate>
+      
+      <guid>https://www.singleye.net/categories/crawler/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cv</title>
+      <link>https://www.singleye.net/categories/cv/</link>
+      <pubDate>Sat, 07 May 2022 01:05:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/cv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Database</title>
+      <link>https://www.singleye.net/categories/database/</link>
+      <pubDate>Tue, 23 Jan 2018 11:20:33 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/database/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Devops</title>
+      <link>https://www.singleye.net/categories/devops/</link>
+      <pubDate>Mon, 08 Jul 2019 22:38:07 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/devops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Diy</title>
+      <link>https://www.singleye.net/categories/diy/</link>
+      <pubDate>Fri, 06 Oct 2017 01:58:00 +0000</pubDate>
+      
+      <guid>https://www.singleye.net/categories/diy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Django</title>
+      <link>https://www.singleye.net/categories/django/</link>
+      <pubDate>Thu, 16 Nov 2017 16:23:13 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/django/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Docker</title>
+      <link>https://www.singleye.net/categories/docker/</link>
+      <pubDate>Tue, 31 Oct 2017 23:59:00 +0000</pubDate>
+      
+      <guid>https://www.singleye.net/categories/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ecs</title>
+      <link>https://www.singleye.net/categories/ecs/</link>
+      <pubDate>Sat, 19 Jan 2019 00:39:37 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/ecs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Esp8266</title>
+      <link>https://www.singleye.net/categories/esp8266/</link>
+      <pubDate>Tue, 20 Mar 2018 16:42:45 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/esp8266/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Flask</title>
+      <link>https://www.singleye.net/categories/flask/</link>
+      <pubDate>Wed, 16 Jan 2019 12:27:13 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/flask/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Git</title>
+      <link>https://www.singleye.net/categories/git/</link>
+      <pubDate>Fri, 24 Nov 2017 15:49:02 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/git/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Go</title>
+      <link>https://www.singleye.net/categories/go/</link>
+      <pubDate>Tue, 05 Dec 2017 15:19:40 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hadoop</title>
+      <link>https://www.singleye.net/categories/hadoop/</link>
+      <pubDate>Sat, 23 Dec 2017 15:38:37 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/hadoop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hardware</title>
+      <link>https://www.singleye.net/categories/hardware/</link>
+      <pubDate>Tue, 20 Mar 2018 16:42:45 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/hardware/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hcatalog</title>
+      <link>https://www.singleye.net/categories/hcatalog/</link>
+      <pubDate>Thu, 11 Jan 2018 19:51:16 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/hcatalog/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hive</title>
+      <link>https://www.singleye.net/categories/hive/</link>
+      <pubDate>Thu, 11 Jan 2018 22:25:07 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/hive/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Javascript</title>
+      <link>https://www.singleye.net/categories/javascript/</link>
+      <pubDate>Tue, 12 Dec 2023 23:54:00 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Llama2</title>
+      <link>https://www.singleye.net/categories/llama2/</link>
+      <pubDate>Fri, 26 Apr 2024 23:48:40 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/llama2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Llm</title>
+      <link>https://www.singleye.net/categories/llm/</link>
+      <pubDate>Fri, 26 Apr 2024 23:48:40 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/llm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://www.singleye.net/categories/machine-learning/</link>
+      <pubDate>Fri, 09 Aug 2019 10:57:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Map</title>
+      <link>https://www.singleye.net/categories/map/</link>
+      <pubDate>Thu, 28 Mar 2019 15:49:48 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/map/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Math</title>
+      <link>https://www.singleye.net/categories/math/</link>
+      <pubDate>Sat, 07 May 2022 01:05:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/math/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mpeg</title>
+      <link>https://www.singleye.net/categories/mpeg/</link>
+      <pubDate>Wed, 09 Aug 2023 15:15:25 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/mpeg/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multimedia</title>
+      <link>https://www.singleye.net/categories/multimedia/</link>
+      <pubDate>Wed, 09 Aug 2023 15:15:25 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/multimedia/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mysql</title>
+      <link>https://www.singleye.net/categories/mysql/</link>
+      <pubDate>Tue, 23 Jan 2018 11:20:33 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network</title>
+      <link>https://www.singleye.net/categories/network/</link>
+      <pubDate>Sun, 01 Sep 2019 15:28:41 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Neural Network</title>
+      <link>https://www.singleye.net/categories/neural-network/</link>
+      <pubDate>Mon, 02 Oct 2017 02:11:00 +0000</pubDate>
+      
+      <guid>https://www.singleye.net/categories/neural-network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Nlp</title>
+      <link>https://www.singleye.net/categories/nlp/</link>
+      <pubDate>Fri, 26 Apr 2024 23:48:40 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/nlp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Nodemcu</title>
+      <link>https://www.singleye.net/categories/nodemcu/</link>
+      <pubDate>Mon, 08 May 2017 00:23:11 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/nodemcu/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Object_tracking</title>
+      <link>https://www.singleye.net/categories/object_tracking/</link>
+      <pubDate>Thu, 06 Jun 2024 09:26:40 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/object_tracking/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pcl</title>
+      <link>https://www.singleye.net/categories/pcl/</link>
+      <pubDate>Fri, 22 Dec 2023 16:40:06 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/pcl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Postgres</title>
+      <link>https://www.singleye.net/categories/postgres/</link>
+      <pubDate>Thu, 16 Mar 2017 00:08:17 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/postgres/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Programming</title>
+      <link>https://www.singleye.net/categories/programming/</link>
+      <pubDate>Thu, 04 Apr 2024 17:06:50 +0000</pubDate>
+      
+      <guid>https://www.singleye.net/categories/programming/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>https://www.singleye.net/categories/projects/</link>
+      <pubDate>Fri, 27 Jan 2017 17:10:07 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/projects/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>https://www.singleye.net/categories/python/</link>
+      <pubDate>Sun, 10 Dec 2023 11:40:29 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Robotics</title>
+      <link>https://www.singleye.net/categories/robotics/</link>
+      <pubDate>Sat, 23 Mar 2024 11:43:22 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/robotics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ros</title>
+      <link>https://www.singleye.net/categories/ros/</link>
+      <pubDate>Sat, 23 Mar 2024 11:43:22 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/ros/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Security</title>
+      <link>https://www.singleye.net/categories/security/</link>
+      <pubDate>Mon, 09 Apr 2018 23:59:32 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/security/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sensor</title>
+      <link>https://www.singleye.net/categories/sensor/</link>
+      <pubDate>Fri, 10 Nov 2017 11:56:13 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/sensor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Shell</title>
+      <link>https://www.singleye.net/categories/shell/</link>
+      <pubDate>Sun, 15 Jan 2017 22:08:38 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Spark</title>
+      <link>https://www.singleye.net/categories/spark/</link>
+      <pubDate>Thu, 11 Jan 2018 23:10:50 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/spark/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sqoop</title>
+      <link>https://www.singleye.net/categories/sqoop/</link>
+      <pubDate>Mon, 25 Dec 2017 18:11:29 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/sqoop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ssh</title>
+      <link>https://www.singleye.net/categories/ssh/</link>
+      <pubDate>Sun, 01 Sep 2019 15:28:41 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/ssh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Subcategory</title>
+      <link>https://www.singleye.net/categories/subcategory/</link>
+      <pubDate>Thu, 19 Sep 2019 12:18:54 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/subcategory/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Technology</title>
+      <link>https://www.singleye.net/categories/technology/</link>
+      <pubDate>Sun, 11 Mar 2018 10:34:02 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/technology/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tensorflow</title>
+      <link>https://www.singleye.net/categories/tensorflow/</link>
+      <pubDate>Thu, 12 Apr 2018 11:06:51 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/tensorflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Video</title>
+      <link>https://www.singleye.net/categories/video/</link>
+      <pubDate>Wed, 09 Aug 2023 15:15:25 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/video/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web</title>
+      <link>https://www.singleye.net/categories/web/</link>
+      <pubDate>Wed, 16 Jan 2019 12:27:13 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/web/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Yarn</title>
+      <link>https://www.singleye.net/categories/yarn/</link>
+      <pubDate>Fri, 29 Dec 2017 11:44:51 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/yarn/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>

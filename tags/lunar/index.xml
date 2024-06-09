@@ -1,185 +1,27 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Lunar on singleye</title>
-    <link>/tags/lunar/</link>
-    <description>singleye (Lunar)</description>
+    <title>Lunar on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/lunar/</link>
+    <description>Recent content in Lunar on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Fri, 27 Jan 2017 17:10:07 +0800</lastBuildDate>
     
-    <atom:link href="/tags/lunar/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/lunar/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>玩转阿波罗11号飞船导航计算机模拟器</title>
-      <link>/2017/01/%E7%8E%A9%E8%BD%AC%E9%98%BF%E6%B3%A2%E7%BD%9711%E5%8F%B7%E9%A3%9E%E8%88%B9%E5%AF%BC%E8%88%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%A8%A1%E6%8B%9F%E5%99%A8/</link>
+      <link>https://www.singleye.net/2017/01/%E7%8E%A9%E8%BD%AC%E9%98%BF%E6%B3%A2%E7%BD%9711%E5%8F%B7%E9%A3%9E%E8%88%B9%E5%AF%BC%E8%88%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%A8%A1%E6%8B%9F%E5%99%A8/</link>
       <pubDate>Fri, 27 Jan 2017 17:10:07 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/01/%E7%8E%A9%E8%BD%AC%E9%98%BF%E6%B3%A2%E7%BD%9711%E5%8F%B7%E9%A3%9E%E8%88%B9%E5%AF%BC%E8%88%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%A8%A1%E6%8B%9F%E5%99%A8/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;http://www.ibiblio.org/apollo/Saturn1B-transparent.png&#34; alt=&#34;土星号&#34;&gt;&lt;/p&gt;
-&lt;p&gt;PS： 上个周末还在听王冠红人馆调侃河南空气质量监督特别小组的禁放政策出台3天后就撤销的节目，心想今年过年回家乡鞭炮还可以照常放，没想到还真的全面禁放了。没办法放鞭炮咱就“发射个火箭”玩玩吧:-)&lt;/p&gt;
-&lt;p&gt;前两天在Github上看到一个有趣的项目，是当年美国登月计划&lt;a href=&#34;https://github.com/virtualagc/virtualagc&#34;&gt;“阿波罗号”&lt;/a&gt;的导航计算机的源代码，并且&lt;a href=&#34;http://www.ibiblio.org/apollo/&#34;&gt;Virtual AGC&lt;/a&gt; &lt;a href=&#34;http://mitmuseum.mit.edu&#34;&gt;MIT museum&lt;/a&gt;还开发了运行用的模拟器，使用这个模拟器能够运行导航计算机中的“指令模块”和“登月模块”。&lt;/p&gt;
-&lt;p&gt;估计很多人看过下面的张照片。没错，那等身的汇编代码现在可以在这个项目里面看到了！
-&lt;img src=&#34;http://news.mit.edu/sites/mit.edu.newsoffice/files/styles/news_article_image_top_slideshow/public/images/2016/margaret-hamilton-mit-apollo-code.jpeg?itok=Gd6FBFbH&#34; alt=&#34;Margaret Hamilton&#34;&gt;&lt;/p&gt;
-&lt;p&gt;那么这个程序究竟是干什么的呢？要知道飞往月球并返回地球依靠宇航员手动是不可能的事情，当然也没有什么GPS，飞船必须沿着预定轨道航行才可以，这个程序就是保证飞船正确航行的导航程序。MIT仪器实验室为阿波罗计划开发了这套导航系统，这套导航计算机也叫“AGC (Apollo Guidance Computer)”，飞船上有有两套这样的导航系统，分别运行了不同的程序，一个是CM (Command Module)用来把宇航员送往月球并且返回，另一个是LM (Lunar Module)用来把宇航员送到月球表面并且返回飞船。&lt;/p&gt;
-&lt;p&gt;先来看看这货到底长什么样子吧。PS: 体格上好像当年玩过的EMC 60块盘的DAE&amp;hellip;
-&lt;img src=&#34;http://www.ibiblio.org/apollo/P6210643_AGC.png&#34; alt=&#34;AGC&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;2048字（不到4kB）的内存&lt;/li&gt;
-&lt;li&gt;36,864字（不到72kB）的只读存储&lt;/li&gt;
-&lt;li&gt;每秒钟最多可执行85,000条指令&lt;/li&gt;
-&lt;li&gt;尺寸: 24&amp;quot;×12.5&amp;quot;×6&amp;quot; (英寸).&lt;/li&gt;
-&lt;li&gt;重达70.1磅&lt;/li&gt;
-&lt;li&gt;使用28V 2.5A的直流电&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;显示器和键盘(DSKY)看起来就跟一个普通计算器差不多。
-&lt;img src=&#34;http://www.ibiblio.org/apollo/RealDSKY-thumb.jpg&#34; alt=&#34;DSKY&#34;&gt;&lt;/p&gt;
-&lt;p&gt;故事先讲到这儿，来看看怎样把这个模拟器跑起来吧。&lt;/p&gt;
-&lt;h2 id=&#34;1-下载代码库&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#1-%e4%b8%8b%e8%bd%bd%e4%bb%a3%e7%a0%81%e5%ba%93&#34;&gt;
-        #
-    &lt;/a&gt;
-    1. 下载代码库
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1&lt;/span&gt;&lt;span&gt;$ git clone https://github.com/virtualagc/virtualagc.git&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h2 id=&#34;2-编译代码&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#2-%e7%bc%96%e8%af%91%e4%bb%a3%e7%a0%81&#34;&gt;
-        #
-    &lt;/a&gt;
-    2. 编译代码
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;我使用的环境是CentOS 6.5，为了编译通过需要对Makefile做一些小的修改：
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1&lt;/span&gt;&lt;span&gt;$ &lt;span style=&#34;color:#366&#34;&gt;cd&lt;/span&gt; virtualagc
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2&lt;/span&gt;&lt;span&gt;$ git diff Makefile yaAGCb1/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3&lt;/span&gt;&lt;span&gt;diff --git a/Makefile b/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4&lt;/span&gt;&lt;span&gt;index 773edf2..0e9ff8c &lt;span style=&#34;color:#f60&#34;&gt;100644&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5&lt;/span&gt;&lt;span&gt;--- a/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6&lt;/span&gt;&lt;span&gt;+++ b/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7&lt;/span&gt;&lt;span&gt;@@ -321,7 +321,7 @@ &lt;span style=&#34;color:#033&#34;&gt;LIBS&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt;-lwsock32
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8&lt;/span&gt;&lt;span&gt; &lt;span style=&#34;color:#033&#34;&gt;CURSES&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;../yaAGC/random.c
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9&lt;/span&gt;&lt;span&gt; &lt;span style=&#34;color:#033&#34;&gt;CURSES&lt;/span&gt;&lt;span style=&#34;color:#555&#34;&gt;+=&lt;/span&gt;-lregex
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10&lt;/span&gt;&lt;span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;else&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11&lt;/span&gt;&lt;span&gt;-CURSES&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;-lcurses
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;12&lt;/span&gt;&lt;span&gt;+CURSES&lt;span style=&#34;color:#555&#34;&gt;=&lt;/span&gt;-lncurses
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;13&lt;/span&gt;&lt;span&gt; endif
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;14&lt;/span&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;15&lt;/span&gt;&lt;span&gt; ifdef MACOSX
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;16&lt;/span&gt;&lt;span&gt;diff --git a/yaAGCb1/Makefile b/yaAGCb1/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;17&lt;/span&gt;&lt;span&gt;index faf4c5e..e779b0b &lt;span style=&#34;color:#f60&#34;&gt;100644&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;18&lt;/span&gt;&lt;span&gt;--- a/yaAGCb1/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;19&lt;/span&gt;&lt;span&gt;+++ b/yaAGCb1/Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;20&lt;/span&gt;&lt;span&gt;@@ -24,7 +24,7 @@ endif
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;21&lt;/span&gt;&lt;span&gt; all default: &lt;span style=&#34;color:#a00&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color:#033&#34;&gt;TARGETS&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;22&lt;/span&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;23&lt;/span&gt;&lt;span&gt; yaAGCb1: &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;$(&lt;/span&gt;SOURCE&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;$(&lt;/span&gt;HEADERS&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;)&lt;/span&gt; Makefile
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;24&lt;/span&gt;&lt;span&gt;-       &lt;span style=&#34;color:#a00&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color:#033&#34;&gt;cc&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt; &lt;span style=&#34;color:#a00&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color:#033&#34;&gt;CFLAGS0&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt; -O0 -g -o &lt;span style=&#34;color:#033&#34;&gt;$@&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;$(&lt;/span&gt;SOURCE&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;)&lt;/span&gt; -lpthread &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;$(&lt;/span&gt;LIBS&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;25&lt;/span&gt;&lt;span&gt;+       &lt;span style=&#34;color:#a00&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color:#033&#34;&gt;cc&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt; &lt;span style=&#34;color:#a00&#34;&gt;${&lt;/span&gt;&lt;span style=&#34;color:#033&#34;&gt;CFLAGS0&lt;/span&gt;&lt;span style=&#34;color:#a00&#34;&gt;}&lt;/span&gt; -O0 -g -o &lt;span style=&#34;color:#033&#34;&gt;$@&lt;/span&gt; &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;$(&lt;/span&gt;SOURCE&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;)&lt;/span&gt; -lpthread -lrt &lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;$(&lt;/span&gt;LIBS&lt;span style=&#34;color:#069;font-weight:bold&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;26&lt;/span&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;27&lt;/span&gt;&lt;span&gt; test.agc.bin: test.agc
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;28&lt;/span&gt;&lt;span&gt;        ../../virtualagc/yaYUL/yaYUL --block1 $^ &amp;gt;test.agc.lst&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
-&lt;p&gt;编译
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1&lt;/span&gt;&lt;span&gt;$ make
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2&lt;/span&gt;&lt;span&gt;$ make install&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-完成后会在用户目录下出现&amp;quot;VirtualAGC&amp;quot;目录，可运行程序都被安装到这个目录下。&lt;/p&gt;
-&lt;h2 id=&#34;3-飞向月球吧&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#3-%e9%a3%9e%e5%90%91%e6%9c%88%e7%90%83%e5%90%a7&#34;&gt;
-        #
-    &lt;/a&gt;
-    3. 飞向月球吧
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;运行bin目录下的VirtualAGC即可运行起来。
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1&lt;/span&gt;&lt;span&gt;$ ./bin/VirtualAGC&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;img src=&#34;http://imglf2.nosdn.127.net/img/NGpJbGd3MUdOUDN1eHVZY2NuYjJrM1dQVjlHOWwyRk1wQ3k0eTVocm9zY0VCNDIvMThmbWFRPT0.gif&#34; alt=&#34;VirtualAGC&#34;&gt;&lt;/p&gt;
-&lt;p&gt;列几个CM的命令：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;命令&lt;/th&gt;
-&lt;th&gt;功能&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;V05N09E&lt;/td&gt;
-&lt;td&gt;查看报警代码&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V35E&lt;/td&gt;
-&lt;td&gt;DSKY灯管测试&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V91E V33E&lt;/td&gt;
-&lt;td&gt;查看内存bank检矫码，使用V33E指令来选择其他内存bank&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V16N36E/V16N65E&lt;/td&gt;
-&lt;td&gt;查看系统当前时间&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V25N36E&lt;/td&gt;
-&lt;td&gt;设置时间&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V27N02E&lt;/td&gt;
-&lt;td&gt;查看core-rope中的内容，通过键盘在R3中输入8进制的地址来查看其中的内容&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V01N02E&lt;/td&gt;
-&lt;td&gt;查看可擦写内存中的内容&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V21N02E&lt;/td&gt;
-&lt;td&gt;修改内存的内容&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V36E&lt;/td&gt;
-&lt;td&gt;重启&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;完整的命令列表可以在Github上的代码中&lt;a href=&#34;https://github.com/virtualagc/virtualagc/blob/master/Colossus249/ASSEMBLY_AND_OPERATION_INFORMATION.agc&#34;&gt;ASSEMBLY_AND_OPERATION_INFORMATION.s&lt;/a&gt;看到。&lt;/p&gt;
-&lt;p&gt;几个LM的命令：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;命令&lt;/th&gt;
-&lt;th&gt;功能&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;V35E&lt;/td&gt;
-&lt;td&gt;DSKY灯管测试&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V37E 00E&lt;/td&gt;
-&lt;td&gt;启动P00号程序&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V25E N01E 01365E 0E 0E 0E&lt;/td&gt;
-&lt;td&gt;设置自检测试失败次数&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V21 N27E 10E&lt;/td&gt;
-&lt;td&gt;启动自检程序&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;V21 N27E 0E&lt;/td&gt;
-&lt;td&gt;关闭自检程序&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;完整的命令列表可以在Github上的代码中&lt;a href=&#34;https://github.com/virtualagc/virtualagc/blob/master/Luminary099/ASSEMBLY_AND_OPERATION_INFORMATION.agc&#34;&gt;ASSEMBLY_AND_OPERATION_INFORMATION.s&lt;/a&gt;看到。&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/01/%E7%8E%A9%E8%BD%AC%E9%98%BF%E6%B3%A2%E7%BD%9711%E5%8F%B7%E9%A3%9E%E8%88%B9%E5%AF%BC%E8%88%AA%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%A8%A1%E6%8B%9F%E5%99%A8/</guid>
+      <description>PS： 上个周末还在听王冠红人馆调侃河南空气质量监督特别小组的禁放政策出台3天后就撤销的节目，心想今年过年回家乡鞭炮还可以照常放，没想到还真的全面禁放了。没办法放鞭炮咱就“发射个火箭”玩玩吧:-)
+前两天在Github上看到一个有趣的项目，是当年美国登月计划“阿波罗号”的导航计算机的源代码，并且Virtual AGC MIT museum还开发了运行用的模拟器，使用这个模拟器能够运行导航计算机中的“指令模块”和“登月模块”。
+估计很多人看过下面的张照片。没错，那等身的汇编代码现在可以在这个项目里面看到了！ 那么这个程序究竟是干什么的呢？要知道飞往月球并返回地球依靠宇航员手动是不可能的事情，当然也没有什么GPS，飞船必须沿着预定轨道航行才可以，这个程序就是保证飞船正确航行的导航程序。MIT仪器实验室为阿波罗计划开发了这套导航系统，这套导航计算机也叫“AGC (Apollo Guidance Computer)”，飞船上有有两套这样的导航系统，分别运行了不同的程序，一个是CM (Command Module)用来把宇航员送往月球并且返回，另一个是LM (Lunar Module)用来把宇航员送到月球表面并且返回飞船。
+先来看看这货到底长什么样子吧。PS: 体格上好像当年玩过的EMC 60块盘的DAE&amp;hellip;  2048字（不到4kB）的内存 36,864字（不到72kB）的只读存储 每秒钟最多可执行85,000条指令 尺寸: 24&amp;rdquo;×12.5&amp;rdquo;×6&amp;rdquo; (英寸). 重达70.1磅 使用28V 2.5A的直流电  显示器和键盘(DSKY)看起来就跟一个普通计算器差不多。 故事先讲到这儿，来看看怎样把这个模拟器跑起来吧。
+1. 下载代码库 1$ git clone https://github.com/virtualagc/virtualagc.git 2. 编译代码 我使用的环境是CentOS 6.5，为了编译通过需要对Makefile做一些小的修改： 1$ cd virtualagc 2$ git diff Makefile yaAGCb1/Makefile 3diff --git a/Makefile b/Makefile 4index 773edf2..0e9ff8c 100644 5--- a/Makefile 6+++ b/Makefile 7@@ -321,7 +321,7 @@ LIBS+=-lwsock32 8 CURSES=../yaAGC/random.c 9 CURSES+=-lregex 10 else 11-CURSES=-lcurses 12+CURSES=-lncurses 13 endif 14 15 ifdef MACOSX 16diff --git a/yaAGCb1/Makefile b/yaAGCb1/Makefile 17index faf4c5e.</description>
     </item>
     
   </channel>

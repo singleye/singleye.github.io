@@ -1,177 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hugo on singleye</title>
-    <link>/tags/hugo/</link>
-    <description>singleye (Hugo)</description>
+    <title>Hugo on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/hugo/</link>
+    <description>Recent content in Hugo on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Tue, 10 Jan 2017 09:16:36 +0000</lastBuildDate>
     
-    <atom:link href="/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>使用nginx搭建hugo静态blog服务</title>
-      <link>/2017/01/%E4%BD%BF%E7%94%A8nginx%E6%90%AD%E5%BB%BAhugo%E9%9D%99%E6%80%81blog%E6%9C%8D%E5%8A%A1/</link>
+      <link>https://www.singleye.net/2017/01/%E4%BD%BF%E7%94%A8nginx%E6%90%AD%E5%BB%BAhugo%E9%9D%99%E6%80%81blog%E6%9C%8D%E5%8A%A1/</link>
       <pubDate>Tue, 10 Jan 2017 09:16:36 +0000</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/01/%E4%BD%BF%E7%94%A8nginx%E6%90%AD%E5%BB%BAhugo%E9%9D%99%E6%80%81blog%E6%9C%8D%E5%8A%A1/</guid>
-      <description>&lt;p&gt;之前使用过wordpress搭建过内容管理网站，但是运行环境搭建有些复杂而且页面内容创建需要不够方便，后来关注到静态页面网站框架，发现可以使用markdown进行内容编辑，这对于程序猿来说简直再有好不过了！&lt;/p&gt;
-&lt;p&gt;简单检索了一下静态内容管理的有很多实现，Ruby的Jekyll，Python的Sphinx doc，Go的Hugo，因为最近在学习Go所以决定搭建一个Hugo来研究下。&lt;/p&gt;
-&lt;h1 id=&#34;使用源码部署hugo&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8%e6%ba%90%e7%a0%81%e9%83%a8%e7%bd%b2hugo&#34;&gt;
-        ##
-    &lt;/a&gt;
-    使用源码部署hugo
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;部署golang&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e9%83%a8%e7%bd%b2golang&#34;&gt;
-        #
-    &lt;/a&gt;
-    部署golang
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;
-  $ yum install golang
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;下载hugo源代码&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%b8%8b%e8%bd%bdhugo%e6%ba%90%e4%bb%a3%e7%a0%81&#34;&gt;
-        #
-    &lt;/a&gt;
-    下载hugo源代码
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;
-  $ wget https://github.com/spf13/hugo/archive/v0.18.1.tar.gz
-  $ tar xf v0.18.1.tar.gz
-  $ cd hugo-0.18.1/
-  $ export GOPATH=/usr/local/go
-  $ go get -v github.com/spf13/hugo
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1 id=&#34;hugo的基本使用&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#hugo%e7%9a%84%e5%9f%ba%e6%9c%ac%e4%bd%bf%e7%94%a8&#34;&gt;
-        ##
-    &lt;/a&gt;
-    hugo的基本使用
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;创建项目&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%88%9b%e5%bb%ba%e9%a1%b9%e7%9b%ae&#34;&gt;
-        #
-    &lt;/a&gt;
-    创建项目
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;
-  $ /usr/local/go/bin/hugo new site myblogs
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;创建post&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%88%9b%e5%bb%bapost&#34;&gt;
-        #
-    &lt;/a&gt;
-    创建post
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;
-  $ /usr/local/go/bin/hugo new post/first.md
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;使用themes&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8themes&#34;&gt;
-        #
-    &lt;/a&gt;
-    使用themes
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;
-  $ cd themes/
-  $ git clone https://github.com/kakawait/hugo-tranquilpeak-theme.git
-  $ cp hugo-tranquilpeak-theme/exampleSite/* ..
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;构造页面&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%9e%84%e9%80%a0%e9%a1%b5%e9%9d%a2&#34;&gt;
-        #
-    &lt;/a&gt;
-    构造页面
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;
-  $ cd content
-  $ mkdir archives
-  $ touch archives/_index.md
-  $ mkdir categories
-  $ touch categories/_index.md
-  $ mkdir tags
-  $ touch tags/_index.md
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;执行成功后创建出下面的页面：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-  http://[Your_blog_DNS]/archives
-  http://[Your_blog_DNS]/categories
-  http://[Your_blog_DNS]/tags
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1 id=&#34;服务部署&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%9c%8d%e5%8a%a1%e9%83%a8%e7%bd%b2&#34;&gt;
-        ##
-    &lt;/a&gt;
-    服务部署
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;第一步，使用 hugo 命令生成静态文件内容&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cd &amp;lt;hugo project home&amp;gt;
-$ hugo
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;执行完以上操作后会在项目目录中产生 public 目录，这个目录中包括了可以部署的静态文件。把 public 目录复制到 nginx 的公开目录中。&lt;/p&gt;
-&lt;p&gt;第二步，配置 nginx&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;server {
-  listen       80;
-  listen       [::]:80;
-  server_name  yourhostname;
-
-  location / {
-    root /directory/of/public;
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;至此，系统的搭建基本完成，赶紧访问吧 :-)&lt;/p&gt;
-&lt;h1 id=&#34;hugo-theme开发&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#hugo-theme%e5%bc%80%e5%8f%91&#34;&gt;
-        ##
-    &lt;/a&gt;
-    hugo theme开发
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;ul&gt;
-&lt;li&gt;templating
-&lt;ul&gt;
-&lt;li&gt;变量访问: {{ var }}&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;front matter&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://gohugo.io/variables/&#34;&gt;variables&lt;/a&gt;
-&lt;ul&gt;
-&lt;li&gt;Site variables
-&lt;ul&gt;
-&lt;li&gt;作用：访问站点配置文件中的内容&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Page variables&lt;/li&gt;
-&lt;li&gt;File variables&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/01/%E4%BD%BF%E7%94%A8nginx%E6%90%AD%E5%BB%BAhugo%E9%9D%99%E6%80%81blog%E6%9C%8D%E5%8A%A1/</guid>
+      <description>之前使用过wordpress搭建过内容管理网站，但是运行环境搭建有些复杂而且页面内容创建需要不够方便，后来关注到静态页面网站框架，发现可以使用markdown进行内容编辑，这对于程序猿来说简直再有好不过了！
+简单检索了一下静态内容管理的有很多实现，Ruby的Jekyll，Python的Sphinx doc，Go的Hugo，因为最近在学习Go所以决定搭建一个Hugo来研究下。
+使用源码部署hugo 部署golang  $ yum install golang  下载hugo源代码  $ wget https://github.com/spf13/hugo/archive/v0.18.1.tar.gz $ tar xf v0.18.1.tar.gz $ cd hugo-0.18.1/ $ export GOPATH=/usr/local/go $ go get -v github.com/spf13/hugo  hugo的基本使用 创建项目  $ /usr/local/go/bin/hugo new site myblogs  创建post  $ /usr/local/go/bin/hugo new post/first.md  使用themes  $ cd themes/ $ git clone https://github.com/kakawait/hugo-tranquilpeak-theme.git $ cp hugo-tranquilpeak-theme/exampleSite/* ..  构造页面  $ cd content $ mkdir archives $ touch archives/_index.</description>
     </item>
     
   </channel>

@@ -1,243 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Yarn on singleye</title>
-    <link>/post/bigdata/yarn/</link>
-    <description>singleye (Yarn)</description>
+    <title>Yarn on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/post/bigdata/yarn/</link>
+    <description>Recent content in Yarn on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Fri, 29 Dec 2017 11:44:51 +0800</lastBuildDate>
     
-    <atom:link href="/post/bigdata/yarn/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/post/bigdata/yarn/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Yarn Config</title>
-      <link>/2017/12/yarn-config/</link>
+      <link>https://www.singleye.net/2017/12/yarn-config/</link>
       <pubDate>Fri, 29 Dec 2017 11:44:51 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/12/yarn-config/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;https://www.singleye.net/media/2017/12/yarn-config/ResourceManagement.jpg&#34; alt=&#34;Yarn config&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Resource manager&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Node manager&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Application master&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;资源&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Container&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;container所需资源，minimum/maximum memory/vcores&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Scheduler&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;FIFO&lt;/li&gt;
-&lt;li&gt;CapacityScheduler&lt;/li&gt;
-&lt;li&gt;FairScheduler&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Queue&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Application &amp;mdash; scheduler &amp;mdash;&amp;gt; Queue&lt;/p&gt;
-&lt;p&gt;yarn-site.xml中配置。&lt;/p&gt;
-&lt;p&gt;下文引用自&lt;a href=&#34;http://dongxicheng.org/mapreduce-nextgen/hadoop-yarn-configurations-resourcemanager-nodemanager/&#34;&gt;http://dongxicheng.org/mapreduce-nextgen/hadoop-yarn-configurations-resourcemanager-nodemanager/&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;node-manager&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#node-manager&#34;&gt;
-        #
-    &lt;/a&gt;
-    Node manager
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;Node manager architecture&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://2xbbhjxc6wk3v21p62t8n4d4-wpengine.netdna-ssl.com/wp-content/uploads/2012/09/Node-Manager-Diagram-Small.png&#34; alt=&#34;Node manager&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;resourcemanager相关配置参数&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#resourcemanager%e7%9b%b8%e5%85%b3%e9%85%8d%e7%bd%ae%e5%8f%82%e6%95%b0&#34;&gt;
-        #
-    &lt;/a&gt;
-    ResourceManager相关配置参数
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;（1） yarn.resourcemanager.address&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：ResourceManager 对客户端暴露的地址。客户端通过该地址向RM提交应用程序，杀死应用程序等。&lt;/p&gt;
-&lt;p&gt;默认值：${yarn.resourcemanager.hostname}:8032&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（2） yarn.resourcemanager.scheduler.address&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：ResourceManager 对ApplicationMaster暴露的访问地址。ApplicationMaster通过该地址向RM申请资源、释放资源等。&lt;/p&gt;
-&lt;p&gt;默认值：${yarn.resourcemanager.hostname}:8030&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（3） yarn.resourcemanager.resource-tracker.address&lt;/li&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：ResourceManager 对NodeManager暴露的地址.。NodeManager通过该地址向RM汇报心跳，领取任务等。
-默认值：${yarn.resourcemanager.hostname}:8031&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（4） yarn.resourcemanager.admin.address&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：ResourceManager 对管理员暴露的访问地址。管理员通过该地址向RM发送管理命令等。&lt;/p&gt;
-&lt;p&gt;默认值：${yarn.resourcemanager.hostname}:8033&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（5） yarn.resourcemanager.webapp.address&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：ResourceManager对外web ui地址。用户可通过该地址在浏览器中查看集群各类信息。&lt;/p&gt;
-&lt;p&gt;默认值：${yarn.resourcemanager.hostname}:8088&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（6） yarn.resourcemanager.scheduler.class&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：启用的资源调度器主类。目前可用的有FIFO、Capacity Scheduler和Fair Scheduler。&lt;/p&gt;
-&lt;p&gt;默认值：
-org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（7） yarn.resourcemanager.resource-tracker.client.thread-count&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：处理来自NodeManager的RPC请求的Handler数目。&lt;/p&gt;
-&lt;p&gt;默认值：50&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（8） yarn.resourcemanager.scheduler.client.thread-count&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：处理来自ApplicationMaster的RPC请求的Handler数目。&lt;/p&gt;
-&lt;p&gt;默认值：50&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（9） yarn.scheduler.minimum-allocation-mb/ yarn.scheduler.maximum-allocation-mb&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：单个可申请的最小/最大内存资源量。比如设置为1024和3072，则运行MapRedce作业时，每个Task最少可申请1024MB内存，最多可申请3072MB内存。&lt;/p&gt;
-&lt;p&gt;默认值：1024/8192&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（10） yarn.scheduler.minimum-allocation-vcores / yarn.scheduler.maximum-allocation-vcores&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：单个可申请的最小/最大虚拟CPU个数。比如设置为1和4，则运行MapRedce作业时，每个Task最少可申请1个虚拟CPU，最多可申请4个虚拟CPU。什么是虚拟CPU，可阅读我的这篇文章：“YARN 资源调度器剖析”。&lt;/p&gt;
-&lt;p&gt;默认值：1/32&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（11） yarn.resourcemanager.nodes.include-path /yarn.resourcemanager.nodes.exclude-path&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：NodeManager黑白名单。如果发现若干个NodeManager存在问题，比如故障率很高，任务运行失败率高，则可以将之加入黑名单中。注意，这两个配置参数可以动态生效。（调用一个refresh命令即可）&lt;/p&gt;
-&lt;p&gt;默认值：“”&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（12） yarn.resourcemanager.nodemanagers.heartbeat-interval-ms&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：NodeManager心跳间隔&lt;/p&gt;
-&lt;p&gt;默认值：1000（毫秒）&lt;/p&gt;
-&lt;h2 id=&#34;nodemanager相关配置参数&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#nodemanager%e7%9b%b8%e5%85%b3%e9%85%8d%e7%bd%ae%e5%8f%82%e6%95%b0&#34;&gt;
-        #
-    &lt;/a&gt;
-    NodeManager相关配置参数
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;（1） yarn.nodemanager.resource.memory-mb&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：NodeManager总的可用物理内存。注意，该参数是不可修改的，一旦设置，整个运行过程中不可动态修改。另外，该参数的默认值是8192MB，即使你的机器内存不够8192MB，YARN也会按照这些内存来使用（傻不傻？），因此，这个值通过一定要配置。不过，Apache已经正在尝试将该参数做成可动态修改的。&lt;/p&gt;
-&lt;p&gt;默认值：8192&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（2） yarn.nodemanager.vmem-pmem-ratio&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：每使用1MB物理内存，最多可用的虚拟内存数。&lt;/p&gt;
-&lt;p&gt;默认值：2.1&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（3） yarn.nodemanager.resource.cpu-vcores&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：NodeManager总的可用虚拟CPU个数。&lt;/p&gt;
-&lt;p&gt;默认值：8&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（4） yarn.nodemanager.local-dirs&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：中间结果存放位置，类似于1.0中的mapred.local.dir。注意，这个参数通常会配置多个目录，已分摊磁盘IO负载。&lt;/p&gt;
-&lt;p&gt;默认值：${hadoop.tmp.dir}/nm-local-dir&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（5） yarn.nodemanager.log-dirs&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：日志存放地址（可配置多个目录）。&lt;/p&gt;
-&lt;p&gt;默认值：${yarn.log.dir}/userlogs&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（6） yarn.nodemanager.log.retain-seconds&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：NodeManager上日志最多存放时间（不启用日志聚集功能时有效）。&lt;/p&gt;
-&lt;p&gt;默认值：10800（3小时）&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;（7） yarn.nodemanager.aux-services&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;参数解释：NodeManager上运行的附属服务。需配置成mapreduce_shuffle，才可运行MapReduce程序&lt;/p&gt;
-&lt;p&gt;默认值：“”&lt;/p&gt;
-&lt;p&gt;yarn-site.xml
-yarn.scheduler.minimum-allocation-mb:341
-yarn.scheduler.increment-allocation-mb:
-yarn.scheduler.maximum-allocation-mb:1023&lt;/p&gt;
-&lt;p&gt;节点分配给NodeManager的可用内存
-yarn.nodemanager.resource.memory-mb:1023&lt;/p&gt;
-&lt;p&gt;yarn.scheduler.minimum-allocation-mb &amp;lt; yarn.nodemanager.resource.memory-mb
-yarn.scheduler.maximum-allocation-mb:1023 &amp;lt; yarn.nodemanager.resource.memory-mb&lt;/p&gt;
-&lt;h2 id=&#34;mapred-sitexml&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#mapred-sitexml&#34;&gt;
-        #
-    &lt;/a&gt;
-    mapred-site.xml
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;yarn.app.mapreduce.am.resource.mb： 341
-mapreduce.map.memory.mb：341
-mapreduce.reduce.memory.mb：682
-mapreduce.task.io.sort.mb：190&lt;/p&gt;
-&lt;p&gt;mapreduce.map.java.opts: -Xmx272m
-mapreduce.reduce.java.opts: -Xmx545m&lt;/p&gt;
-&lt;p&gt;Resource manager: bdtest-002&lt;/p&gt;
-&lt;p&gt;Application manager:&lt;/p&gt;
-&lt;p&gt;Node manager:&lt;/p&gt;
-&lt;h1 id=&#34;yarn操作&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#yarn%e6%93%8d%e4%bd%9c&#34;&gt;
-        ##
-    &lt;/a&gt;
-    Yarn操作
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;hr&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;查看application log&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  $ yarn logs -applicationId applicationID
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;控制application&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  yarn application -list
-  yarn application -status
-  yarn application -kill
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;yarn参考文章&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#yarn%e5%8f%82%e8%80%83%e6%96%87%e7%ab%a0&#34;&gt;
-        #
-    &lt;/a&gt;
-    Yarn参考文章
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://blog.csdn.net/suifeng3051/article/details/49508261&#34;&gt;Yarn scheduler&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://hadoop.apache.org/docs/r2.4.1/hadoop-yarn/hadoop-yarn-common/yarn-default.xml&#34;&gt;Yarn configure&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/12/yarn-config/</guid>
+      <description>Resource manager Node manager Application master
+ 资源
+ Container
+ container所需资源，minimum/maximum memory/vcores  Scheduler
+ FIFO CapacityScheduler FairScheduler  Queue
+  Application &amp;mdash; scheduler &amp;mdash;&amp;gt; Queue
+yarn-site.xml中配置。
+下文引用自http://dongxicheng.org/mapreduce-nextgen/hadoop-yarn-configurations-resourcemanager-nodemanager/
+Node manager Node manager architecture
+ResourceManager相关配置参数  （1） yarn.resourcemanager.address  参数解释：ResourceManager 对客户端暴露的地址。客户端通过该地址向RM提交应用程序，杀死应用程序等。
+默认值：${yarn.resourcemanager.hostname}:8032
+ （2） yarn.resourcemanager.scheduler.address  参数解释：ResourceManager 对ApplicationMaster暴露的访问地址。ApplicationMaster通过该地址向RM申请资源、释放资源等。
+默认值：${yarn.resourcemanager.hostname}:8030
+ （3） yarn.resourcemanager.resource-tracker.address 参数解释：ResourceManager 对NodeManager暴露的地址.。NodeManager通过该地址向RM汇报心跳，领取任务等。 默认值：${yarn.resourcemanager.hostname}:8031
+ （4） yarn.resourcemanager.admin.address
+  参数解释：ResourceManager 对管理员暴露的访问地址。管理员通过该地址向RM发送管理命令等。
+默认值：${yarn.resourcemanager.hostname}:8033
+ （5） yarn.resourcemanager.webapp.address  参数解释：ResourceManager对外web ui地址。用户可通过该地址在浏览器中查看集群各类信息。</description>
     </item>
     
   </channel>

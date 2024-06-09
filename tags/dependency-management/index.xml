@@ -1,36 +1,27 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Dependency Management on singleye</title>
-    <link>/tags/dependency-management/</link>
-    <description>singleye (Dependency Management)</description>
+    <title>Dependency Management on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/dependency-management/</link>
+    <description>Recent content in Dependency Management on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Sat, 02 Dec 2017 18:17:23 +0800</lastBuildDate>
     
-    <atom:link href="/tags/dependency-management/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/dependency-management/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>GO语言依赖管理那些事儿</title>
-      <link>/2017/12/go%E8%AF%AD%E8%A8%80%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/</link>
+      <link>https://www.singleye.net/2017/12/go%E8%AF%AD%E8%A8%80%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/</link>
       <pubDate>Sat, 02 Dec 2017 18:17:23 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/12/go%E8%AF%AD%E8%A8%80%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/</guid>
-      <description>&lt;p&gt;学习GO开发的过程中发现GO的依赖管理有些不够合理之处。&lt;/p&gt;
-&lt;p&gt;首先，使用GO开发时在假设项目及依赖关系都通过全系统唯一的GOPATH进行管理，可事实上一个开发人员不可能同时只做一个项目开发，不能假设不同项目的依赖都是一致的。这个问题自从v1.5引入vendor管理方法得到了一定改善。可是go get对vendor支持并不友好，这增加了管理的工作量。很多项目也被开发出来解决这个问题，比如&amp;rsquo;govendor&amp;rsquo;。&lt;/p&gt;
-&lt;p&gt;引入vendor方法后的项目依赖查找顺序如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;首先查找当前包下面的vendor目录&lt;/li&gt;
-&lt;li&gt;向上一级目录查找，直至找到src目录下的vendor目录&lt;/li&gt;
-&lt;li&gt;在GOPATH下面查找&lt;/li&gt;
-&lt;li&gt;在GOROOT下面查找&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;第二个不合理的地方，虽然引入了vendor目录解决单独项目的局部依赖管理问题，但依然要求把每个项目放入系统全局GOPATH中进行管理。可是一个项目可能只是一个大项目中的一小部分，而整个大项目可能有不同的开发语言构成，那么管理这种混合项目就是一个很麻烦的事情。另外每一个项目本身随着开发时间的推移会出现多个版本，当你在处理一个版本的问题是可能需要临时切换到另一个版本，基于同一个GOPATH目录开发时对于这种切换管理也并不算友好。&amp;lsquo;gb&amp;rsquo;这个项目开发出来后解决了这一问题，但这导致了项目管理必须使用gb工具，就连基本的build也脱离不开这种依赖，这也导致了本人碰到的第三个问题。&lt;/p&gt;
-&lt;p&gt;第三个不合理之处是对于编辑器的不友好。由于个人的主要编辑器是vim，并且使用了vim-go插件，这个插件支持了Go的开发工具链，可以在vim中方便的使用GoFmt/GoImports/GoBuild/GoTest等这些命令进行开发。但是由于gb对vim的支持欠缺导致在gb创建的项目若不放入标准的GOPATH中有些vim-go的命令执行会出现问题。&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/12/go%E8%AF%AD%E8%A8%80%E4%BE%9D%E8%B5%96%E7%AE%A1%E7%90%86%E9%82%A3%E4%BA%9B%E4%BA%8B%E5%84%BF/</guid>
+      <description>学习GO开发的过程中发现GO的依赖管理有些不够合理之处。
+首先，使用GO开发时在假设项目及依赖关系都通过全系统唯一的GOPATH进行管理，可事实上一个开发人员不可能同时只做一个项目开发，不能假设不同项目的依赖都是一致的。这个问题自从v1.5引入vendor管理方法得到了一定改善。可是go get对vendor支持并不友好，这增加了管理的工作量。很多项目也被开发出来解决这个问题，比如&amp;rsquo;govendor&amp;rsquo;。
+引入vendor方法后的项目依赖查找顺序如下：
+ 首先查找当前包下面的vendor目录 向上一级目录查找，直至找到src目录下的vendor目录 在GOPATH下面查找 在GOROOT下面查找  第二个不合理的地方，虽然引入了vendor目录解决单独项目的局部依赖管理问题，但依然要求把每个项目放入系统全局GOPATH中进行管理。可是一个项目可能只是一个大项目中的一小部分，而整个大项目可能有不同的开发语言构成，那么管理这种混合项目就是一个很麻烦的事情。另外每一个项目本身随着开发时间的推移会出现多个版本，当你在处理一个版本的问题是可能需要临时切换到另一个版本，基于同一个GOPATH目录开发时对于这种切换管理也并不算友好。&amp;rsquo;gb&amp;rsquo;这个项目开发出来后解决了这一问题，但这导致了项目管理必须使用gb工具，就连基本的build也脱离不开这种依赖，这也导致了本人碰到的第三个问题。
+第三个不合理之处是对于编辑器的不友好。由于个人的主要编辑器是vim，并且使用了vim-go插件，这个插件支持了Go的开发工具链，可以在vim中方便的使用GoFmt/GoImports/GoBuild/GoTest等这些命令进行开发。但是由于gb对vim的支持欠缺导致在gb创建的项目若不放入标准的GOPATH中有些vim-go的命令执行会出现问题。</description>
     </item>
     
   </channel>

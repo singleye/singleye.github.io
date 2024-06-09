@@ -1,390 +1,44 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Database on singleye</title>
-    <link>/categories/database/</link>
-    <description>singleye (Database)</description>
+    <title>Database on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/categories/database/</link>
+    <description>Recent content in Database on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Tue, 23 Jan 2018 11:20:33 +0800</lastBuildDate>
     
-    <atom:link href="/categories/database/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/categories/database/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Mysql charset/collation字符编码设置</title>
-      <link>/2018/01/mysql-charset/collation%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE/</link>
+      <link>https://www.singleye.net/2018/01/mysql-charset/collation%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE/</link>
       <pubDate>Tue, 23 Jan 2018 11:20:33 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2018/01/mysql-charset/collation%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE/</guid>
-      <description>&lt;p&gt;mysql在创建数据库时有两个跟字符编码相关的参数&amp;quot;character set&amp;quot;和&amp;quot;collate&amp;quot;，这里解释一下这两个参数的作用。&lt;/p&gt;
-&lt;h2 id=&#34;character-set&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#character-set&#34;&gt;
-        #
-    &lt;/a&gt;
-    character set
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;**“character set”**很容易解释，就是指定字符在存储到mysql中时使用的编码集。数据库支持哪些编码可以通过&amp;quot;show character set&amp;quot;获得。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-mysql&gt; show character set;
-+----------+-----------------------------+---------------------+--------+
-| Charset  | Description                 | Default collation   | Maxlen |
-+----------+-----------------------------+---------------------+--------+
-| big5     | Big5 Traditional Chinese    | big5_chinese_ci     |      2 |
-| dec8     | DEC West European           | dec8_swedish_ci     |      1 |
-| cp850    | DOS West European           | cp850_general_ci    |      1 |
-| hp8      | HP West European            | hp8_english_ci      |      1 |
-| koi8r    | KOI8-R Relcom Russian       | koi8r_general_ci    |      1 |
-| latin1   | cp1252 West European        | latin1_swedish_ci   |      1 |
-| latin2   | ISO 8859-2 Central European | latin2_general_ci   |      1 |
-| swe7     | 7bit Swedish                | swe7_swedish_ci     |      1 |
-| ascii    | US ASCII                    | ascii_general_ci    |      1 |
-| ujis     | EUC-JP Japanese             | ujis_japanese_ci    |      3 |
-| sjis     | Shift-JIS Japanese          | sjis_japanese_ci    |      2 |
-| hebrew   | ISO 8859-8 Hebrew           | hebrew_general_ci   |      1 |
-| tis620   | TIS620 Thai                 | tis620_thai_ci      |      1 |
-| euckr    | EUC-KR Korean               | euckr_korean_ci     |      2 |
-| koi8u    | KOI8-U Ukrainian            | koi8u_general_ci    |      1 |
-| gb2312   | GB2312 Simplified Chinese   | gb2312_chinese_ci   |      2 |
-| greek    | ISO 8859-7 Greek            | greek_general_ci    |      1 |
-| cp1250   | Windows Central European    | cp1250_general_ci   |      1 |
-| gbk      | GBK Simplified Chinese      | gbk_chinese_ci      |      2 |
-| latin5   | ISO 8859-9 Turkish          | latin5_turkish_ci   |      1 |
-| armscii8 | ARMSCII-8 Armenian          | armscii8_general_ci |      1 |
-| utf8     | UTF-8 Unicode               | utf8_general_ci     |      3 |
-| ucs2     | UCS-2 Unicode               | ucs2_general_ci     |      2 |
-| cp866    | DOS Russian                 | cp866_general_ci    |      1 |
-| keybcs2  | DOS Kamenicky Czech-Slovak  | keybcs2_general_ci  |      1 |
-| macce    | Mac Central European        | macce_general_ci    |      1 |
-| macroman | Mac West European           | macroman_general_ci |      1 |
-| cp852    | DOS Central European        | cp852_general_ci    |      1 |
-| latin7   | ISO 8859-13 Baltic          | latin7_general_ci   |      1 |
-| utf8mb4  | UTF-8 Unicode               | utf8mb4_general_ci  |      4 |
-| cp1251   | Windows Cyrillic            | cp1251_general_ci   |      1 |
-| utf16    | UTF-16 Unicode              | utf16_general_ci    |      4 |
-| utf16le  | UTF-16LE Unicode            | utf16le_general_ci  |      4 |
-| cp1256   | Windows Arabic              | cp1256_general_ci   |      1 |
-| cp1257   | Windows Baltic              | cp1257_general_ci   |      1 |
-| utf32    | UTF-32 Unicode              | utf32_general_ci    |      4 |
-| binary   | Binary pseudo charset       | binary              |      1 |
-| geostd8  | GEOSTD8 Georgian            | geostd8_general_ci  |      1 |
-| cp932    | SJIS for Windows Japanese   | cp932_japanese_ci   |      2 |
-| eucjpms  | UJIS for Windows Japanese   | eucjpms_japanese_ci |      3 |
-+----------+-----------------------------+---------------------+--------+
-40 rows in set (0.00 sec)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&#34;collate&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#collate&#34;&gt;
-        #
-    &lt;/a&gt;
-    collate
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;这个参数指定mysql根据哪些规则来比较存储的数据的字符集，这些信息可以用来进行数据的比较排序。&lt;/p&gt;
-&lt;p&gt;这个参数的格式构成规则如下：&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;&amp;lt;字符集&amp;gt;_&amp;lt;语言相关信息&amp;gt;_&amp;lt;后缀&amp;gt;&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;例如： &amp;ldquo;utf8_general_ci&amp;rdquo;, &amp;ldquo;latin1_danish_ci&amp;rdquo;&lt;/p&gt;
-&lt;h2 id=&#34;mysql一些其他特性&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#mysql%e4%b8%80%e4%ba%9b%e5%85%b6%e4%bb%96%e7%89%b9%e6%80%a7&#34;&gt;
-        #
-    &lt;/a&gt;
-    mysql一些其他特性
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;1-mysql支持4个级别的字符集设置服务器数据库表列&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#1-mysql%e6%94%af%e6%8c%814%e4%b8%aa%e7%ba%a7%e5%88%ab%e7%9a%84%e5%ad%97%e7%ac%a6%e9%9b%86%e8%ae%be%e7%bd%ae%e6%9c%8d%e5%8a%a1%e5%99%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e8%a1%a8%e5%88%97&#34;&gt;
-        ##
-    &lt;/a&gt;
-    1. mysql支持4个级别的字符集设置：服务器，数据库，表，列。
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;h4 id=&#34;11-服务器级别&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#11-%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%ba%a7%e5%88%ab&#34;&gt;
-        ###
-    &lt;/a&gt;
-    1.1 服务器级别
-&lt;/div&gt;
-&lt;/h4&gt;
-&lt;ul&gt;
-&lt;li&gt;作用：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;服务器的字符集可以作为&amp;quot;CREATE DATABASE&amp;quot;的默认值&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;设置方法：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;启动参数： &amp;lsquo;&amp;ndash;character-set-server&amp;rsquo; &amp;lsquo;&amp;ndash;collation-server&amp;rsquo;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;查询：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;SHOW VARIABLES 查询 character_set_server/collation_server&lt;/p&gt;
-&lt;h4 id=&#34;12-数据库级别&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#12-%e6%95%b0%e6%8d%ae%e5%ba%93%e7%ba%a7%e5%88%ab&#34;&gt;
-        ###
-    &lt;/a&gt;
-    1.2 数据库级别
-&lt;/div&gt;
-&lt;/h4&gt;
-&lt;ul&gt;
-&lt;li&gt;作用：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;作为创建表时的默认值&lt;/p&gt;
-&lt;p&gt;影响LOAD_DATA语句中的CHARACTER SET的值&lt;/p&gt;
-&lt;p&gt;影响存储过程中与字符编码相关的操作&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;设置方法：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&amp;lsquo;CREATE DATABASE&amp;rsquo;或&amp;rsquo;ALTER DATABASE&amp;rsquo; 的参数 &amp;lsquo;CHARACTER SET&amp;rsquo; &amp;lsquo;COLLATE&amp;rsquo;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;查询：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;USE db_name;&lt;/br&gt;SELECT @@character_set_database, @@collation_database;&lt;/p&gt;
-&lt;h4 id=&#34;13-表级别&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#13-%e8%a1%a8%e7%ba%a7%e5%88%ab&#34;&gt;
-        ###
-    &lt;/a&gt;
-    1.3 表级别
-&lt;/div&gt;
-&lt;/h4&gt;
-&lt;ul&gt;
-&lt;li&gt;作用：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;每张表可以有表级别的字符集。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;设置方法：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;使用 CREATE TABLE 和 ALTER TABLE 命令进行设置。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-CREATE TABLE tbl_name (column_list)
-    [[DEFAULT] CHARACTER SET charset_name]
-    [COLLATE collation_name]]
-
-ALTER TABLE tbl_name
-    [[DEFAULT] CHARACTER SET charset_name]
-    [COLLATE collation_name]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;查询：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;
-SHOW CREATE TABLE table_name;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h4 id=&#34;14-列级别&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#14-%e5%88%97%e7%ba%a7%e5%88%ab&#34;&gt;
-        ###
-    &lt;/a&gt;
-    1.4 列级别
-&lt;/div&gt;
-&lt;/h4&gt;
-&lt;ul&gt;
-&lt;li&gt;作用：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;字符类型的列（CHAR, VARCHAR, TEXT）可以有一个本列相关的 character set和collation设置。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;设置方法：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;设置方法是在CREATE TABLE时使用相应的列参数。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-col_name {CHAR | VARCHAR | TEXT} (col_length)
-    [CHARACTER SET charset_name]
-    [COLLATE collation_name]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;比如：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-CREATE TABLE t1
-(
-    col1 VARCHAR(5)
-      CHARACTER SET utf8
-      COLLATE utf8_general_ci
-);
-
-ALTER TABLE t1 MODIFY
-    col1 VARCHAR(5)
-      CHARACTER SET utf8
-      COLLATE utf8_general_ci;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;查询：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;
-SHOW CREATE TABLE table_name;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;clientserver通讯字符编码&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#clientserver%e9%80%9a%e8%ae%af%e5%ad%97%e7%ac%a6%e7%bc%96%e7%a0%81&#34;&gt;
-        ##
-    &lt;/a&gt;
-    client/server通讯字符编码
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;设置：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;mysql数据库client/server之间通讯的字符编码也可以单独设置，设置的方法有若干种：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;使用SQL命令&amp;quot;SET NAME &amp;lsquo;charset_name&amp;quot;和 &amp;ldquo;SET CHAARACTER SET &amp;lsquo;charset_name&amp;rsquo;&amp;ldquo;设置：&lt;/strong&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-SET NAME &#39;utf8&#39;;
-
-
-SET character_set_client = charset_name;
-SET character_set_results = charset_name;
-SET collation_connection = @@collation_database;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;strong&gt;使用mysql配置文件设置：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;[mysql]
-default-character-set=koi8r&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;使用mysql客户端设置：&lt;/strong&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-mysql&gt; charset utf8
-Charset changed
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;查询：&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;
-SHOW VARIABLES LIKE &#39;character_set%&#39;;
-SHOW VARIABLES LIKE &#39;collation%&#39;;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1 id=&#34;参考&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%8f%82%e8%80%83&#34;&gt;
-        ##
-    &lt;/a&gt;
-    参考
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;*&lt;a href=&#34;https://dev.mysql.com/doc/refman/5.7/en/charset.html&#34;&gt;https://dev.mysql.com/doc/refman/5.7/en/charset.html&lt;/a&gt;&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2018/01/mysql-charset/collation%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE/</guid>
+      <description>mysql在创建数据库时有两个跟字符编码相关的参数&amp;rdquo;character set&amp;rdquo;和&amp;rdquo;collate&amp;rdquo;，这里解释一下这两个参数的作用。
+character set “character set”很容易解释，就是指定字符在存储到mysql中时使用的编码集。数据库支持哪些编码可以通过&amp;rdquo;show character set&amp;rdquo;获得。
+ mysql show character set; +----------+-----------------------------+---------------------+--------+ | Charset | Description | Default collation | Maxlen | +----------+-----------------------------+---------------------+--------+ | big5 | Big5 Traditional Chinese | big5_chinese_ci | 2 | | dec8 | DEC West European | dec8_swedish_ci | 1 | | cp850 | DOS West European | cp850_general_ci | 1 | | hp8 | HP West European | hp8_english_ci | 1 | | koi8r | KOI8-R Relcom Russian | koi8r_general_ci | 1 | | latin1 | cp1252 West European | latin1_swedish_ci | 1 | | latin2 | ISO 8859-2 Central European | latin2_general_ci | 1 | | swe7 | 7bit Swedish | swe7_swedish_ci | 1 | | ascii | US ASCII | ascii_general_ci | 1 | | ujis | EUC-JP Japanese | ujis_japanese_ci | 3 | | sjis | Shift-JIS Japanese | sjis_japanese_ci | 2 | | hebrew | ISO 8859-8 Hebrew | hebrew_general_ci | 1 | | tis620 | TIS620 Thai | tis620_thai_ci | 1 | | euckr | EUC-KR Korean | euckr_korean_ci | 2 | | koi8u | KOI8-U Ukrainian | koi8u_general_ci | 1 | | gb2312 | GB2312 Simplified Chinese | gb2312_chinese_ci | 2 | | greek | ISO 8859-7 Greek | greek_general_ci | 1 | | cp1250 | Windows Central European | cp1250_general_ci | 1 | | gbk | GBK Simplified Chinese | gbk_chinese_ci | 2 | | latin5 | ISO 8859-9 Turkish | latin5_turkish_ci | 1 | | armscii8 | ARMSCII-8 Armenian | armscii8_general_ci | 1 | | utf8 | UTF-8 Unicode | utf8_general_ci | 3 | | ucs2 | UCS-2 Unicode | ucs2_general_ci | 2 | | cp866 | DOS Russian | cp866_general_ci | 1 | | keybcs2 | DOS Kamenicky Czech-Slovak | keybcs2_general_ci | 1 | | macce | Mac Central European | macce_general_ci | 1 | | macroman | Mac West European | macroman_general_ci | 1 | | cp852 | DOS Central European | cp852_general_ci | 1 | | latin7 | ISO 8859-13 Baltic | latin7_general_ci | 1 | | utf8mb4 | UTF-8 Unicode | utf8mb4_general_ci | 4 | | cp1251 | Windows Cyrillic | cp1251_general_ci | 1 | | utf16 | UTF-16 Unicode | utf16_general_ci | 4 | | utf16le | UTF-16LE Unicode | utf16le_general_ci | 4 | | cp1256 | Windows Arabic | cp1256_general_ci | 1 | | cp1257 | Windows Baltic | cp1257_general_ci | 1 | | utf32 | UTF-32 Unicode | utf32_general_ci | 4 | | binary | Binary pseudo charset | binary | 1 | | geostd8 | GEOSTD8 Georgian | geostd8_general_ci | 1 | | cp932 | SJIS for Windows Japanese | cp932_japanese_ci | 2 | | eucjpms | UJIS for Windows Japanese | eucjpms_japanese_ci | 3 | +----------+-----------------------------+---------------------+--------+ 40 rows in set (0.</description>
     </item>
     
     <item>
       <title>postgres数据库使用指南</title>
-      <link>/2017/03/postgres%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</link>
+      <link>https://www.singleye.net/2017/03/postgres%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</link>
       <pubDate>Thu, 16 Mar 2017 00:08:17 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/03/postgres%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</guid>
-      <description>&lt;p&gt;在此省略postgres数据库的安装过程。&lt;/p&gt;
-&lt;h2 id=&#34;1-初始化数据库环境&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#1-%e5%88%9d%e5%a7%8b%e5%8c%96%e6%95%b0%e6%8d%ae%e5%ba%93%e7%8e%af%e5%a2%83&#34;&gt;
-        #
-    &lt;/a&gt;
-    1. 初始化数据库环境
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;安装完postgres后需要先初始化数据库的环境，可以使用命令行工具 initdb 完成。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;initdb &amp;lt;DB env path&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;2-数据库管理&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#2-%e6%95%b0%e6%8d%ae%e5%ba%93%e7%ae%a1%e7%90%86&#34;&gt;
-        #
-    &lt;/a&gt;
-    2. 数据库管理
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;21-创建数据库&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#21-%e5%88%9b%e5%bb%ba%e6%95%b0%e6%8d%ae%e5%ba%93&#34;&gt;
-        ##
-    &lt;/a&gt;
-    2.1 创建数据库
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;方法1：使用命令行 createdb ，并直接指定用户&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;createdb -O &amp;lt;DB user&amp;gt; &amp;lt;DB name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;方法2：使用 SQL 创建&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# CREATE DATABASE xxxx2;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;创建时指定数据库的拥有人：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# CREATE DATABASE exampledb OWNER dbuser;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;22-删除数据库&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#22-%e5%88%a0%e9%99%a4%e6%95%b0%e6%8d%ae%e5%ba%93&#34;&gt;
-        ##
-    &lt;/a&gt;
-    2.2 删除数据库
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dropdb &amp;lt;DB name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;3-用户及权限管理&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#3-%e7%94%a8%e6%88%b7%e5%8f%8a%e6%9d%83%e9%99%90%e7%ae%a1%e7%90%86&#34;&gt;
-        #
-    &lt;/a&gt;
-    3. 用户及权限管理
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;31-添加用户&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#31-%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7&#34;&gt;
-        ##
-    &lt;/a&gt;
-    3.1 添加用户
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;初始化完数据库环境后需要创建用户，之后再进行数据库创建和使用。&lt;/p&gt;
-&lt;p&gt;有两种方法可以创建用户：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;方法1:使用命令行 createuser&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;createuser --interactive
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;按照提示信息一步步进行用户信息的输入就可以了。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;方法2:使用命令行工具&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sudo -s -u postgres psql
-postgres# CREATE USER xxxx1 WITH PASSWORD &amp;#39;xxxx&amp;#39;;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;32-删除用户&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#32-%e5%88%a0%e9%99%a4%e7%94%a8%e6%88%b7&#34;&gt;
-        ##
-    &lt;/a&gt;
-    3.2 删除用户
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;dropuser &amp;lt;DB user&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;33-设置用户访问数据库密码&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#33-%e8%ae%be%e7%bd%ae%e7%94%a8%e6%88%b7%e8%ae%bf%e9%97%ae%e6%95%b0%e6%8d%ae%e5%ba%93%e5%af%86%e7%a0%81&#34;&gt;
-        ##
-    &lt;/a&gt;
-    3.3 设置用户访问数据库密码
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;方法1：使用内建命令设置密码&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ psql &amp;lt;DB name&amp;gt;
-&amp;lt;DB name&amp;gt;=&amp;gt; \password dbuser
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;方法2：使用SQL设置密码&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# create user dbuser with password &amp;#39;password&amp;#39;;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修改密码：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# alter user dbuser with password &amp;#39;password&amp;#39;;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;34-设置访问权限&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#34-%e8%ae%be%e7%bd%ae%e8%ae%bf%e9%97%ae%e6%9d%83%e9%99%90&#34;&gt;
-        ##
-    &lt;/a&gt;
-    3.4 设置访问权限
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;postgres# GRANT ALL PRIVILEGES ON DATABASE xxxx2 to xxxx1;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;4-数据库运行&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#4-%e6%95%b0%e6%8d%ae%e5%ba%93%e8%bf%90%e8%a1%8c&#34;&gt;
-        #
-    &lt;/a&gt;
-    4 数据库运行
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;启动：&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;pg_ctl start -D /usr/local/var/postgres -l /usr/local/var/log/postgres.log
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;停止：&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;pg_ctl stop -D /usr/local/var/postgres
-&lt;/code&gt;&lt;/pre&gt;</description>
+      
+      <guid>https://www.singleye.net/2017/03/postgres%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</guid>
+      <description>在此省略postgres数据库的安装过程。
+1. 初始化数据库环境 安装完postgres后需要先初始化数据库的环境，可以使用命令行工具 initdb 完成。
+initdb &amp;lt;DB env path&amp;gt;  2. 数据库管理 2.1 创建数据库 方法1：使用命令行 createdb ，并直接指定用户
+createdb -O &amp;lt;DB user&amp;gt; &amp;lt;DB name&amp;gt;  方法2：使用 SQL 创建
+postgres# CREATE DATABASE xxxx2;  创建时指定数据库的拥有人：
+postgres# CREATE DATABASE exampledb OWNER dbuser;  2.2 删除数据库 dropdb &amp;lt;DB name&amp;gt;  3. 用户及权限管理 3.1 添加用户 初始化完数据库环境后需要创建用户，之后再进行数据库创建和使用。
+有两种方法可以创建用户：
+方法1:使用命令行 createuser
+createuser --interactive  按照提示信息一步步进行用户信息的输入就可以了。
+方法2:使用命令行工具
+sudo -s -u postgres psql postgres# CREATE USER xxxx1 WITH PASSWORD &#39;xxxx&#39;;  3.</description>
     </item>
     
   </channel>

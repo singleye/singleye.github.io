@@ -1,716 +1,498 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>softmax输出层公式推导及代码实验</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="NeuralNetwork, softmax, sigmoid, python, numpy, matploblib">
 
-<title>softmax输出层公式推导及代码实验 - singleye</title>
-
-<meta name="description" content="sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，softmax输出层提供了一种解决这些问题比较有效的方法，本文对softmax输出层进行一些推导体会。">
-
-
-    <meta name="keywords" content="NeuralNetwork,softmax,sigmoid,python,numpy,matploblib">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
     
 
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
     
-
-
-
-
-
-    
-    
-        
+    <meta name="description" content="sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：
+ 在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：  使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i &#43; (1-y_i) \ln (1-a_i)] $ 使用softmax和log-likelyhood代价函数作为输出层  sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &hellip; y_n | X) $，其中y1, &hellip; yn之间相互关联，且总和为1。  这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。
+softmax定义：  $$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$  将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：
+ 每个神经元的输出为正数，并且输出数值介于0-1之间。 所有神经元的输出总和为1。 某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。 softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。  下图展示了softmax层工作的基本原理。">
+    <meta property="og:description" content="sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：
+ 在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：  使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i &#43; (1-y_i) \ln (1-a_i)] $ 使用softmax和log-likelyhood代价函数作为输出层  sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &hellip; y_n | X) $，其中y1, &hellip; yn之间相互关联，且总和为1。  这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。
+softmax定义：  $$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$  将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：
+ 每个神经元的输出为正数，并且输出数值介于0-1之间。 所有神经元的输出总和为1。 某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。 softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。  下图展示了softmax层工作的基本原理。">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="softmax输出层公式推导及代码实验">
+    <meta property="og:url" content="/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：
+ 在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：  使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i &#43; (1-y_i) \ln (1-a_i)] $ 使用softmax和log-likelyhood代价函数作为输出层  sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &hellip; y_n | X) $，其中y1, &hellip; yn之间相互关联，且总和为1。  这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。
+softmax定义：  $$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$  将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：
+ 每个神经元的输出为正数，并且输出数值介于0-1之间。 所有神经元的输出总和为1。 某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。 softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。  下图展示了softmax层工作的基本原理。">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
-    
-
-
-
-
-
-    
-
-
-
-
-
-    
-    
-        
-    
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
-
-    
-
-
-
-
-
-    
-    
-        
-    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
+      <meta property="og:image" content="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg">
     
     
     
 
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
     
 
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
     
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-    
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
     
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
 </script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  </head>
 
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
     
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">softmax输出层公式推导及代码实验</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
     
-        <div class="post-date dt-published">
-            <time datetime="2017-10-02">2017-10-02</time>
-            
-        </div>
     
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
 
-    <a class="post-hidden-url u-url" href="/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/">/2017/10/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
 
 
-    <div class="post-taxonomies">
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      softmax输出层公式推导及代码实验
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-10-02T02:11:00Z">
         
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/machine-learning/">Machine Learning</a></li>
-                
-                    
-                    <li><a href="/categories/neural-network/">Neural Network</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="/tags/neuralnetwork/">#NeuralNetwork</a></li>
-                
-                    
-                    <li><a href="/tags/softmax/">#Softmax</a></li>
-                
-                    
-                    <li><a href="/tags/sigmoid/">#Sigmoid</a></li>
-                
-                    
-                    <li><a href="/tags/python/">#Python</a></li>
-                
-                    
-                    <li><a href="/tags/numpy/">#Numpy</a></li>
-                
-                    
-                    <li><a href="/tags/matploblib/">#Matploblib</a></li>
-                
-            </ul>
-        
-        
-    </div>
+  十月 2, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/machine-learning">Machine Learning</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/neural-network">Neural Network</a>
+    
+  
+
+  </div>
+
 </div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              
 
-        </div>
-        
+<!-- more /-->
 
-  
-  
-
-
-
-
-  
-  
-  
-  <details class="toc noselect">
-    <summary>Table of Contents</summary>
-    <div class="inner"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#代价函数c">代价函数C</a></li>
-    <li><a href="#用反向传播进行梯度下降">用反向传播进行梯度下降</a>
-      <ul>
-        <li><a href="#求解-delta_il--a_il---y_i-">求解$ \delta_i^L = ({a_i^L} - y_i) $</a></li>
-        <li><a href="#求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程">求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：</a></li>
-        <li><a href="#求-frac-partial-cpartial-b_il--a_il---y_i-的过程">求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：</a></li>
-      </ul>
-    </li>
-    <li><a href="#sigmoid隐藏层与softmax输出层网络">sigmoid隐藏层与softmax输出层网络</a>
-      <ul>
-        <li><a href="#前馈网络计算步骤">前馈网络计算步骤：</a></li>
-        <li><a href="#反向传播计算步骤">反向传播计算步骤：</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-  </details>
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
-</script>
-
-        <div class="content e-content">
-            <!-- more /-->
 <p>sigmoid激活函数在神经网络中有着强大的通用性，但也存在这一些问题，比如：</p>
+
 <ol>
 <li>在w/b参数还没有训练成熟时，训练预测偏差较大，此时的训练速度会较慢。这个问题的解决方法有两种：
+
 <ul>
 <li>使用交叉熵代价函数: $ C = -{1\over n} \sum_{i=1}^n [y_i \ln a_i + (1-y_i) \ln (1-a_i)] $</li>
 <li>使用softmax和log-likelyhood代价函数作为输出层</li>
-</ul>
-</li>
+</ul></li>
 <li>sigmoid的输出结果是伯努利分布 $ P(y_1|X), P(y_2|X), &hellip; P(y_n|X) $，说明每一个输出项之间是相互独立的，这在预测一种输出结果的情形时不太符合人们的直观感受。这个问题也可以用softmax输出层解决，因为softmax的输出是多项分布：$ P(y_1, y_2, &hellip; y_n | X) $，其中y1, &hellip; yn之间相互关联，且总和为1。</li>
 </ol>
+
 <p>这样看起来softmax是个很有效的方法，下面就对这个方法进行一些研究。</p>
-<h1 id="softmax定义" >
-<div>
-    <a href="#softmax%e5%ae%9a%e4%b9%89">
-        ##
-    </a>
-    softmax定义：
-</div>
-</h1>
+
+<h1 id="softmax定义">softmax定义：</h1>
+
 <div>
 $$ softmax(z_j) = {e^{z_j} \over {\sum_{i=1}^m e^{z_i} }} , j=1, ... m $$
 </div>
+
 <p>将softmax层应用在网络输出层时，每一个神经元的softmax激活输出可以理解为该神经元对应结果的预测概率，这里有几个基本事实：</p>
+
 <ul>
 <li>每个神经元的输出为正数，并且输出数值介于0-1之间。</li>
 <li>所有神经元的输出总和为1。</li>
 <li>某一项输入（Z值）增大时，其对应的输出概率增大；同时其他输出概率同时减小（总和总是1）。该结论可以从$ \frac {\partial a_i} {\partial {z_i}} $（总为正数）以及$ \frac {\partial a_i} {\partial {z_j}}$（总为负数）推算出来，这两个数字也说明了softmax的输入／输出单调性。</li>
 <li>softmax的每个激活输出值之间相互关联，表现出了输出非局部性特征。直观的理解就是因为所有激活输出的总和总是为1，那么其中一个激活输出的值发生变动的时候其他的激活输出也必将变化。这一点也是跟sigmoid激活函数的很不同的一点，也说明了$ \frac {\partial a_i} {\partial {z_j}}$值存在的意义。</li>
 </ul>
+
 <p>下图展示了softmax层工作的基本原理。</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/how_softmax_works.png?x-oss-process=style/png2jpg" alt=""></p>
-<h1 id="应用场景" >
-<div>
-    <a href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af">
-        ##
-    </a>
-    应用场景：
-</div>
-</h1>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/how_softmax_works.png?x-oss-process=style/png2jpg" alt="" /></p>
+
+<h1 id="应用场景">应用场景：</h1>
+
 <p>从softmax的定义知道所有输出神经元的总和为1，因此softmax可以用在预测在多种可能性中只有一个结果的场景，比如mnist手写判定。</p>
-<h1 id="softmax输出层组成的神经网络" >
-<div>
-    <a href="#softmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bb%84%e6%88%90%e7%9a%84%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c">
-        ##
-    </a>
-    softmax输出层组成的神经网络
-</div>
-</h1>
+
+<h1 id="softmax输出层组成的神经网络">softmax输出层组成的神经网络</h1>
+
 <p>下面的图展示了一个简单的softmax输出层神经网络，中间层依然使用sigmoid。</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg" alt="softmax NN"></p>
-<h2 id="代价函数c" >
-<div>
-    <a href="#%e4%bb%a3%e4%bb%b7%e5%87%bd%e6%95%b0c">
-        #
-    </a>
-    代价函数C
-</div>
-</h2>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg" alt="softmax NN" /></p>
+
+<h2 id="代价函数c">代价函数C</h2>
+
 <p>为了解决在学习过程中出现的速度问题使用log-likelihood代价函数，函数定义为：</p>
-$$ C=-\sum_i^m y_i \ln a_i $$
+
+<p>$$ C=-\sum_i^m y_i \ln a_i $$</p>
+
 <p>关于实际应用这个等式需要解释一下。假设softmax输出层有4个输出，预测a值为(0.1, 0.2, 0.3, 0.4)，实际结果y为(0, 1, 0, 0)，那么这个等式为 $C = -(0\ln(0.1) + 1\ln(0.2) + 0\ln(0.3) + 0\ln(0.4))$，可以看出来因为0的存在可以让这个等式只保留实际结果为真（1）的项。这时可以把等式简化为：</p>
-$$ C=-\ln a_i | y_i=1 $$
-<h2 id="用反向传播进行梯度下降" >
-<div>
-    <a href="#%e7%94%a8%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%bf%9b%e8%a1%8c%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d">
-        #
-    </a>
-    用反向传播进行梯度下降
-</div>
-</h2>
+
+<p>$$ C=-\ln a_i | y_i=1 $$</p>
+
+<h2 id="用反向传播进行梯度下降">用反向传播进行梯度下降</h2>
+
 <p>反向传播算法要求几个关键值：</p>
+
 <ul>
 <li>$ \delta_i^L $</li>
 <li>$ \frac {\partial C}{\partial w_{ij}^L} $</li>
 <li>$ \frac {\partial C}{\partial b_{i}^L} $</li>
 </ul>
+
 <p>如果输出层使用softmax时，最后一层（L层）的相应值与使用sigmoid的情况有些不同，下面对使用softmax是的这3个值进行推导。</p>
-<h3 id="求解-delta_il--a_il---y_i-" >
-<div>
-    <a href="#%e6%b1%82%e8%a7%a3-delta_il--a_il---y_i-">
-        ##
-    </a>
-    求解$ \delta_i^L = ({a_i^L} - y_i) $
-</div>
-</h3>
+
+<h3 id="求解-delta-i-l-a-i-l-y-i">求解$ \delta_i^L = ({a_i^L} - y_i) $</h3>
+
 <p>过程如下：</p>
+
 <div>
 $$ {\delta_i^L} = {\frac {\partial C}{\partial z_{i}^L}} = {\frac {\partial }{\partial z_{i}^L}} (-\sum_k^m y_k \ln {a_k^L})$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = -(\sum_k^m y_k {1 \over {a_k^L}} {\frac {\partial {a_k^L}}{\partial z_{i}^L}})$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = -(y_i {1 \over a_i^L} \frac {\partial a_i^L}{\partial z_{i}^L} + \sum_{k \neq i}^m y_k {1 \over a_k^L} {\frac {\partial a_k^L}{\partial z_{i}^L}})$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i {1 \over a_i^L} {a_i^L(1-a_i^L)} + \sum_{k \neq i}^m y_k {1 \over a_k^L} (-{a_i^L}{a_k^L}) )$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i (1-a_i^L) - \sum_{k \neq i}^m y_k {a_i^L})$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {y_i a_i^L} - \sum_{k \neq i}^m y_k {a_i^L})$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = - (y_i - {a_i^L}{\sum_{k=1}^m y_k})$$
+
 $$ {\frac {\partial C}{\partial z_{i}^L}} = ({a_i^L} - y_i)$$
+
 </div>
-<h3 id="求-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-的过程" >
-<div>
-    <a href="#%e6%b1%82-frac-partial-cpartial-w_ijl--a_il-y_ia_jl-1-%e7%9a%84%e8%bf%87%e7%a8%8b">
-        ##
-    </a>
-    求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：
-</div>
-</h3>
+
+<h3 id="求-frac-partial-c-partial-w-ij-l-a-i-l-y-i-a-j-l-1-的过程">求$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} $的过程：</h3>
+
 <div>
 $$ \frac {\partial C}{\partial w_{ij}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial w_{ij}^L}}$$
+
 $$ \frac {\partial C}{\partial w_{ij}^L} = {\delta_i^L} {a_j^{L-1}}$$
+
 $$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}}$$
 </div>
-<h3 id="求-frac-partial-cpartial-b_il--a_il---y_i-的过程" >
-<div>
-    <a href="#%e6%b1%82-frac-partial-cpartial-b_il--a_il---y_i-%e7%9a%84%e8%bf%87%e7%a8%8b">
-        ##
-    </a>
-    求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：
-</div>
-</h3>
+
+<h3 id="求-frac-partial-c-partial-b-i-l-a-i-l-y-i-的过程">求$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) $的过程：</h3>
+
 <div>
 $$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} {\frac {\partial z_{i}^L}{\partial b_{i}^L}}$$
+
 $$ \frac {\partial C}{\partial b_{i}^L} = {\frac {\partial C}{\partial z_{i}^L}} $$
+
 $$ \frac {\partial C}{\partial b_{i}^L} = {\delta_i^L} = ({a_i^L} - y_i) $$
 </div>
+
 <p>以上求解过程中用了两个重要的计算等式:</p>
+
 <ul>
 <li>$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $</li>
 <li>$ \frac {\partial a_j} {\partial {z_i}} = -{a_i \cdot a_j} | i \neq j$</li>
 </ul>
+
 <p>下面对这两个等式进行推导：</p>
-<h4 id="求导情况1--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-" >
-<div>
-    <a href="#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b51--frac-partial-a_i-partial-z_i--a_i-cdot-1--a_i-">
-        ###
-    </a>
-    求导情况1: $ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $
-</div>
-</h4>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-acaf14aac554ab61ff6f32845fd5128e_b.png" alt="i==j"></p>
+
+<h4 id="求导情况1-frac-partial-a-i-partial-z-i-a-i-cdot-1-a-i">求导情况1: $ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $</h4>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-acaf14aac554ab61ff6f32845fd5128e_b.png" alt="i==j" /></p>
+
 <ul>
 <li>结论：</li>
 </ul>
-$$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $$
+
+<p>$$ \frac {\partial a_i} {\partial {z_i}} = a_i \cdot (1- a_i) $$</p>
+
 <ul>
 <li>推导过程：</li>
 </ul>
+
 <div>
 $$ \frac {\partial a_i} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }}) $$
+
+
 $$ = \frac {\partial}{\partial {z_i}} (e^{z_i}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_i}}$$
+
 $$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_i}}$$
+
 $$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1){\frac {\partial}{\partial z_i}({e^{z_i}})} \cdot {e^{z_i}}$$
+
 $$ = {e^{z_i} \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot ({e^{z_i} \over {\sum_{k=1}^m e^{z_k} }})^2$$
+
 $$ = a_i - (a_i)^2 $$
+
 $$ = a_i \cdot (1- a_i) $$
 </div>
-<h4 id="求导情况2--frac-partial-a_j-partial-z_i---a_i-cdot-a_j" >
-<div>
-    <a href="#%e6%b1%82%e5%af%bc%e6%83%85%e5%86%b52--frac-partial-a_j-partial-z_i---a_i-cdot-a_j">
-        ###
-    </a>
-    求导情况2: $ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$
-</div>
-</h4>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-f09fb0c50194f6cc0828fc285eb9bc1c_b.png" alt="i neq j"></p>
+
+<h4 id="求导情况2-frac-partial-a-j-partial-z-i-a-i-cdot-a-j">求导情况2: $ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$</h4>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/v2-f09fb0c50194f6cc0828fc285eb9bc1c_b.png" alt="i neq j" /></p>
+
 <ul>
 <li>结论：</li>
 </ul>
-$$ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$$
+
+<p>$$ \frac {\partial a_j} {\partial {z_i}} = -a_i \cdot a_j$$</p>
+
 <ul>
 <li>推导过程：</li>
 </ul>
+
 <div>
 $$ \frac {\partial a_j} {\partial {z_i}} = \frac {\partial}{\partial {z_i}} ({e^{z_j} \over {\sum_{k=1}^m e^{z_k} }}) $$
+
 $$ = \frac {\partial}{\partial {z_i}} (e^{z_j}) \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + \frac {\partial}{\partial {z_i}} ({1 \over {\sum_{k=1}^m e^{z_k} }}) \cdot {e^{z_j}}$$
+
 $$ = 0 \cdot {1 \over {\sum_{k=1}^m e^{z_k} }} + (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot {\frac {\partial}{\partial z_i}({\sum_{k=1}^m e^{z_k} })} \cdot {e^{z_j}}$$
+
 $$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot (0+1) \cdot \frac {\partial}{\partial z_i}e^{z_i} \cdot {e^{z_j}}$$
+
 $$ = (-1) \cdot {1 \over ({\sum_{k=1}^m e^{z_k} })^2} \cdot e^{z_i} \cdot {e^{z_j}}$$
+
 $$ = - {e^{z_i} \over {\sum_{k=1}^m e^{z_k}}} \cdot {{e^{z_j}} \over {\sum_{k=1}^m e^{z_k}}}$$
+
 $$ = -a_i \cdot a_j$$
 </div>
-<h2 id="sigmoid隐藏层与softmax输出层网络" >
-<div>
-    <a href="#sigmoid%e9%9a%90%e8%97%8f%e5%b1%82%e4%b8%8esoftmax%e8%be%93%e5%87%ba%e5%b1%82%e7%bd%91%e7%bb%9c">
-        #
-    </a>
-    sigmoid隐藏层与softmax输出层网络
-</div>
-</h2>
+
+<h2 id="sigmoid隐藏层与softmax输出层网络">sigmoid隐藏层与softmax输出层网络</h2>
+
 <p>按照下图的拓扑构成的网络使用sigmoid进行隐藏层计算，使用softmax进行输出层计算，那么怎么进行网络训练呢？其实方法一样都是按照前馈网络计算代价值进行评估，使用反向传播算法进行梯度下降。</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg" alt="softmax NN"></p>
-<h3 id="前馈网络计算步骤" >
-<div>
-    <a href="#%e5%89%8d%e9%a6%88%e7%bd%91%e7%bb%9c%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4">
-        ##
-    </a>
-    前馈网络计算步骤：
-</div>
-</h3>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-network.jpg" alt="softmax NN" /></p>
+
+<h3 id="前馈网络计算步骤">前馈网络计算步骤：</h3>
+
 <ol>
 <li>在隐藏层的计算时使用sigmoid</li>
 <li>在最后输出层使用softmax</li>
 </ol>
-<h3 id="反向传播计算步骤" >
-<div>
-    <a href="#%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e8%ae%a1%e7%ae%97%e6%ad%a5%e9%aa%a4">
-        ##
-    </a>
-    反向传播计算步骤：
-</div>
-</h3>
+
+<h3 id="反向传播计算步骤">反向传播计算步骤：</h3>
+
 <ul>
 <li>计算输出层，计算最后一层softmax输出层的下列值：</li>
 </ul>
+
 <div>
 $$ \delta_i^L = ({a_i^L} - y_i) $$
+
 $$ \frac {\partial C}{\partial w_{ij}^L} = ({a_i^L}-{y_i}){a_j^{L-1}} = \delta_i^L \cdot a_j^{L-1} $$
+
 $$ \frac {\partial C}{\partial b_{i}^L} = ({a_i^L} - y_i) =\delta_i^L $$
 </div>
+
 <ul>
 <li>计算隐藏层，反向一层一层计算sigmoid隐藏层的下列值：</li>
 </ul>
+
 <div>
 $$ \delta_j^{l-1} = (\sum_{k=1}^m {\delta_k^l \cdot w_{kj}}) \cdot { a_j^{l-1} (1 - a_j^{l-1}) } $$
+
 $$ \frac {\partial C}{\partial w_{ij}^l} = \delta_i^{l} \cdot a_j^{l-1} $$
+
 $$ \frac {\partial C}{\partial b_{i}^l} = \delta_i^{l} $$
 </div>
+
 <p>计算过程中可以发现只有最后一层的$ \delta_i^L$计算较为特殊，计算权重和偏置的方法与之前的sigmoid构成的网络一致。</p>
-<h1 id="代码实例" >
-<div>
-    <a href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e4%be%8b">
-        ##
-    </a>
-    代码实例
-</div>
-</h1>
+
+<h1 id="代码实例">代码实例</h1>
+
 <p>下面的例子实验一个输入层有4个输入，隐藏层有5个神经元并且使用sigmoid激活函数，输出层有2个神经元并使用softmax激活函数的网络，拓扑如下：</p>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/experiment-softmax.jpg" alt="拓扑"></p>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/experiment-softmax.jpg" alt="拓扑" /></p>
+
 <pre><code># construct the network
 
 # input layer: 4 inputs
@@ -743,7 +525,7 @@ for i in xrange(num_epochs):
     z3 = np.dot(a2, w3) + b3
     #z3 = np.dot(a2, w3)
     a3 = softmax(z3)
-    
+
     if i%1000 == 0:
         print &quot;Perception&quot;, a3
         print &quot;W2&quot;, w2
@@ -759,133 +541,471 @@ for i in xrange(num_epochs):
     deriv_b3 = delta_l3
     w3 -= eta*deriv_w3
     b3 -= eta*np.mean(deriv_b3, 0)
-    
+
     delta_l2 = np.dot(delta_l3, w3.T)*(a2*(1-a2))
     deriv_w2 = np.dot(input.T, delta_l2)
     deriv_b2 = delta_l2
     w2 -= eta*deriv_w2
     b2 -= eta*np.mean(deriv_b2, 0)
 </code></pre>
-<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-cost.png" alt="训练代价"></p>
+
+<p><img src="http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/softmax/softmax-cost.png" alt="训练代价" /></p>
+
 <p><a href="https://github.com/singleye/MachineLearning/blob/master/NeuralNetwork/Softmax/experiment-softmax.ipynb">完整代码</a></p>
-<h1 id="参考" >
-<div>
-    <a href="#%e5%8f%82%e8%80%83">
-        ##
-    </a>
-    参考
-</div>
-</h1>
+
+<h1 id="参考">参考</h1>
+
 <ul>
 <li><a href="http://neuralnetworksanddeeplearning.com/chap3.html#softmax">http://neuralnetworksanddeeplearning.com/chap3.html#softmax</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/25723112">https://zhuanlan.zhihu.com/p/25723112</a></li>
 <li><a href="http://colah.github.io/posts/2015-09-Visual-Information/">http://colah.github.io/posts/2015-09-Visual-Information/</a></li>
 </ul>
 
-        </div>
-
-    </article>
-
-    
-    
-
-    
-        
-        
-            <h3 class="read-next-title noselect">Read next</h3>
-            <ul class="read-next-posts noselect">
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
                 
-                <li><a href="/2017/08/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E8%B7%B5%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6/">神经网络实践：自动驾驶</a></li>
                 
-                <li><a href="/2017/07/%E5%9B%BE%E5%83%8F%E5%8D%B7%E7%A7%AF%E5%AE%9E%E8%B7%B5/">图像卷积实践</a></li>
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/neuralnetwork/">NeuralNetwork</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/softmax/">softmax</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/sigmoid/">sigmoid</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/python/">python</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/numpy/">numpy</a>
+
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/matploblib/">matploblib</a>
+
+                  </div>
                 
-                <li><a href="/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/">python中__main__的作用域及变量使用</a></li>
-                
-            </ul>
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/" data-tooltip="基于 Kalman filter 的目标跟踪">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/" data-tooltip="神经网络之反向传播算法">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-    
-
-    
-
-    
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
         
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
+          <a class="post-action-btn btn btn--default" href="#">
         
-            <footer class="common-footer noselect">
-    
-    
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    <div class="common-footer-bottom">
-        
 
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
             
-        </div>
-        <div style="display:flex;align-items: center">
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/" data-tooltip="基于 Kalman filter 的目标跟踪">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2017/09/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E4%B9%8B%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E7%AE%97%E6%B3%95/" data-tooltip="神经网络之反向传播算法">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2017\/10\/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C\/';
+          
+            this.page.identifier = '\/2017\/10\/softmax%E8%BE%93%E5%87%BA%E5%B1%82%E5%85%AC%E5%BC%8F%E6%8E%A8%E5%AF%BC%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E9%AA%8C\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

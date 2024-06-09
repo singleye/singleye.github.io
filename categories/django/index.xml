@@ -1,62 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Django on singleye</title>
-    <link>/categories/django/</link>
-    <description>singleye (Django)</description>
+    <title>Django on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/categories/django/</link>
+    <description>Recent content in Django on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Thu, 16 Nov 2017 16:23:13 +0800</lastBuildDate>
     
-    <atom:link href="/categories/django/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/categories/django/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Django静态文件配置</title>
-      <link>/2017/11/django%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE/</link>
+      <link>https://www.singleye.net/2017/11/django%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Thu, 16 Nov 2017 16:23:13 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/11/django%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE/</guid>
-      <description>&lt;p&gt;配置项：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;配置项&lt;/th&gt;
-&lt;th&gt;说明&lt;/th&gt;
-&lt;th&gt;例子&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;STATIC_URL&lt;/td&gt;
-&lt;td&gt;用户通过web访问静态文件时的URL前缀部分&lt;/td&gt;
-&lt;td&gt;STATIC_URL=&amp;quot;/static/&amp;quot;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;STATIC_ROOT&lt;/td&gt;
-&lt;td&gt;manager.py collectstatic执行后静态文件会收集存放到&lt;/td&gt;
-&lt;td&gt;STATIC_ROOT = os.path.join(BASE_DIR, &amp;lsquo;collected_static&amp;rsquo;)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;STATICFILES_DIRS&lt;/td&gt;
-&lt;td&gt;每个app目录中可以创建一个static目录存放对应的静态文件，也可以通过在settings文件中指定STATICFILES_DIRS来指定一个公共的位置存放静态文件&lt;/td&gt;
-&lt;td&gt;&lt;br&gt;STATICFILES_DIRS = (&lt;/br&gt;    os.path.join(BASE_DIR, &amp;ldquo;common_static&amp;rdquo;),&lt;/br&gt;    &amp;lsquo;/path/to/others/static/&amp;rsquo;,  # 指定一个目录&lt;/br&gt;)&lt;/br&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;STATICFILES_FINDERS&lt;/td&gt;
-&lt;td&gt;指定静态文件查找器&lt;/td&gt;
-&lt;td&gt;STATICFILES_FINDERS = (&lt;/br&gt;    &amp;ldquo;django.contrib.staticfiles.finders.FileSystemFinder&amp;rdquo;,&lt;/br&gt;    &amp;ldquo;django.contrib.staticfiles.finders.AppDirectoriesFinder&amp;rdquo;&lt;/br&gt;)&lt;/br&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DEBUG&lt;/td&gt;
-&lt;td&gt;如果指定&amp;rsquo;DEBUG=True&amp;rsquo;，那么Django通过STATICFILES_FINDERS指定的查找器寻找静态文件。如果指定&amp;rsquo;DEBUG=False&amp;rsquo;，那么Django不会负责静态文件访问服务，这时可以通过apache或者nginx提供静态文件服务，访问前一般通过&amp;rsquo;collectstatic&amp;rsquo;把项目静态文件收集好后统一部署。&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/11/django%E9%9D%99%E6%80%81%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE/</guid>
+      <description>配置项：
+   配置项 说明 例子     STATIC_URL 用户通过web访问静态文件时的URL前缀部分 STATIC_URL=&amp;ldquo;/static/&amp;rdquo;   STATIC_ROOT manager.py collectstatic执行后静态文件会收集存放到 STATIC_ROOT = os.path.join(BASE_DIR, &amp;lsquo;collected_static&amp;rsquo;)   STATICFILES_DIRS 每个app目录中可以创建一个static目录存放对应的静态文件，也可以通过在settings文件中指定STATICFILES_DIRS来指定一个公共的位置存放静态文件 
+STATICFILES_DIRS = ( os.path.join(BASE_DIR, &amp;ldquo;common_static&amp;rdquo;), &amp;lsquo;/path/to/others/static/&amp;rsquo;, # 指定一个目录)   STATICFILES_FINDERS 指定静态文件查找器 STATICFILES_FINDERS = ( &amp;ldquo;django.contrib.staticfiles.finders.FileSystemFinder&amp;rdquo;, &amp;ldquo;django.contrib.staticfiles.finders.AppDirectoriesFinder&amp;rdquo;)   DEBUG 如果指定&amp;rsquo;DEBUG=True&amp;rsquo;，那么Django通过STATICFILES_FINDERS指定的查找器寻找静态文件。如果指定&amp;rsquo;DEBUG=False&amp;rsquo;，那么Django不会负责静态文件访问服务，这时可以通过apache或者nginx提供静态文件服务，访问前一般通过&amp;rsquo;collectstatic&amp;rsquo;把项目静态文件收集好后统一部署。     </description>
     </item>
     
   </channel>

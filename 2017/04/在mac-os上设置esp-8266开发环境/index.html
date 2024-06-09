@@ -1,479 +1,298 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
 <!DOCTYPE html>
-
-
-<html lang="zh-cn" data-theme="">
-<head>
+<html lang="zh-cn">
+  <head>
     
-        
-<meta charset="utf-8">
-<meta name="HandheldFriendly" content="True">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="referrer" content="no-referrer-when-downgrade">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>在Mac OS上设置ESP 8266开发环境</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="ESP8266, 8266, esp-open-sdk">
 
-<title>在Mac OS上设置ESP 8266开发环境 - singleye</title>
-
-<meta name="description" content="做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P">
-
-
-    <meta name="keywords" content="ESP8266,8266,esp-open-sdk">
-
-
-
-
-<link rel="icon" type="image/x-icon" href="https://www.singleye.net/favicon.ico">
-<link rel="apple-touch-icon-precomposed" href="https://www.singleye.net/favicon.png">
-
-
-
-
-
-
-
-
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
     
 
-
-
-<style>
-  body {
-    visibility: hidden;
-    opacity: 0;
-  }
-</style>
-
-<noscript>
-  <style>
-    body {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
-</noscript>
-
-
-
-
     
-
-
-
-
-
-    
-    
-        
+    <meta name="description" content="做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P
+要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。
+由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。
+安装使用esp-open-sdk 1.安装依赖关系
+brew install gnu-sed --with-default-names brew tap homebrew/dupes brew install gperf brew install grep brew install autoconf brew install binutils brew install gawk brew install wget brew install automake brew install libtool brew install help2man  参考
+2.准备case-sensitive分区
+由于Mac OS的分区默认是case-insensitive的，而编译需要在case-sensitive的分区上进行，所以需要创建一个独立分区解决这个问题(linux系统上没有这个问题)。
+hdiutil create ~/Desktop/eos.dmg -volname &quot;esp-open-sdk&quot; -size 10g -fs &quot;Case-sensitive HFS&#43;&quot; hdiutil mount ~/Desktop/eos.dmg cd /Volumes/esp-open-sdk  3.编译esp-open-sdk
+下载代码库，使用&rsquo;&ndash;recursive&rsquo;会同时下载crosstool-NG／esp-open-lwip／esptool／lx106-hal子模块
+git clone --recursive https://github.">
+    <meta property="og:description" content="做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P
+要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。
+由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。
+安装使用esp-open-sdk 1.安装依赖关系
+brew install gnu-sed --with-default-names brew tap homebrew/dupes brew install gperf brew install grep brew install autoconf brew install binutils brew install gawk brew install wget brew install automake brew install libtool brew install help2man  参考
+2.准备case-sensitive分区
+由于Mac OS的分区默认是case-insensitive的，而编译需要在case-sensitive的分区上进行，所以需要创建一个独立分区解决这个问题(linux系统上没有这个问题)。
+hdiutil create ~/Desktop/eos.dmg -volname &quot;esp-open-sdk&quot; -size 10g -fs &quot;Case-sensitive HFS&#43;&quot; hdiutil mount ~/Desktop/eos.dmg cd /Volumes/esp-open-sdk  3.编译esp-open-sdk
+下载代码库，使用&rsquo;&ndash;recursive&rsquo;会同时下载crosstool-NG／esp-open-lwip／esptool／lx106-hal子模块
+git clone --recursive https://github.">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="在Mac OS上设置ESP 8266开发环境">
+    <meta property="og:url" content="/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P
+要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。
+由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。
+安装使用esp-open-sdk 1.安装依赖关系
+brew install gnu-sed --with-default-names brew tap homebrew/dupes brew install gperf brew install grep brew install autoconf brew install binutils brew install gawk brew install wget brew install automake brew install libtool brew install help2man  参考
+2.准备case-sensitive分区
+由于Mac OS的分区默认是case-insensitive的，而编译需要在case-sensitive的分区上进行，所以需要创建一个独立分区解决这个问题(linux系统上没有这个问题)。
+hdiutil create ~/Desktop/eos.dmg -volname &quot;esp-open-sdk&quot; -size 10g -fs &quot;Case-sensitive HFS&#43;&quot; hdiutil mount ~/Desktop/eos.dmg cd /Volumes/esp-open-sdk  3.编译esp-open-sdk
+下载代码库，使用&rsquo;&ndash;recursive&rsquo;会同时下载crosstool-NG／esp-open-lwip／esptool／lx106-hal子模块
+git clone --recursive https://github.">
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.184a655c5ad8596648622468e6696abf0cf0a2cf8266df17b4f7a36fe9c97551.css" integrity="sha256-GEplXFrYWWZIYiRo5mlqvwzwos&#43;CZt8XtPejb&#43;nJdVE=">
     
 
-
-
-
-
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
     
 
-
-
-
-
     
-    
-        
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.c4c04b3ef88e3d619ad4c7ee5e03048422bc55c4fefdc1f07657c1133670aa22.css" integrity="sha256-xMBLPviOPWGa1MfuXgMEhCK8VcT&#43;/cHwdlfBEzZwqiI=">
-    
-
-
-
-
 
     
-
-
-
-
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-        
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
     
     
 
     
-        <link rel="stylesheet" href="/css/style.min.21c5d8fe0a79d623b0adc1ce4bd4f6dd2c05cd939c9aaaa966ba7186b1464f4d.css" integrity="sha256-IcXY/gp51iOwrcHOS9T23SwFzZOcmqqpZrpxhrFGT00=">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
 
     
-
-
-
-
-
-    
-    
-        
-    
-    
-
-    
-        <script src="/js/script.min.08f04d96386c73c9bf4d160333f8f448c05a6e01c06770542ee0e013954ce930.js" type="text/javascript" charset="utf-8" integrity="sha256-CPBNljhsc8m/TRYDM/j0SMBabgHAZ3BULuDgE5VM6TA="></script>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-</head>
-<body>
-    <a class="skip-main" href="#main">Skip to main content</a>
-    <div class="container">
-        <header class="common-header">
-            
-                <div class="header-top">
-    <div class="header-top-left">
-        <h1 class="site-title noselect">
-    <a href="/">singleye</a>
-</h1>
-
-        
-
-
-
-
-
-
-
-    
-        <div class="theme-switcher">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sun-high"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg>
-
-
-</span>
-
-        </div>
-    
-
-    <script>
-        const STORAGE_KEY = 'user-color-scheme'
-        const defaultTheme = "light"
-
-        let currentTheme
-        let switchButton
-        let autoDefinedScheme = window.matchMedia('(prefers-color-scheme: dark)')
-
-        function switchTheme(e) {
-            currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-            if (localStorage) localStorage.setItem(STORAGE_KEY, currentTheme);
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        const autoChangeScheme = e => {
-            currentTheme = e.matches ? 'dark' : 'light'
-            document.documentElement.setAttribute('data-theme', currentTheme);
-            changeGiscusTheme(currentTheme);
-            document.body.dispatchEvent(new CustomEvent(currentTheme + "-theme-set"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchButton = document.querySelector('.theme-switcher')
-            currentTheme = detectCurrentScheme()
-
-            if (currentTheme === 'auto') {
-                autoChangeScheme(autoDefinedScheme);
-                autoDefinedScheme.addListener(autoChangeScheme);
-            } else {
-                document.documentElement.setAttribute('data-theme', currentTheme)
-            }
-
-            if (switchButton) {
-                switchButton.addEventListener('click', switchTheme, false)
-            }
-
-            showContent();
-        })
-
-        function detectCurrentScheme() {
-            if (localStorage !== null && localStorage.getItem(STORAGE_KEY)) {
-                return localStorage.getItem(STORAGE_KEY)
-            }
-            if (defaultTheme) {
-                return defaultTheme
-            }
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-
-        function showContent() {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = 1;
-        }
-
-        function changeGiscusTheme (theme) {
-            function sendMessage(message) {
-              const iframe = document.querySelector('iframe.giscus-frame');
-              if (!iframe) return;
-              iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-            }
-
-            sendMessage({
-              setConfig: {
-                theme: theme
-              }
-            });
-        }
-    </script>
-
-
-        <ul class="social-icons noselect">
-
-
-
-
-
-
-
-    <li>
-            <a href="/index.xml" title="RSS" rel="me">
-            <span class="inline-svg">
-
-    
-
-
-    
-    
-    
-    
-    
-
-    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-rss"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M4 4a16 16 0 0 1 16 16" /><path d="M4 11a9 9 0 0 1 9 9" /></svg>
-
-
-</span>
-
-            </a>
-        </li>
-    
-
-</ul>
-
-    </div>
-    <div class="header-top-right">
-
-    </div>
-</div>
-
-
-    <nav class="noselect">
-        
-        
-        <a class="" href="https://www.singleye.net/" title="">Home</a>
-        
-        <a class="" href="https://www.singleye.net/categories" title="">Categories</a>
-        
-        <a class="" href="https://www.singleye.net/tags" title="">Tags</a>
-        
-        <a class="" href="https://github.com/singleye" title="">GitHub</a>
-        
-    </nav>
-
-
-
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 <script>
   MathJax = {
     tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$','$$'], ['\\[', '\\]']],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
     }
   };
-
-  window.addEventListener('load', (event) => {
-      document.querySelectorAll("mjx-container").forEach(function(x){
-        x.parentElement.classList += 'has-jax'})
-    });
-
-</script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-
-
-
-
-            
-        </header>
-        <main id="main" tabindex="-1">
-            
-    
-
-    <article class="post h-entry">
-        <div class="post-header">
-            <header>
-                <h1 class="p-name post-title">在Mac OS上设置ESP 8266开发环境</h1>
-                
-
-            </header>
-            
-
-
-
-<div class="post-info noselect">
-    
-        <div class="post-date dt-published">
-            <time datetime="2017-04-08">2017-04-08</time>
-            
-        </div>
-    
-
-    <a class="post-hidden-url u-url" href="/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</a>
-    <a href="https://www.singleye.net/" class="p-name p-author post-hidden-author h-card" rel="me"></a>
-
-
-    <div class="post-taxonomies">
-        
-            <ul class="post-categories">
-                
-                    
-                    <li><a href="/categories/hardware/">Hardware</a></li>
-                
-                    
-                    <li><a href="/categories/esp8266/">ESP8266</a></li>
-                
-            </ul>
-        
-        
-            <ul class="post-tags">
-                
-                    
-                    <li><a href="/tags/esp8266/">#ESP8266</a></li>
-                
-                    
-                    <li><a href="/tags/8266/">#8266</a></li>
-                
-                    
-                    <li><a href="/tags/esp-open-sdk/">#Esp-Open-Sdk</a></li>
-                
-            </ul>
-        
-        
-    </div>
-</div>
-
-        </div>
-        
-
-  
-  
-
-
-
-
-  
-  
-  
-  <details class="toc noselect">
-    <summary>Table of Contents</summary>
-    <div class="inner"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#安装使用esp-open-sdk">安装使用esp-open-sdk</a></li>
-    <li><a href="#使用esp8266-rtos-sdk">使用ESP8266 RTOS SDK</a></li>
-    <li><a href="#烧录程序">烧录程序</a>
-      <ul>
-        <li><a href="#串口驱动">串口驱动</a></li>
-        <li><a href="#烧录工具esptoolpy">烧录工具esptool.py</a></li>
-      </ul>
-    </li>
-    <li><a href="#参考资料">参考资料</a></li>
-  </ul>
-</nav></div>
-  </details>
-  
-
-
-
-<script>
-  var toc = document.querySelector(".toc");
-  if (toc) {
-    toc.addEventListener("click", function () {
-      if (event.target.tagName !== "A") {
-        event.preventDefault();
-        if (this.open) {
-          this.open = false;
-          this.classList.remove("expanded");
-        } else {
-          this.open = true;
-          this.classList.add("expanded");
-        }
-      }
-    });
-  }
 </script>
 
-        <div class="content e-content">
-            <p>做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P</p>
-<p>要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。</p>
-<p>由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。</p>
-<h2 id="安装使用esp-open-sdk" >
-<div>
-    <a href="#%e5%ae%89%e8%a3%85%e4%bd%bf%e7%94%a8esp-open-sdk">
-        #
+
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
     </a>
-    安装使用esp-open-sdk
+  
+</header>
+
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      在Mac OS上设置ESP 8266开发环境
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-04-08T00:10:24&#43;08:00">
+        
+  四月 8, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/hardware">Hardware</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/esp8266">ESP8266</a>
+    
+  
+
+  </div>
+
 </div>
-</h2>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              
+
+<p>做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P</p>
+
+<p>要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。</p>
+
+<p>由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。</p>
+
+<h2 id="安装使用esp-open-sdk">安装使用esp-open-sdk</h2>
+
 <p><strong>1.安装依赖关系</strong></p>
-<pre tabindex="0"><code>brew install gnu-sed --with-default-names
+
+<pre><code>brew install gnu-sed --with-default-names
 brew tap homebrew/dupes
 brew install gperf
 brew install grep
@@ -484,195 +303,559 @@ brew install wget
 brew install automake
 brew install libtool
 brew install help2man
-</code></pre><p><a href="http://www.esp8266.com/wiki/doku.php?id=setup-osx-compiler-esp8266#esp-open-sdk_with_brew">参考</a></p>
+</code></pre>
+
+<p><a href="http://www.esp8266.com/wiki/doku.php?id=setup-osx-compiler-esp8266#esp-open-sdk_with_brew">参考</a></p>
+
 <p><strong>2.准备case-sensitive分区</strong></p>
+
 <p>由于Mac OS的分区默认是case-insensitive的，而编译需要在case-sensitive的分区上进行，所以需要创建一个独立分区解决这个问题(linux系统上没有这个问题)。</p>
-<pre tabindex="0"><code>hdiutil create ~/Desktop/eos.dmg -volname &#34;esp-open-sdk&#34; -size 10g -fs &#34;Case-sensitive HFS+&#34;
+
+<pre><code>hdiutil create ~/Desktop/eos.dmg -volname &quot;esp-open-sdk&quot; -size 10g -fs &quot;Case-sensitive HFS+&quot;
 hdiutil mount ~/Desktop/eos.dmg
 cd /Volumes/esp-open-sdk
-</code></pre><p><strong>3.编译esp-open-sdk</strong></p>
+</code></pre>
+
+<p><strong>3.编译esp-open-sdk</strong></p>
+
 <p>下载代码库，使用&rsquo;&ndash;recursive&rsquo;会同时下载crosstool-NG／esp-open-lwip／esptool／lx106-hal子模块</p>
-<pre tabindex="0"><code>git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
-</code></pre><p>编译有两种方式：</p>
+
+<pre><code>git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
+</code></pre>
+
+<p>编译有两种方式：</p>
+
 <ul>
 <li>方式一(STANDALONE=y)：将toolchain与SDK一起编译安装，这种方式操作简单方便，而且后期开发编译时不需要指定-I／-L参数，缺点是不便于今后SDK升级。</li>
 </ul>
-<pre tabindex="0"><code>make STANDALONE=y
-</code></pre><ul>
+
+<pre><code>make STANDALONE=y
+</code></pre>
+
+<ul>
 <li>方式二(STANDALONE=n)：只编译Xtensa toolchain，不编译8266 SDK，这种方式便于今后SDK升级。</li>
 </ul>
-<pre tabindex="0"><code>make STANDALONE=n
-</code></pre><p>编译完成后会在当前目录下生成&rsquo;xtensa-lx106-elf&rsquo;目录，将&rsquo;xtensa-lx106-elf/bin&rsquo;添加到PATH环境变量中以便开发时使用编译器&rsquo;xtensa-lx106-elf-gcc'</p>
-<pre tabindex="0"><code>export PATH=$PATH:`pwd`/xtensa-lx106-elf/bin/
-</code></pre><p>最后，esptool.py使用需要安装&rsquo;pySerial&rsquo;这个python库</p>
-<pre tabindex="0"><code>pip install pyserial
-</code></pre><p><strong>4.测试开发环境</strong></p>
+
+<pre><code>make STANDALONE=n
+</code></pre>
+
+<p>编译完成后会在当前目录下生成&rsquo;xtensa-lx106-elf&rsquo;目录，将&rsquo;xtensa-lx106-elf/bin&rsquo;添加到PATH环境变量中以便开发时使用编译器&rsquo;xtensa-lx106-elf-gcc&rsquo;</p>
+
+<pre><code>export PATH=$PATH:`pwd`/xtensa-lx106-elf/bin/
+</code></pre>
+
+<p>最后，esptool.py使用需要安装&rsquo;pySerial&rsquo;这个python库</p>
+
+<pre><code>pip install pyserial
+</code></pre>
+
+<p><strong>4.测试开发环境</strong></p>
+
 <p>esp-open-sdk自带example，可以编译一下来测试开发环境是否设置好了</p>
-<pre tabindex="0"><code>cd examples/blinky
+
+<pre><code>cd examples/blinky
 make
-</code></pre><p>如果编译成功通过则说明esp-open-sdk安装成功了。</p>
-<h2 id="使用esp8266-rtos-sdk" >
-<div>
-    <a href="#%e4%bd%bf%e7%94%a8esp8266-rtos-sdk">
-        #
-    </a>
-    使用ESP8266 RTOS SDK
-</div>
-</h2>
+</code></pre>
+
+<p>如果编译成功通过则说明esp-open-sdk安装成功了。</p>
+
+<h2 id="使用esp8266-rtos-sdk">使用ESP8266 RTOS SDK</h2>
+
 <p>8266还有一套基于FreeRTOS的SDK，配置这套SDK之前需要先完成前面的esp-open-sdk的配置。</p>
+
 <p><strong>1.构建SDK</strong></p>
+
 <p>我选择把这套SDK构建到同一个分区上。</p>
-<pre tabindex="0"><code>cd /Volumes/esp-open-sdk
+
+<pre><code>cd /Volumes/esp-open-sdk
 git clone https://github.com/espressif/ESP8266_RTOS_SDK.git
-</code></pre><p>完成后需要设置两个环境变量&rsquo;SDK_PATH&rsquo;, &lsquo;BIN_PATH&rsquo;。为了简化设置我把这连个环境变量设知道&rsquo;~/.bash_profile&rsquo;文件中，这样可以每次打开shell后自动加载：</p>
-<pre tabindex="0"><code># ESP 8266 dev env
+</code></pre>
+
+<p>完成后需要设置两个环境变量&rsquo;SDK_PATH&rsquo;, &lsquo;BIN_PATH&rsquo;。为了简化设置我把这连个环境变量设知道&rsquo;~/.bash_profile&rsquo;文件中，这样可以每次打开shell后自动加载：</p>
+
+<pre><code># ESP 8266 dev env
 ESP_8266_OPEN_SDK=/Volumes/esp-open-sdk/esp-open-sdk/xtensa-lx106-elf/
 ESP_8266_RTOS_SDK=/Volumes/esp-open-sdk/ESP8266_RTOS_SDK
 ESP_8266_RTOS_SDK_BIN=/Volumes/esp-open-sdk/ESP8266_RTOS_BIN
 export SDK_PATH=$ESP_8266_RTOS_SDK
 export BIN_PATH=$ESP_8266_RTOS_SDK_BIN
 PATH=$PATH:$ESP_8266_OPEN_SDK/bin
-</code></pre><p><strong>2.开发方法</strong></p>
+</code></pre>
+
+<p><strong>2.开发方法</strong></p>
+
 <p>RTOS SDK的代码目录中有一个样板程序，开发时可以把这个模版拷贝到开发目录中，然后运行gen_misc.sh进行编译。</p>
-<pre tabindex="0"><code>cp -r examples/project_template ~/test
+
+<pre><code>cp -r examples/project_template ~/test
 cd ~/test/project_template
 sh gen_misc.sh
-</code></pre><p>运行gen_misc.sh后会有若干选项，按照提示操作下去最后就会编译出的文件会放到‘BIN_PATH’目录下</p>
-<pre tabindex="0"><code>ls /Volumes/esp-open-sdk/ESP8266_RTOS_BIN/
+</code></pre>
+
+<p>运行gen_misc.sh后会有若干选项，按照提示操作下去最后就会编译出的文件会放到‘BIN_PATH’目录下</p>
+
+<pre><code>ls /Volumes/esp-open-sdk/ESP8266_RTOS_BIN/
 eagle.S             eagle.dump          eagle.flash.bin     eagle.irom0text.bin
-</code></pre><h2 id="烧录程序" >
-<div>
-    <a href="#%e7%83%a7%e5%bd%95%e7%a8%8b%e5%ba%8f">
-        #
-    </a>
-    烧录程序
-</div>
-</h2>
-<h3 id="串口驱动" >
-<div>
-    <a href="#%e4%b8%b2%e5%8f%a3%e9%a9%b1%e5%8a%a8">
-        ##
-    </a>
-    串口驱动
-</div>
-</h3>
+</code></pre>
+
+<h2 id="烧录程序">烧录程序</h2>
+
+<h3 id="串口驱动">串口驱动</h3>
+
 <p>烧录前需要先将硬件连到电脑上，如果使用的是nodeMCU的话会比较方便，只需要使用一根micro USB数据线，并下载这个驱动：<a href="https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers">nodeMCU USBtoUART驱动</a></p>
-<h3 id="烧录工具esptoolpy" >
-<div>
-    <a href="#%e7%83%a7%e5%bd%95%e5%b7%a5%e5%85%b7esptoolpy">
-        ##
-    </a>
-    烧录工具esptool.py
-</div>
-</h3>
+
+<h3 id="烧录工具esptool-py">烧录工具esptool.py</h3>
+
 <p>安装完驱动后就可以连接烧录了，程序烧录可以使用esptool.py工具完成，使用方法如下：</p>
-<pre tabindex="0"><code>esptool.py --port &lt;serial-port-of-ESP8266&gt; write_flash -fm &lt;mode&gt; 0x00000 &lt;nodemcu-firmware&gt;.bin
-</code></pre><h2 id="参考资料" >
-<div>
-    <a href="#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99">
-        #
-    </a>
-    参考资料
-</div>
-</h2>
+
+<pre><code>esptool.py --port &lt;serial-port-of-ESP8266&gt; write_flash -fm &lt;mode&gt; 0x00000 &lt;nodemcu-firmware&gt;.bin
+</code></pre>
+
+<h2 id="参考资料">参考资料</h2>
+
 <ul>
 <li><a href="https://github.com/pfalcon/esp-open-sdk">esp-open-sdk</a></li>
 <li><a href="https://github.com/espressif/ESP8266_RTOS_SDK">ESP8266-RTOS-SDK</a></li>
 </ul>
 
-        </div>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/esp8266/">ESP8266</a>
 
-    </article>
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/8266/">8266</a>
 
-    
-    
+  <a class="tag tag--primary tag--small" href="https://www.singleye.net/tags/esp-open-sdk/">esp-open-sdk</a>
 
-    
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/" data-tooltip="使用Arduino IDE进行nodeMCU开发">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
         
-    
-
-    
-
-    
+          <a class="post-action-btn btn btn--default" href="#">
         
-    <div id="disqus_thread"></div>
-<script>
-    window.disqus_config = function () {
-    
-    
-    
-    };
-    (function() {
-        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
-            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
-            return;
-        }
-        var d = document, s = d.createElement('script'); s.async = true;
-        s.src = '//' + "singleye" + '.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
 
 
-
-
-
-
-
-
-
-
-
-    
-
-    
-
-    
-
-        </main>
-        
-            <footer class="common-footer noselect">
-    
-    
-
-    <div class="common-footer-bottom">
-        
-
-        <div style="display: flex; align-items: center; gap:8px">
-            © singleye, 2024
             
-        </div>
-        <div style="display:flex;align-items: center">
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-            
-            
-            
-            
-            
-        </div>
-        <div>
-            Powered by <a target="_blank" rel="noopener noreferrer" href="https://gohugo.io/">Hugo</a>, theme <a target="_blank" rel="noopener noreferrer" href="https://github.com/Junyi-99/hugo-theme-anubis2">Anubis2</a>.<br>
-            
-
-        </div>
-    </div>
-
-    <p class="h-card vcard">
-
-    <a href=https://www.singleye.net/ class="p-name u-url url fn" rel="me"></a>
-
-    
-
-    
-</p>
-
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
 </footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="2">
         
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://www.singleye.net/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/" data-tooltip="使用Arduino IDE进行nodeMCU开发">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="2">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
-</body>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/11/python-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                <h3 class="media-heading">Python 内存管理</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/10/%E5%B7%A6%E4%B9%98/%E5%8F%B3%E4%B9%98%E6%97%8B%E8%BD%AC/">
+                <h3 class="media-heading">左乘/右乘旋转</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/08/%E5%A4%9A%E5%AA%92%E4%BD%93%E6%A0%BC%E5%BC%8F%E6%A0%87%E5%87%86h264-%E7%BC%96%E7%A0%81%E4%B8%8E-mp4-%E6%A0%BC%E5%BC%8F%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D/">
+                <h3 class="media-heading">多媒体格式标准、H264 编码与 MP4 格式简要介绍</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         79 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/www.singleye.net\/2017\/04\/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83\/';
+          
+            this.page.identifier = '\/2017\/04\/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'singleye';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
 </html>
+

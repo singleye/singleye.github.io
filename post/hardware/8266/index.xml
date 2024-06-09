@@ -1,627 +1,93 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>8266 on singleye</title>
-    <link>/post/hardware/8266/</link>
-    <description>singleye (8266)</description>
+    <title>8266 on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/post/hardware/8266/</link>
+    <description>Recent content in 8266 on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Fri, 12 May 2017 10:34:42 +0800</lastBuildDate>
     
-    <atom:link href="/post/hardware/8266/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/post/hardware/8266/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>esp8266_sprint_float</title>
-      <link>/2017/05/esp8266_sprint_float/</link>
+      <link>https://www.singleye.net/2017/05/esp8266_sprint_float/</link>
       <pubDate>Fri, 12 May 2017 10:34:42 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/05/esp8266_sprint_float/</guid>
-      <description>&lt;p&gt;用C语言进行字符串格式化操作的时候经常会使用sprintf/snprintf这两个函数，但这两天在使用Arduino IDE进行8266开发的时候却碰到了一个浮点数字符串打印小问题。&lt;/p&gt;
-&lt;p&gt;问题代码&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  char buffer[128];
-  float num = 1.0;
-  
-  ...
-  
-  memset(buffer, 0, sizeof(buffer));
-  snprintf(buffer, sizeof(buffer), “%f”, num);
-  Serial.println(buffer);
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;实际运行并没有按照以往认为的方式将浮点数输出出来&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  snprintf(buffer, sizeof(buffer), &amp;#34;%d.&amp;#34;);
-&lt;/code&gt;&lt;/pre&gt;</description>
+      
+      <guid>https://www.singleye.net/2017/05/esp8266_sprint_float/</guid>
+      <description>用C语言进行字符串格式化操作的时候经常会使用sprintf/snprintf这两个函数，但这两天在使用Arduino IDE进行8266开发的时候却碰到了一个浮点数字符串打印小问题。
+问题代码
+ char buffer[128]; float num = 1.0; ... memset(buffer, 0, sizeof(buffer)); snprintf(buffer, sizeof(buffer), “%f”, num); Serial.println(buffer);  实际运行并没有按照以往认为的方式将浮点数输出出来
+ snprintf(buffer, sizeof(buffer), &amp;quot;%d.&amp;quot;);  </description>
     </item>
     
     <item>
       <title>esp8266启动模式 - 如何理解&#39;rst cause:2, boot mode:(3,6)&#39;</title>
-      <link>/2017/05/esp8266%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F-%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3rst-cause2-boot-mode36/</link>
+      <link>https://www.singleye.net/2017/05/esp8266%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F---%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3rst-cause2-boot-mode36/</link>
       <pubDate>Mon, 08 May 2017 00:23:11 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/05/esp8266%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F-%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3rst-cause2-boot-mode36/</guid>
-      <description>&lt;p&gt;8266模块启动或者出现问题后重启时会输出类似**&amp;lsquo;rst cause:2, boot mode:(3,6)&amp;rsquo;**的消息，这个模块的启动消息可以看出启动的原因和模式。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;rst cause:2, boot mode:(3,6)
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;rst-cause&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#rst-cause&#34;&gt;
-        ##
-    &lt;/a&gt;
-    &amp;lsquo;rst cause&amp;rsquo;
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;**&amp;lsquo;rst cause&amp;rsquo;**含义如下：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;编号&lt;/th&gt;
-&lt;th&gt;描述&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;0&lt;/td&gt;
-&lt;td&gt;unknown&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;1&lt;/td&gt;
-&lt;td&gt;normal boot&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;2&lt;/td&gt;
-&lt;td&gt;reset pin&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;3&lt;/td&gt;
-&lt;td&gt;software reset&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;4&lt;/td&gt;
-&lt;td&gt;watchdog reset&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h1 id=&#34;boot-mode&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#boot-mode&#34;&gt;
-        ##
-    &lt;/a&gt;
-    &amp;lsquo;boot mode&amp;rsquo;
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;消息中内容的**&amp;lsquo;boot mode:(x,y)&amp;rsquo;&lt;strong&gt;中的&lt;/strong&gt;&amp;lsquo;x&amp;rsquo;**表示GPIO &amp;lsquo;15/0/2&amp;rsquo; 3个端口的二进制数（有电压为1，没电压为0）。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;启动模式 = ((GPIO15 &amp;lt;&amp;lt; 2) | (GPIO0 &amp;lt;&amp;lt; 1) | GPIO2);
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;由于模块启动的时候会检查0/2/15端口的状态，理解这个数字的意义需要先了解模块的启动模式。&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;启动模式&lt;/th&gt;
-&lt;th&gt;GPIO15 (MTDO)&lt;/th&gt;
-&lt;th&gt;GPIO0&lt;/th&gt;
-&lt;th&gt;GPIO2&lt;/th&gt;
-&lt;th&gt;启动模式&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;0&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;无效&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;1&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;Uart bootloader&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;2&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;无效&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;3&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;SPI flash (Boot sketch)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;4&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;SDIO&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;5&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;SDIO&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;6&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;0V&lt;/td&gt;
-&lt;td&gt;SDIO&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;7&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;3.3V&lt;/td&gt;
-&lt;td&gt;SDIO&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h1 id=&#34;参考资料&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99&#34;&gt;
-        ##
-    &lt;/a&gt;
-    参考资料
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/esp8266/Arduino/blob/master/doc/boards.md#adafruit-huzzah-esp8266-esp-12&#34;&gt;https://github.com/esp8266/Arduino/blob/master/doc/boards.md#adafruit-huzzah-esp8266-esp-12&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes&#34;&gt;https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/05/esp8266%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F---%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3rst-cause2-boot-mode36/</guid>
+      <description>8266模块启动或者出现问题后重启时会输出类似&amp;lsquo;rst cause:2, boot mode:(3,6)&amp;rsquo;的消息，这个模块的启动消息可以看出启动的原因和模式。
+rst cause:2, boot mode:(3,6)  &amp;lsquo;rst cause&amp;rsquo; &amp;lsquo;rst cause&amp;rsquo;含义如下：
+   编号 描述     0 unknown   1 normal boot   2 reset pin   3 software reset   4 watchdog reset    &amp;lsquo;boot mode&amp;rsquo; 消息中内容的&amp;lsquo;boot mode:(x,y)&amp;rsquo;中的&amp;lsquo;x&amp;rsquo;表示GPIO &amp;lsquo;15/0/2&amp;rsquo; 3个端口的二进制数（有电压为1，没电压为0）。
+启动模式 = ((GPIO15 &amp;lt;&amp;lt; 2) | (GPIO0 &amp;lt;&amp;lt; 1) | GPIO2);  由于模块启动的时候会检查0/2/15端口的状态，理解这个数字的意义需要先了解模块的启动模式。
+   启动模式 GPIO15 (MTDO) GPIO0 GPIO2 启动模式     0 0V 0V 0V 无效   1 0V 0V 3.</description>
     </item>
     
     <item>
       <title>在ESP 8266 nodeMCU上运行MQTT</title>
-      <link>/2017/05/%E5%9C%A8esp-8266-nodemcu%E4%B8%8A%E8%BF%90%E8%A1%8Cmqtt/</link>
+      <link>https://www.singleye.net/2017/05/%E5%9C%A8esp-8266-nodemcu%E4%B8%8A%E8%BF%90%E8%A1%8Cmqtt/</link>
       <pubDate>Sun, 07 May 2017 16:20:58 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/05/%E5%9C%A8esp-8266-nodemcu%E4%B8%8A%E8%BF%90%E8%A1%8Cmqtt/</guid>
-      <description>&lt;p&gt;自动接触nodeMCU后发现8266是一个非常好的物联网开发Wi-Fi模块，因此就想把MQTT通讯协议在上面运行起来做些简单的事情。&lt;/p&gt;
-&lt;h1 id=&#34;开发目标&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%bc%80%e5%8f%91%e7%9b%ae%e6%a0%87&#34;&gt;
-        ##
-    &lt;/a&gt;
-    开发目标
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;ol&gt;
-&lt;li&gt;将nodeMCU作为一个MQTT的客户端运行。&lt;/li&gt;
-&lt;li&gt;使用PubSubClient这个MQTT协议实现。&lt;/li&gt;
-&lt;li&gt;程序每次启动后先把将芯片设置到STA模式下，并连接指定的WI-FI路由器。&lt;/li&gt;
-&lt;li&gt;连接建立好之后连接指定的MQTT服务器，并注册从服务器接收数据的topic，并定期将数据（uptime）发送到服务器端指定的topic上。
-&lt;ul&gt;
-&lt;li&gt;上传topic：&amp;ldquo;MAC地址/uplink&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;接收topic：&amp;ldquo;MAC地址/downlink&amp;rdquo;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;当收到downlink消息后把数据进行解析并执行，目前只支持&amp;rsquo;blink&amp;rsquo;命令。该命令可以把芯片上的LED灯按照指定的次数点亮的简单操作。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h1 id=&#34;程序开发&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a8%8b%e5%ba%8f%e5%bc%80%e5%8f%91&#34;&gt;
-        ##
-    &lt;/a&gt;
-    程序开发
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;程序启动设置&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%a8%8b%e5%ba%8f%e5%90%af%e5%8a%a8%e8%ae%be%e7%bd%ae&#34;&gt;
-        #
-    &lt;/a&gt;
-    程序启动设置
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;程序启动的入口为&amp;rsquo;setup()&amp;lsquo;函数，这个函数做几件事情：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;设置LED控制PIN模式&lt;/li&gt;
-&lt;li&gt;将WI-FI芯片设置到STA运行模式，并连接Wi-Fi路由器&lt;/li&gt;
-&lt;li&gt;连接MQTT服务器，监听&amp;rsquo;downlink&amp;rsquo;消息&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;程序片段解析：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void setup() {
-  Serial.begin(BAUD_RATE);
-  pinMode(LED_PIN, OUTPUT);  // 设置LED控制端口
-
-  WiFi.disconnect();
-  WiFi.mode(WIFI_STA);       // 设置启动为STA模式
-  WiFi.setAutoConnect(true);
-  WiFi.begin(wifi_ssid, wifi_pwd);  // 连接Wi-Fi路由器
-
-  Serial.printf(&amp;#34;Connecting to AP(%s), password(%s)\n&amp;#34;, wifi_ssid, wifi_pwd);
-  while (WL_CONNECTED != WiFi.status()) {
-    Serial.print(&amp;#34;.&amp;#34;);
-    blink(BLINK_SLOWLY);
-  }
-  Serial.printf(&amp;#34;\nWifi connection is setup!\n&amp;#34;);
-  Serial.printf(&amp;#34;MAC: %s, IP: %s\n&amp;#34;, WiFi.macAddress().c_str(), WiFi.localIP().toString().c_str());
-
-  while (!setup_mqtt_connection()) {   // 连接MQTT服务器
-    Serial.print(&amp;#34;.&amp;#34;);
-    blink(BLINK_SLOWLY);
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;连接mqtt服务器&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e8%bf%9e%e6%8e%a5mqtt%e6%9c%8d%e5%8a%a1%e5%99%a8&#34;&gt;
-        #
-    &lt;/a&gt;
-    连接MQTT服务器
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;这个方法的工作就是建立连接并且注册接收的topic。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;bool setup_mqtt_connection()
-{
-  char client_id[CLIENT_ID_LEN];
-
-  snprintf(client_id, CLIENT_ID_LEN, &amp;#34;%s&amp;#34;, WiFi.macAddress().c_str());
-  Serial.printf(&amp;#34;Client[%s] is connecting MQTT server!\n&amp;#34;, client_id);
-  mqtt_connected = mq_client.connect(client_id);  // 连接MQTT服务器
-  if (!mqtt_connected) {
-    Serial.println(&amp;#34;MQTT connection failure&amp;#34;);
-    return false;
-  }
-
-  mq_client.setCallback(mqtt_callback);  // 指定接收downlink消息的处理函数
-
-  memset(uplink_topic, 0, TOPIC_LEN);
-  snprintf(uplink_topic, TOPIC_LEN, &amp;#34;%s/uplink&amp;#34;, WiFi.macAddress().c_str());
-  
-  memset(downlink_topic, 0, TOPIC_LEN);
-  snprintf(downlink_topic, TOPIC_LEN, &amp;#34;%s/downlink&amp;#34;, WiFi.macAddress().c_str());
-  Serial.printf(&amp;#34;Subscribing to topic: %s\n&amp;#34;, downlink_topic);
-  mqtt_connected = mq_client.subscribe(downlink_topic);  // 注册接收downlink消息
-  if (!mqtt_connected) {
-    Serial.println(&amp;#34;MQTT connection failure&amp;#34;);
-    return false;
-  }
-
-  Serial.println(&amp;#34;MQTT connection is setup&amp;#34;);
-  return true;
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;接收消息处理&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%8e%a5%e6%94%b6%e6%b6%88%e6%81%af%e5%a4%84%e7%90%86&#34;&gt;
-        #
-    &lt;/a&gt;
-    接收消息处理
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;MQTT消息处理函数遵循PubSubClient的接口开发就行了。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void mqtt_callback(char *topic, uint8_t* buffer, unsigned int len) {
-  blink(BLINK_QUICKLY);
-  memset(recv_buffer, 0, RECV_BUFFER_LEN);
-  strncpy(recv_buffer, (char *)buffer, (RECV_BUFFER_LEN&amp;lt;len ? RECV_BUFFER_LEN-1:len));
-  Serial.printf(&amp;#34;Received [topic:%s]:%s\n&amp;#34;, topic, (char*)recv_buffer);
-  parse_cmd((char *)recv_buffer);
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;但这里需要注意&amp;rsquo;len&amp;rsquo;这个参数的使用细节。&amp;rsquo;len&amp;rsquo;这个参数表明接收到的消息的实际长度，最好在处理函数中将数据复制出来后进行处理。最开始我没有这样处理，结果发现&amp;rsquo;buffer&amp;rsquo;中的数据会包含发出数据的信息，研究了一下源代码发现PubSubClient的发出／接收缓冲区是共用的，而且发出／接收后都不会重置。另外需要注意的是这个缓冲区并不大，默认为MQTT_MAX_PACKET_SIZE(128)个子节
-。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;class PubSubClient {
-   ...
-   uint8_t buffer[MQTT_MAX_PACKET_SIZE];  // PubSubClient中的数据共用缓冲区
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;主循环&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%b8%bb%e5%be%aa%e7%8e%af&#34;&gt;
-        #
-    &lt;/a&gt;
-    主循环
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;程序主循环的主要任务就是数据周期发送并处理MQTT消息接收&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;void loop() {
-  // send message every 10 second
-  if (millis() - last_uplink_tick &amp;gt;= UPLINK_INTERVAL) {
-    memset(send_buffer, 0, SEND_BUFFER_LEN);
-    snprintf(send_buffer, SEND_BUFFER_LEN, &amp;#34;Client[%s@%s]: uptime:%ld&amp;#34;,
-             WiFi.macAddress().c_str(),
-             WiFi.localIP().toString().c_str(),
-             millis());
-    Serial.printf(&amp;#34;Sending: %s\n&amp;#34;, send_buffer);
-    blink(BLINK_QUICKLY);
-    mq_client.publish(uplink_topic, send_buffer);  // 发送数据到MQTT服务器
-    last_uplink_tick = millis();
-  }
-
-  mq_client.loop();
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;使用方法&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95&#34;&gt;
-        ##
-    &lt;/a&gt;
-    使用方法
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;编译&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%bc%96%e8%af%91&#34;&gt;
-        #
-    &lt;/a&gt;
-    编译
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;我使用Arduino IDE进行开发，这是一个蛮不错的开发环境。不熟悉的人可以参考我另外一篇&lt;a href=&#34;http://www.singleye.net/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/&#34;&gt;“使用Arduino IDE进行nodeMCU开发”&lt;/a&gt;的blog。&lt;/p&gt;
-&lt;h2 id=&#34;运行&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e8%bf%90%e8%a1%8c&#34;&gt;
-        #
-    &lt;/a&gt;
-    运行
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;nodemcu客户端&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#nodemcu%e5%ae%a2%e6%88%b7%e7%ab%af&#34;&gt;
-        ##
-    &lt;/a&gt;
-    nodeMCU客户端
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;将程序烧入nodeMCU后每次只要通电程序就会自动运行。启动后程序有以下类似输出。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Connecting to AP(your_wifi_ssid), password(your_wifi_password)
-....
-Wifi connection is setup!
-MAC: A0:20:A6:18:47:F1, IP: 192.168.102.102
-Client[A0:20:A6:18:47:F1] is connecting MQTT server!
-Subscribing to topic: A0:20:A6:18:47:F1/downlink
-MQTT connection is setup
-Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:21959   &amp;lt;-- 上传数据
-Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:32036
-Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:42077
-Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:52160
-Sending: Client[A0:20:A6:18:47:F1@192.168.102.102]: uptime:62233
-Received [topic:A0:20:A6:18:47:F1/downlink]:#blink#3#      &amp;lt;-- 接收控制命令
-Received [topic:A0:20:A6:18:47:F1/downlink]:bli     &amp;lt;-- 接收到非法命令
-Received unknown command: bli
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;数据接收端&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e6%95%b0%e6%8d%ae%e6%8e%a5%e6%94%b6%e7%ab%af&#34;&gt;
-        ##
-    &lt;/a&gt;
-    数据接收端
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;简单运行可以使用&amp;rsquo;mosquitto_sub&amp;rsquo;。命令可以参照下面的写法，需要用&amp;rsquo;-h&amp;rsquo;指定你的MQTT服务器地址，用&amp;rsquo;-t&amp;rsquo;指定接收的topic，这个topic会在nodeMCU每次运行时在串口输出，nodeMCU的MAC地址也会从串口输出。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mosquitto_sub -h &amp;#34;your_mqtt_server&amp;#34; -t &amp;#34;MAC_ADDRESS/uplink&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我直接是在MQTT服务器上运行数据接收端，因此我实际运行的命令如下：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ mosquitto_sub -t &amp;#34;A0:20:A6:18:47/uplink&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;远程控制端&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e8%bf%9c%e7%a8%8b%e6%8e%a7%e5%88%b6%e7%ab%af&#34;&gt;
-        ##
-    &lt;/a&gt;
-    远程控制端
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;可以使用&amp;rsquo;mosquitto_pub&amp;rsquo;进行远程数据发送实现对nodeMCU的控制。下面的例子可以把LED连续点亮3次。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;mosquitto_pub -h &amp;#34;your_mqtt_server&amp;#34; -t &amp;#34;MAC_ADDRESS/downlink&amp;#34; -m &amp;#34;blink#3&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我也是从MQTT服务器端直接发送的控制数据，因此命令可以这样写：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ mosquitto_pub -t &amp;#34;A0:20:A6:18:47:F1/downlink&amp;#34; -m &amp;#34;#blink#3#&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;demo&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#demo&#34;&gt;
-        ##
-    &lt;/a&gt;
-    Demo
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;embed src=&#39;http://player.youku.com/player.php/Type/Folder/Fid//Ob//sid/XMjc1MDE4Njg2MA==/v.swf&#39; quality=&#39;high&#39; width=&#39;480&#39; height=&#39;400&#39; align=&#39;middle&#39; allowScriptAccess=&#39;always&#39; allowFullScreen=&#39;true&#39; mode=&#39;transparent&#39; type=&#39;application/x-shockwave-flash&#39;&gt;&lt;/embed&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://youtu.be/sUh0jkb34zY?list=PLtYMWBKPeJhV7YmKgXZK3j_Pe73ljN-Dx&#34;&gt;Video on YouTube&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;本文中程序的完整代码可以在&lt;a href=&#34;https://github.com/singleye/esp8266/tree/master/mqtt&#34;&gt;github&lt;/a&gt;上面找到。&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/05/%E5%9C%A8esp-8266-nodemcu%E4%B8%8A%E8%BF%90%E8%A1%8Cmqtt/</guid>
+      <description>自动接触nodeMCU后发现8266是一个非常好的物联网开发Wi-Fi模块，因此就想把MQTT通讯协议在上面运行起来做些简单的事情。
+开发目标  将nodeMCU作为一个MQTT的客户端运行。 使用PubSubClient这个MQTT协议实现。 程序每次启动后先把将芯片设置到STA模式下，并连接指定的WI-FI路由器。 连接建立好之后连接指定的MQTT服务器，并注册从服务器接收数据的topic，并定期将数据（uptime）发送到服务器端指定的topic上。  上传topic：&amp;rdquo;MAC地址/uplink&amp;rdquo; 接收topic：&amp;rdquo;MAC地址/downlink&amp;rdquo;  当收到downlink消息后把数据进行解析并执行，目前只支持&amp;rsquo;blink&amp;rsquo;命令。该命令可以把芯片上的LED灯按照指定的次数点亮的简单操作。  程序开发 程序启动设置 程序启动的入口为&amp;rsquo;setup()&amp;lsquo;函数，这个函数做几件事情：
+ 设置LED控制PIN模式 将WI-FI芯片设置到STA运行模式，并连接Wi-Fi路由器 连接MQTT服务器，监听&amp;rsquo;downlink&amp;rsquo;消息  程序片段解析：
+void setup() { Serial.begin(BAUD_RATE); pinMode(LED_PIN, OUTPUT); // 设置LED控制端口 WiFi.disconnect(); WiFi.mode(WIFI_STA); // 设置启动为STA模式 WiFi.setAutoConnect(true); WiFi.begin(wifi_ssid, wifi_pwd); // 连接Wi-Fi路由器 Serial.printf(&amp;quot;Connecting to AP(%s), password(%s)\n&amp;quot;, wifi_ssid, wifi_pwd); while (WL_CONNECTED != WiFi.status()) { Serial.print(&amp;quot;.&amp;quot;); blink(BLINK_SLOWLY); } Serial.printf(&amp;quot;\nWifi connection is setup!\n&amp;quot;); Serial.printf(&amp;quot;MAC: %s, IP: %s\n&amp;quot;, WiFi.macAddress().c_str(), WiFi.localIP().toString().c_str()); while (!setup_mqtt_connection()) { // 连接MQTT服务器 Serial.print(&amp;quot;.&amp;quot;); blink(BLINK_SLOWLY); } }  连接MQTT服务器 这个方法的工作就是建立连接并且注册接收的topic。</description>
     </item>
     
     <item>
       <title>使用Arduino IDE进行nodeMCU开发</title>
-      <link>/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/</link>
+      <link>https://www.singleye.net/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/</link>
       <pubDate>Wed, 12 Apr 2017 19:10:33 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/</guid>
-      <description>&lt;h1 id=&#34;安装arduino-ide&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85arduino-ide&#34;&gt;
-        ##
-    &lt;/a&gt;
-    安装Arduino IDE
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;这两天发现使用Arduino IDE开发nodeMCU(ESP 8266)非常方便，写出来分享一下。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;1.下载arduino IDE&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Arduino IDE可以在&lt;a href=&#34;https://www.arduino.cc&#34;&gt;Arduino官网&lt;/a&gt;下载到。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;2.配置开发板管理器网址&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;打开preference，用下面的URL设置“附加开发模版管理器网址”：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;http://arduino.esp8266.com/stable/package_esp8266com_index.json
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/04/arduino_preference_esp8266_setup.png&#34; alt=&#34;preference&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;3.下载更新8266开发模版&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;打开“工具”-&amp;gt;“开发板”-&amp;gt;“开发板管理器”，选择“esp8266”并安装。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/04/nodemcu_board_setup_step1.png&#34; alt=&#34;Step1&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/04/nodemcu_board_setup_step2.png&#34; alt=&#34;Step2&#34;&gt;&lt;/p&gt;
-&lt;p&gt;安装完后在“工具”-&amp;gt;“开发板”中选择对应的开发板型号。&lt;/p&gt;
-&lt;h1 id=&#34;安装usb-to-uart驱动&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85usb-to-uart%e9%a9%b1%e5%8a%a8&#34;&gt;
-        ##
-    &lt;/a&gt;
-    安装USB to UART驱动
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;nodeMCU自带Silicon Labs的USB芯片，可以直接使用microUSB进行连接，这对于不太熟悉硬件的爱好者是非常友好的。&lt;/p&gt;
-&lt;p&gt;连接前需要在这里下载驱动：&lt;a href=&#34;https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers&#34;&gt;nodeMCU USBtoUART驱动&lt;/a&gt;&lt;/p&gt;
-&lt;h1 id=&#34;设置uart端口&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e8%ae%be%e7%bd%aeuart%e7%ab%af%e5%8f%a3&#34;&gt;
-        ##
-    &lt;/a&gt;
-    设置UART端口
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;现在拿出一根microUSB线将nodeMCU连接到电脑上吧。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/04/nodemcu_usb.jpeg&#34; alt=&#34;USB连接&#34;&gt;&lt;/p&gt;
-&lt;p&gt;此时在Arduino IDE中还需要进行最后一个简单设置：“端口”。设置好这个端口后就可以跟板子进行串口通讯了。&lt;/p&gt;
-&lt;p&gt;设置过程通过“工具”-&amp;gt;“端口”进行选择。通常情况下应该选择类似&amp;quot;/dev/cu.SLAB_USBtoUART&amp;quot;字样的那个端口。&lt;/p&gt;
-&lt;h1 id=&#34;开发烧录程序&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%bc%80%e5%8f%91%e7%83%a7%e5%bd%95%e7%a8%8b%e5%ba%8f&#34;&gt;
-        ##
-    &lt;/a&gt;
-    开发烧录程序
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;首先用Arduino IDE自带的例子程序进行说明开发过程。选择&amp;quot;文件&amp;quot;-&amp;gt;&amp;ldquo;示例&amp;rdquo;-&amp;gt;&amp;ldquo;01.Basics&amp;rdquo;-&amp;gt;&amp;ldquo;Blink&amp;rdquo;，将会打开&amp;quot;Blink&amp;quot;例子程序。&lt;/p&gt;
-&lt;p&gt;由于nodeMCU的LED灯连在16号管脚上，因此需要简单修改一下这个例子。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#define ESP8266_LED_BUILTIN 16
-
-// the setup function runs once when you press reset or power the board
-void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(ESP8266_LED_BUILTIN, OUTPUT);
-}
-
-// the loop function runs over and over again forever
-void loop() {
-  digitalWrite(ESP8266_LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(500);                       // wait for 0.5 second
-  digitalWrite(ESP8266_LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-  delay(500);                       // wait for 0.5 second
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后来把写好的程序编译烧录到nodeMCU中吧。点击“上传”按钮将会自动完成这个步骤。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/04/nodemcu_upload.png&#34; alt=&#34;USB连接&#34;&gt;&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/04/%E4%BD%BF%E7%94%A8arduino-ide%E8%BF%9B%E8%A1%8Cnodemcu%E5%BC%80%E5%8F%91/</guid>
+      <description>安装Arduino IDE 这两天发现使用Arduino IDE开发nodeMCU(ESP 8266)非常方便，写出来分享一下。
+1.下载arduino IDE
+Arduino IDE可以在Arduino官网下载到。
+2.配置开发板管理器网址
+打开preference，用下面的URL设置“附加开发模版管理器网址”：
+http://arduino.esp8266.com/stable/package_esp8266com_index.json  3.下载更新8266开发模版
+打开“工具”-&amp;gt;“开发板”-&amp;gt;“开发板管理器”，选择“esp8266”并安装。
+安装完后在“工具”-&amp;gt;“开发板”中选择对应的开发板型号。
+安装USB to UART驱动 nodeMCU自带Silicon Labs的USB芯片，可以直接使用microUSB进行连接，这对于不太熟悉硬件的爱好者是非常友好的。
+连接前需要在这里下载驱动：nodeMCU USBtoUART驱动
+设置UART端口 现在拿出一根microUSB线将nodeMCU连接到电脑上吧。
+此时在Arduino IDE中还需要进行最后一个简单设置：“端口”。设置好这个端口后就可以跟板子进行串口通讯了。
+设置过程通过“工具”-&amp;gt;“端口”进行选择。通常情况下应该选择类似&amp;rdquo;/dev/cu.SLAB_USBtoUART&amp;rdquo;字样的那个端口。
+开发烧录程序 首先用Arduino IDE自带的例子程序进行说明开发过程。选择&amp;rdquo;文件&amp;rdquo;-&amp;gt;&amp;ldquo;示例&amp;rdquo;-&amp;gt;&amp;ldquo;01.Basics&amp;rdquo;-&amp;gt;&amp;ldquo;Blink&amp;rdquo;，将会打开&amp;rdquo;Blink&amp;rdquo;例子程序。
+由于nodeMCU的LED灯连在16号管脚上，因此需要简单修改一下这个例子。
+#define ESP8266_LED_BUILTIN 16 // the setup function runs once when you press reset or power the board void setup() { // initialize digital pin LED_BUILTIN as an output. pinMode(ESP8266_LED_BUILTIN, OUTPUT); } // the loop function runs over and over again forever void loop() { digitalWrite(ESP8266_LED_BUILTIN, HIGH); // turn the LED on (HIGH is the voltage level) delay(500); // wait for 0.</description>
     </item>
     
     <item>
       <title>在Mac OS上设置ESP 8266开发环境</title>
-      <link>/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</link>
+      <link>https://www.singleye.net/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</link>
       <pubDate>Sat, 08 Apr 2017 00:10:24 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</guid>
-      <description>&lt;p&gt;做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P&lt;/p&gt;
-&lt;p&gt;要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。&lt;/p&gt;
-&lt;p&gt;由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。&lt;/p&gt;
-&lt;h2 id=&#34;安装使用esp-open-sdk&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e4%bd%bf%e7%94%a8esp-open-sdk&#34;&gt;
-        #
-    &lt;/a&gt;
-    安装使用esp-open-sdk
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;1.安装依赖关系&lt;/strong&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;brew install gnu-sed --with-default-names
-brew tap homebrew/dupes
-brew install gperf
-brew install grep
-brew install autoconf
-brew install binutils
-brew install gawk
-brew install wget
-brew install automake
-brew install libtool
-brew install help2man
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;a href=&#34;http://www.esp8266.com/wiki/doku.php?id=setup-osx-compiler-esp8266#esp-open-sdk_with_brew&#34;&gt;参考&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;2.准备case-sensitive分区&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;由于Mac OS的分区默认是case-insensitive的，而编译需要在case-sensitive的分区上进行，所以需要创建一个独立分区解决这个问题(linux系统上没有这个问题)。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hdiutil create ~/Desktop/eos.dmg -volname &amp;#34;esp-open-sdk&amp;#34; -size 10g -fs &amp;#34;Case-sensitive HFS+&amp;#34;
-hdiutil mount ~/Desktop/eos.dmg
-cd /Volumes/esp-open-sdk
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;3.编译esp-open-sdk&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;下载代码库，使用&amp;rsquo;&amp;ndash;recursive&amp;rsquo;会同时下载crosstool-NG／esp-open-lwip／esptool／lx106-hal子模块&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;git clone --recursive https://github.com/pfalcon/esp-open-sdk.git
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;编译有两种方式：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;方式一(STANDALONE=y)：将toolchain与SDK一起编译安装，这种方式操作简单方便，而且后期开发编译时不需要指定-I／-L参数，缺点是不便于今后SDK升级。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;make STANDALONE=y
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;方式二(STANDALONE=n)：只编译Xtensa toolchain，不编译8266 SDK，这种方式便于今后SDK升级。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;make STANDALONE=n
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;编译完成后会在当前目录下生成&amp;rsquo;xtensa-lx106-elf&amp;rsquo;目录，将&amp;rsquo;xtensa-lx106-elf/bin&amp;rsquo;添加到PATH环境变量中以便开发时使用编译器&amp;rsquo;xtensa-lx106-elf-gcc&#39;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;export PATH=$PATH:`pwd`/xtensa-lx106-elf/bin/
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后，esptool.py使用需要安装&amp;rsquo;pySerial&amp;rsquo;这个python库&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;pip install pyserial
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;4.测试开发环境&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;esp-open-sdk自带example，可以编译一下来测试开发环境是否设置好了&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;cd examples/blinky
-make
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果编译成功通过则说明esp-open-sdk安装成功了。&lt;/p&gt;
-&lt;h2 id=&#34;使用esp8266-rtos-sdk&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8esp8266-rtos-sdk&#34;&gt;
-        #
-    &lt;/a&gt;
-    使用ESP8266 RTOS SDK
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;8266还有一套基于FreeRTOS的SDK，配置这套SDK之前需要先完成前面的esp-open-sdk的配置。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;1.构建SDK&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;我选择把这套SDK构建到同一个分区上。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;cd /Volumes/esp-open-sdk
-git clone https://github.com/espressif/ESP8266_RTOS_SDK.git
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;完成后需要设置两个环境变量&amp;rsquo;SDK_PATH&amp;rsquo;, &amp;lsquo;BIN_PATH&amp;rsquo;。为了简化设置我把这连个环境变量设知道&amp;rsquo;~/.bash_profile&amp;rsquo;文件中，这样可以每次打开shell后自动加载：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# ESP 8266 dev env
-ESP_8266_OPEN_SDK=/Volumes/esp-open-sdk/esp-open-sdk/xtensa-lx106-elf/
-ESP_8266_RTOS_SDK=/Volumes/esp-open-sdk/ESP8266_RTOS_SDK
-ESP_8266_RTOS_SDK_BIN=/Volumes/esp-open-sdk/ESP8266_RTOS_BIN
-export SDK_PATH=$ESP_8266_RTOS_SDK
-export BIN_PATH=$ESP_8266_RTOS_SDK_BIN
-PATH=$PATH:$ESP_8266_OPEN_SDK/bin
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;2.开发方法&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;RTOS SDK的代码目录中有一个样板程序，开发时可以把这个模版拷贝到开发目录中，然后运行gen_misc.sh进行编译。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;cp -r examples/project_template ~/test
-cd ~/test/project_template
-sh gen_misc.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;运行gen_misc.sh后会有若干选项，按照提示操作下去最后就会编译出的文件会放到‘BIN_PATH’目录下&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ls /Volumes/esp-open-sdk/ESP8266_RTOS_BIN/
-eagle.S             eagle.dump          eagle.flash.bin     eagle.irom0text.bin
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;烧录程序&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%83%a7%e5%bd%95%e7%a8%8b%e5%ba%8f&#34;&gt;
-        #
-    &lt;/a&gt;
-    烧录程序
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;串口驱动&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%b8%b2%e5%8f%a3%e9%a9%b1%e5%8a%a8&#34;&gt;
-        ##
-    &lt;/a&gt;
-    串口驱动
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;烧录前需要先将硬件连到电脑上，如果使用的是nodeMCU的话会比较方便，只需要使用一根micro USB数据线，并下载这个驱动：&lt;a href=&#34;https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers&#34;&gt;nodeMCU USBtoUART驱动&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;烧录工具esptoolpy&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%83%a7%e5%bd%95%e5%b7%a5%e5%85%b7esptoolpy&#34;&gt;
-        ##
-    &lt;/a&gt;
-    烧录工具esptool.py
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;安装完驱动后就可以连接烧录了，程序烧录可以使用esptool.py工具完成，使用方法如下：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;esptool.py --port &amp;lt;serial-port-of-ESP8266&amp;gt; write_flash -fm &amp;lt;mode&amp;gt; 0x00000 &amp;lt;nodemcu-firmware&amp;gt;.bin
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;参考资料&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99&#34;&gt;
-        #
-    &lt;/a&gt;
-    参考资料
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/pfalcon/esp-open-sdk&#34;&gt;esp-open-sdk&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/espressif/ESP8266_RTOS_SDK&#34;&gt;ESP8266-RTOS-SDK&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/04/%E5%9C%A8mac-os%E4%B8%8A%E8%AE%BE%E7%BD%AEesp-8266%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</guid>
+      <description>做物联网产品开发有段时间了，虽然开发了两款智能产品，但hands-on的开发一直都在服务器和应用层进行，硬件层的研发并没有真的深入下去。决定有时间也对这个层面学习学习，软硬都能搞才算得上是全栈吧 :-P
+要完成一个物联网产品的开发需要解决联网的问题。目前解决联网的比较常用的方案有Wi-Fi和GSM两种（NB-IOT也在上升势头，相信一年后会有较多的应用出现）。这次先学习下乐鑫ESP 8266 WI-FI芯片的开发。
+由于我用的是Mac OS，所以就介绍如何在Mac上进行8266的环境设置。
+安装使用esp-open-sdk 1.安装依赖关系
+brew install gnu-sed --with-default-names brew tap homebrew/dupes brew install gperf brew install grep brew install autoconf brew install binutils brew install gawk brew install wget brew install automake brew install libtool brew install help2man  参考
+2.准备case-sensitive分区
+由于Mac OS的分区默认是case-insensitive的，而编译需要在case-sensitive的分区上进行，所以需要创建一个独立分区解决这个问题(linux系统上没有这个问题)。
+hdiutil create ~/Desktop/eos.dmg -volname &amp;quot;esp-open-sdk&amp;quot; -size 10g -fs &amp;quot;Case-sensitive HFS+&amp;quot; hdiutil mount ~/Desktop/eos.dmg cd /Volumes/esp-open-sdk  3.编译esp-open-sdk
+下载代码库，使用&amp;rsquo;&amp;ndash;recursive&amp;rsquo;会同时下载crosstool-NG／esp-open-lwip／esptool／lx106-hal子模块
+git clone --recursive https://github.</description>
     </item>
     
   </channel>

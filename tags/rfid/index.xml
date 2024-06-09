@@ -1,33 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>RFID on singleye</title>
-    <link>/tags/rfid/</link>
-    <description>singleye (RFID)</description>
+    <title>Rfid on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/rfid/</link>
+    <description>Recent content in Rfid on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Tue, 20 Mar 2018 16:42:45 +0800</lastBuildDate>
     
-    <atom:link href="/tags/rfid/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/rfid/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>自动饮水机</title>
-      <link>/2018/03/%E8%87%AA%E5%8A%A8%E9%A5%AE%E6%B0%B4%E6%9C%BA/</link>
+      <link>https://www.singleye.net/2018/03/%E8%87%AA%E5%8A%A8%E9%A5%AE%E6%B0%B4%E6%9C%BA/</link>
       <pubDate>Tue, 20 Mar 2018 16:42:45 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2018/03/%E8%87%AA%E5%8A%A8%E9%A5%AE%E6%B0%B4%E6%9C%BA/</guid>
-      <description>&lt;!-- more /--&gt;
-&lt;p&gt;Youtube观看：&lt;/p&gt;
-&lt;div id=&#34;video-area&#34; align=&#34;center&#34;&gt;
-	&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/lCAez16g8Dg&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
-&lt;/div&gt;
-&lt;p&gt;Youku观看:&lt;/p&gt;
-&lt;div id=&#34;video-area&#34; align=&#34;center&#34;&gt;
-	&lt;iframe height=498 width=510 src=&#39;http://player.youku.com/embed/XMzQ3ODMyNzQ0OA==&#39; frameborder=0 &#39;allowfullscreen&#39;&gt;&lt;/iframe&gt;
-&lt;/div&gt;</description>
+      
+      <guid>https://www.singleye.net/2018/03/%E8%87%AA%E5%8A%A8%E9%A5%AE%E6%B0%B4%E6%9C%BA/</guid>
+      <description>Youtube观看：
+  Youku观看:
+  </description>
     </item>
     
   </channel>

@@ -1,161 +1,28 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>HCatalog on singleye</title>
-    <link>/post/bigdata/hcatalog/</link>
-    <description>singleye (HCatalog)</description>
+    <title>HCatalog on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/post/bigdata/hcatalog/</link>
+    <description>Recent content in HCatalog on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Thu, 11 Jan 2018 19:51:16 +0800</lastBuildDate>
     
-    <atom:link href="/post/bigdata/hcatalog/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/post/bigdata/hcatalog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Hcatalog简介</title>
-      <link>/2018/01/hcatalog%E7%AE%80%E4%BB%8B/</link>
+      <link>https://www.singleye.net/2018/01/hcatalog%E7%AE%80%E4%BB%8B/</link>
       <pubDate>Thu, 11 Jan 2018 19:51:16 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2018/01/hcatalog%E7%AE%80%E4%BB%8B/</guid>
-      <description>&lt;p&gt;HCatalog是Hadoop生态链中的一个有趣的组件。HCatalog构建于Hive的&lt;a href=&#34;http://hadooptutorial.info/hive-metastore-configuration/&#34;&gt;metastore&lt;/a&gt;之上并结合了Hive的DDL，通过服务的形式开放给Hadoop生态链中的其他组件，这样即可用一种统一的形式将Hive数据仓库中的数据的metadata开放给需要的服务，这样的话需要的服务就可以通过HCatalog来了解到所使用的数据的内容以及格式等等元信息。&lt;/p&gt;
-&lt;p&gt;下图展示了HCatalog在Hadoop生态系统中的定位：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://i.stack.imgur.com/eAn8r.png&#34; alt=&#34;Architecture-001&#34;&gt;&lt;/p&gt;
-&lt;p&gt;可以看出HCatalog内置可以支持多种数据格式：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ORC&lt;/li&gt;
-&lt;li&gt;RC&lt;/li&gt;
-&lt;li&gt;Text&lt;/li&gt;
-&lt;li&gt;SequenceFile&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;另外用户还可以自定义格式，不过需要编写InputFormat, OutputFormat, SerDe(Serializer/Deserializer):&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://www.tutorialspoint.com/hcatalog/images/architecture.jpg&#34; alt=&#34;Architecture-002&#34;&gt;&lt;/p&gt;
-&lt;p&gt;HCatalog提供了&amp;rsquo;hcat&#39;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-$ hcat
-usage: hcat { -e &#34;&lt;query&gt;&#34; | -f &#34;&lt;filepath&gt;&#34; } [ -g &#34;&lt;group&gt;&#34; ] [ -p &#34;&lt;perms&gt;&#34; ] [ -D&#34;&lt;name&gt;=&lt;value&gt;&#34; ]
- -D &lt;property=value&gt;   use hadoop value for given property
- -e &lt;exec&gt;             hcat command given from command line
- -f &lt;file&gt;             hcat commands in file
- -g &lt;group&gt;            group for the db/table specified in CREATE statement
- -h,--help             Print help information
- -p &lt;perms&gt;            permissions for the db/table specified in CREATE statement
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;参数**-e**提供了使用Hive &amp;lsquo;DDL&amp;rsquo;命令的接口&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;DDL命令&lt;/th&gt;
-&lt;th&gt;解释&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;CREATE TABLE&lt;/td&gt;
-&lt;td&gt;建表操作，注意如果建表时使用了“CLUSTERED BY”那么这个表不能被Pig和MapReduce使用&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;ALTER TABLE&lt;/td&gt;
-&lt;td&gt;修改表&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SHOW TABLES&lt;/td&gt;
-&lt;td&gt;查询表&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DROP TABLE&lt;/td&gt;
-&lt;td&gt;删除表&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;CREATE/ALTER/DROP VIEW&lt;/td&gt;
-&lt;td&gt;管理view&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SHOW PARTITIONS&lt;/td&gt;
-&lt;td&gt;查询分区表的分区信息&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Create/Drop Index&lt;/td&gt;
-&lt;td&gt;管理index&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DESCRIBE&lt;/td&gt;
-&lt;td&gt;查询表结构&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;例子：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-$ hcat -e  &#34;show tables;&#34;
-OK
-activity
-device
-...
-Time taken: 3.255 seconds
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;
-# hcat -e &#34;describe device;&#34;
-OK
-id               bigint
-uuid             string
-time             string
-type             int
-address          string
-Time taken: 3.824 seconds
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;APIs&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;API&lt;/th&gt;
-&lt;th&gt;解释&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;HCatReader&lt;/td&gt;
-&lt;td&gt;从hdfs中读取数据&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;HCatWriter&lt;/td&gt;
-&lt;td&gt;向hdfs中写入数据&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;DataTransferFactory&lt;/td&gt;
-&lt;td&gt;创建HCatReader/HCatWriter实例&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;HCatInputFormat&lt;/td&gt;
-&lt;td&gt;利用MapReduce job从表结构由HCatalog管理的表中读取并处理数据&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;HCatOutputFormat&lt;/td&gt;
-&lt;td&gt;利用MapReduce job处理数据并向表结构由HCatalog管理的表中写入数据&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;HCatLoader&lt;/td&gt;
-&lt;td&gt;Pig script用来读取表结构由HCatalog管理的数据&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;HCatStorer&lt;/td&gt;
-&lt;td&gt;Pig script用来写入表结构由HCatalog管理的数据&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h1 id=&#34;参考信息&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%8f%82%e8%80%83%e4%bf%a1%e6%81%af&#34;&gt;
-        ##
-    &lt;/a&gt;
-    参考信息
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.tutorialspoint.com/hcatalog/hcatalog_quick_guide.htm&#34;&gt;HCataLog quick guide&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://hadooptutorial.info/hive-metastore-configuration/&#34;&gt;Hive metastore&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2018/01/hcatalog%E7%AE%80%E4%BB%8B/</guid>
+      <description>HCatalog是Hadoop生态链中的一个有趣的组件。HCatalog构建于Hive的metastore之上并结合了Hive的DDL，通过服务的形式开放给Hadoop生态链中的其他组件，这样即可用一种统一的形式将Hive数据仓库中的数据的metadata开放给需要的服务，这样的话需要的服务就可以通过HCatalog来了解到所使用的数据的内容以及格式等等元信息。
+下图展示了HCatalog在Hadoop生态系统中的定位：
+可以看出HCatalog内置可以支持多种数据格式：
+ ORC RC Text SequenceFile  另外用户还可以自定义格式，不过需要编写InputFormat, OutputFormat, SerDe(Serializer/Deserializer):
+HCatalog提供了&amp;rsquo;hcat&amp;rsquo;
+ $ hcat usage: hcat { -e &#34;&#34; | -f &#34;&#34; } [ -g &#34;&#34; ] [ -p &#34;&#34; ] [ -D&#34;=&#34; ] -D  use hadoop value for given property -e  hcat command given from command line -f  hcat commands in file -g  group for the db/table specified in CREATE statement -h,--help Print help information -p  permissions for the db/table specified in CREATE statement  参数-e提供了使用Hive &amp;lsquo;DDL&amp;rsquo;命令的接口</description>
     </item>
     
   </channel>

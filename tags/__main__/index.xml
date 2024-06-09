@@ -1,63 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>__Main__ on singleye</title>
-    <link>/tags/__main__/</link>
-    <description>singleye (__Main__)</description>
+    <title>__Main__ on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/__main__/</link>
+    <description>Recent content in __Main__ on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Sat, 10 Jun 2017 23:00:31 +0800</lastBuildDate>
     
-    <atom:link href="/tags/__main__/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/__main__/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>python中__main__的作用域及变量使用</title>
-      <link>/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/</link>
+      <link>https://www.singleye.net/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/</link>
       <pubDate>Sat, 10 Jun 2017 23:00:31 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/</guid>
-      <description>&lt;p&gt;今天使用python写一段小程序时发现了一个容易忽略掉的变量作用域的细节。先看一下问题。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat main_variable.py
-x = 1
-
-if __name__ == &amp;#34;__main__&amp;#34;:
-    global x
-    x = 2
-
-$ python main_area.py
-main_area.py:4: SyntaxWarning: name &amp;#39;x&amp;#39; is assigned to before global declaration
-  global x
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;程序的本来目的是在对全局变量前使用global进行声明，但却引发了SyntaxWarning异常。问题原因其实也很简单，因为虽然使用&amp;rsquo;if &lt;strong&gt;name&lt;/strong&gt; == &amp;ldquo;&lt;strong&gt;main&lt;/strong&gt;&amp;quot;&amp;lsquo;进行判断后再执行，但代码还是处于整个文件的作用域中，因此并不需要使用global进行声明。&lt;/p&gt;
-&lt;p&gt;因此程序可以有下面两种改法：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;方法1:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat main_variable.py
-x = 1
-
-if __name__ == &amp;#34;__main__&amp;#34;:
-    x = 2
-
-$ python main_area.py
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;方法2:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat main_variable.py
-x = 1
-
-def main():
-    global x
-    x = 2
-
-if __name__ == &amp;#34;__main__&amp;#34;:
-    main()
-
-$ python main_area.py
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;写程序一定要注意细节啊！&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/06/python%E4%B8%AD__main__%E7%9A%84%E4%BD%9C%E7%94%A8%E5%9F%9F%E5%8F%8A%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8/</guid>
+      <description>今天使用python写一段小程序时发现了一个容易忽略掉的变量作用域的细节。先看一下问题。
+$ cat main_variable.py x = 1 if __name__ == &amp;quot;__main__&amp;quot;: global x x = 2 $ python main_area.py main_area.py:4: SyntaxWarning: name &#39;x&#39; is assigned to before global declaration global x  程序的本来目的是在对全局变量前使用global进行声明，但却引发了SyntaxWarning异常。问题原因其实也很简单，因为虽然使用&amp;rsquo;if name == &amp;ldquo;main&amp;rdquo;&amp;lsquo;进行判断后再执行，但代码还是处于整个文件的作用域中，因此并不需要使用global进行声明。
+因此程序可以有下面两种改法：
+ 方法1:  $ cat main_variable.py x = 1 if __name__ == &amp;quot;__main__&amp;quot;: x = 2 $ python main_area.py   方法2:  $ cat main_variable.py x = 1 def main(): global x x = 2 if __name__ == &amp;quot;__main__&amp;quot;: main() $ python main_area.</description>
     </item>
     
   </channel>

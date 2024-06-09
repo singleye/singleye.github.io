@@ -1,318 +1,62 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Technology on singleye</title>
-    <link>/categories/technology/</link>
-    <description>singleye (Technology)</description>
+    <title>Technology on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/categories/technology/</link>
+    <description>Recent content in Technology on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Sun, 11 Mar 2018 10:34:02 +0800</lastBuildDate>
     
-    <atom:link href="/categories/technology/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/categories/technology/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>使用Nvidia Jetson TX2挖以太币</title>
-      <link>/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</link>
+      <link>https://www.singleye.net/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</link>
       <pubDate>Sun, 11 Mar 2018 10:34:02 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</guid>
-      <description>&lt;!-- more /--&gt;
-&lt;p&gt;现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。&lt;/p&gt;
-&lt;p&gt;进行挖矿大概需要几个步骤：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;注册钱包&lt;/li&gt;
-&lt;li&gt;加入矿池&lt;/li&gt;
-&lt;li&gt;准备挖矿工具&lt;/li&gt;
-&lt;li&gt;开挖&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;下面详细介绍一下如何进行挖矿。&lt;/p&gt;
-&lt;h1 id=&#34;获取以太币钱包地址&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e8%8e%b7%e5%8f%96%e4%bb%a5%e5%a4%aa%e5%b8%81%e9%92%b1%e5%8c%85%e5%9c%b0%e5%9d%80&#34;&gt;
-        ##
-    &lt;/a&gt;
-    获取以太币钱包地址
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;使用myetherwallet&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8myetherwallet&#34;&gt;
-        #
-    &lt;/a&gt;
-    使用myetherwallet
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;挖矿前首先需要创建自己的钱包，可以到“&lt;strong&gt;myetherwallet&lt;/strong&gt;”(&lt;a href=&#34;https://www.myetherwallet.com&#34;&gt;https://www.myetherwallet.com&lt;/a&gt;)进行创建。&lt;/p&gt;
-&lt;p&gt;第一步：输入密码，点击“Create New Wallet”：
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myetherwallet.jpg&#34; alt=&#34;myetherwallet&#34;&gt;&lt;/p&gt;
-&lt;p&gt;第二步：保存&amp;quot;Keystore&amp;quot;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/savewallet.jpg&#34; alt=&#34;保存钱包密钥文件&#34;&gt;&lt;/p&gt;
-&lt;p&gt;之后为了方便管理可以使用chrome浏览器的&amp;quot;&amp;ldquo;插件进行创建。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/myether-plugin.jpg&#34; alt=&#34;myetherplugin&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;使用metamask&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8metamask&#34;&gt;
-        #
-    &lt;/a&gt;
-    使用MetaMask
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&amp;quot;MetaMask&amp;quot;插件进行创建和管理。
-&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/metamask-plugin.jpg&#34; alt=&#34;metamask&#34;&gt;&lt;/p&gt;
-&lt;p&gt;需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！&lt;/p&gt;
-&lt;p&gt;使用&amp;quot;MetaMask&amp;quot;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&amp;quot;MetaMask&amp;quot;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。&lt;/p&gt;
-&lt;h1 id=&#34;选择矿池&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e9%80%89%e6%8b%a9%e7%9f%bf%e6%b1%a0&#34;&gt;
-        ##
-    &lt;/a&gt;
-    选择矿池
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2018/03/ethermining/chart.jpeg&#34; alt=&#34;矿池&#34;&gt;&lt;/p&gt;
-&lt;p&gt;（数据来自&lt;a href=&#34;https://www.etherchain.org/charts/topMiners&#34;&gt;Top Miners&lt;/a&gt;）&lt;/p&gt;
-&lt;p&gt;国内用户可以选择国内的矿池：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;矿池&lt;/th&gt;
-&lt;th&gt;地址&lt;/th&gt;
-&lt;th&gt;矿池&lt;/th&gt;
-&lt;th&gt;起付点&lt;/th&gt;
-&lt;th&gt;费率&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;f2pool&lt;/td&gt;
-&lt;td&gt;&lt;a href=&#34;https://www.f2pool.com&#34;&gt;https://www.f2pool.com&lt;/a&gt;&lt;/td&gt;
-&lt;td&gt;eth.f2pool.com:8008&lt;/br&gt;eth.f2pool.com:8080&lt;/td&gt;
-&lt;td&gt;0.1 ETH&lt;/td&gt;
-&lt;td&gt;3%&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;ethfans&lt;/td&gt;
-&lt;td&gt;&lt;a href=&#34;https://eth.ethfans.org/#/&#34;&gt;https://eth.ethfans.org/#/&lt;/a&gt;&lt;/td&gt;
-&lt;td&gt;huabei-pool.ethfans.org:3333&lt;/br&gt;huabei-pool.ethfans.org:13333&lt;/br&gt;guangdong-pool.ethfans.org:3333&lt;/br&gt;guangdong-pool.ethfans.org:13333&lt;/td&gt;
-&lt;td&gt;0.05 ETH&lt;/td&gt;
-&lt;td&gt;1%&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h1 id=&#34;选择挖矿软件&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e9%80%89%e6%8b%a9%e6%8c%96%e7%9f%bf%e8%bd%af%e4%bb%b6&#34;&gt;
-        ##
-    &lt;/a&gt;
-    选择挖矿软件
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;现在开好户签好合同了，矿工要开始干活了 :-)&lt;/p&gt;
-&lt;p&gt;家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/09/tensorflow/IMG_6135.JPG?x-oss-process=style/png2jpg&#34; alt=&#34;Jetson&#34;&gt;&lt;/p&gt;
-&lt;p&gt;常用的挖矿软件有两个：&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;软件&lt;/th&gt;
-&lt;th&gt;CPU&lt;/th&gt;
-&lt;th&gt;GPU&lt;/th&gt;
-&lt;th&gt;CUDA&lt;/th&gt;
-&lt;th&gt;OpenCL&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;ethminer&lt;/td&gt;
-&lt;td&gt;No&lt;/td&gt;
-&lt;td&gt;Yes, ver &amp;gt; 9.0&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;geth&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;td&gt;Yes&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;我为Jetson选择了ethminer，这个工具需要在Linux上编译一下：&lt;/p&gt;
-&lt;h2 id=&#34;编译ethminer&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%bc%96%e8%af%91ethminer&#34;&gt;
-        #
-    &lt;/a&gt;
-    编译ethminer
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;开始前需要说一下，由于Jetson不支持OpenCL（Nvidia官方裁剪了系统 -__-凸），因此要在Jetson上使用ethminer的话就要直接使用CUDA，而且版本需要大于9.0，好在Jetpack v3.2使用了更高版本的CUDA。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Jetpack version: 3.2&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;从github下载ethminer&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/ethereum-mining/ethminer&#34;&gt;https://github.com/ethereum-mining/ethminer&lt;/a&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-$ git clone https://github.com/ethereum-mining/ethminer
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;编译ethminer&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;
-$ git submodule update --init --recursive
-$ mkdir build
-$ cd build
-$ cmake .. -DETHASHCUDA=ON -DETHASHCL=OFF    # 配置CUDA，默认使用OpenCL
-$ sudo make install
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1 id=&#34;开始挖矿&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%bc%80%e5%a7%8b%e6%8c%96%e7%9f%bf&#34;&gt;
-        ##
-    &lt;/a&gt;
-    开始挖矿
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;挖矿前用先查看了下设备信息：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-$ ethminer -U --list-devices
-
-Listing CUDA devices.
-FORMAT: [deviceID] deviceName
-[0] NVIDIA Tegra X2
-        Compute version: 6.2
-        cudaDeviceProp::totalGlobalMem: 8235802624
-        Pci: 0000:00:00
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;确定可以正常看到GPU信息后就开撸吧。&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-# 使用f2pool进行挖矿的命令：
-
-$ ethminer -U -S eth.f2pool.com:8080 -FS etc.f2pool.com:8118 -O 0x839c9c5d79a469ef58d13983f12b61266c373d70 -SP 1
-
-# 使用ethfans进行挖矿的命令：
-
-$ ethminer -U -S huabei-pool.ethfans.org:3333 -FS  huabei-pool.ethfans.org:13333 -O 0x839c9c5d79a469ef58d13983f12b61266c373d70 -SP 1 -SE singleye@163.com
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;参数解释：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;-U: 指定使用CUDA方法进行计算 （-G是使用OpenCL，Jetson不支持&amp;hellip;）&lt;/li&gt;
-&lt;li&gt;-S: 指定矿池地址&lt;/li&gt;
-&lt;li&gt;-FS: Failover矿池地址，当-S指定的矿池出现故障后会自动切换到这个地址&lt;/li&gt;
-&lt;li&gt;-O: 指定自己的钱包地址，否则就白费功夫啦&lt;/li&gt;
-&lt;li&gt;-SP: 指定stratum协议版本，需要跟矿池匹配，这里使用‘1’&lt;/li&gt;
-&lt;li&gt;-SE: 可以制定一个自己的邮件地址，可能后面会发送统计信息到这里&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2018/03/%E4%BD%BF%E7%94%A8nvidia-jetson-tx2%E6%8C%96%E4%BB%A5%E5%A4%AA%E5%B8%81/</guid>
+      <description>现在加密货币在全世界都到了很疯狂的程度了，经常听说挖矿，那么挖矿究竟是怎么回事呢，到底怎么进行挖矿呢？这里介绍一下以太币挖矿的那些事儿。
+进行挖矿大概需要几个步骤：
+ 注册钱包 加入矿池 准备挖矿工具 开挖  下面详细介绍一下如何进行挖矿。
+获取以太币钱包地址 使用myetherwallet 挖矿前首先需要创建自己的钱包，可以到“myetherwallet”(https://www.myetherwallet.com)进行创建。
+第一步：输入密码，点击“Create New Wallet”： 第二步：保存&amp;rdquo;Keystore&amp;rdquo;密钥，密钥文件一定要小心保存，如果丢失了那么钱包就永远也找不回来了。另外最好使用物理隔离，可以存在U盘上需要用的时候再拿出来，或者干脆打印出来，如果密码被盗窃那所有的以太币就不保了 :P
+之后为了方便管理可以使用chrome浏览器的&amp;rdquo;&amp;ldquo;插件进行创建。
+使用MetaMask 还有一个更方便的创建钱包的方法，就是使用chrome浏览器的&amp;rdquo;MetaMask&amp;rdquo;插件进行创建和管理。 需要提醒一下，创建成功后一定要保护好创建钱包的那12个单词，这是唯一的恢复账号的方法！
+使用&amp;rdquo;MetaMask&amp;rdquo;跟myetherwallet不太一样的一点是，在创建出钱包的密钥是通过&amp;rdquo;MetaMask&amp;rdquo;进行管理的，这种方法有好有坏，好处是使用方便，坏处是一旦MetaMask挂了或者被黑的话，那么你的钱包也会受到牵连。
+选择矿池 有了钱包地址后需要加入矿池才有资格成为一名真正的矿工，截止2018-03-11，全世界的矿池总算力已经达到了259.27 TH/s
+（数据来自Top Miners）
+国内用户可以选择国内的矿池：
+   矿池 地址 矿池 起付点 费率     f2pool https://www.f2pool.com eth.f2pool.com:8008eth.f2pool.com:8080 0.1 ETH 3%   ethfans https://eth.ethfans.org/#/ huabei-pool.ethfans.org:3333huabei-pool.ethfans.org:13333guangdong-pool.ethfans.org:3333guangdong-pool.ethfans.org:13333 0.05 ETH 1%    选择挖矿软件 现在开好户签好合同了，矿工要开始干活了 :-)
+家里唯一有个靠谱GPU的机器就是我的小Jetson了，之前学习机器学习时候买的小平台，这下要从码农变身矿工了。
+常用的挖矿软件有两个：
+   软件 CPU GPU CUDA OpenCL     ethminer No Yes, ver &amp;gt; 9.</description>
     </item>
     
     <item>
       <title>在区块链上存储信息</title>
-      <link>/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/</link>
+      <link>https://www.singleye.net/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/</link>
       <pubDate>Sat, 13 Jan 2018 09:30:01 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/</guid>
-      <description>&lt;p&gt;区块链本质上讲是一个分布式存储，目前流行的比特币/以太坊主要用来存储交易数据，那么是否可以利用这些公链存储别的信息呢？&lt;/p&gt;
-&lt;p&gt;当然是有的，收集了几篇关于如何使用区块链存储数据文章，回头有空了再来整理一下。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.righto.com/2014/02/ascii-bernanke-wikileaks-photographs.html&#34;&gt;http://www.righto.com/2014/02/ascii-bernanke-wikileaks-photographs.html&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://bitcoin.stackexchange.com/questions/39347/how-to-store-data-on-the-blockchain&#34;&gt;https://bitcoin.stackexchange.com/questions/39347/how-to-store-data-on-the-blockchain&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://ethereum.stackexchange.com/questions/7884/how-can-i-store-data-in-ethereum-blockchain&#34;&gt;https://ethereum.stackexchange.com/questions/7884/how-can-i-store-data-in-ethereum-blockchain&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://docs.google.com/document/d/1UwaaUgunnrFpL6jetA_DdNLQsbbqBx1HLcln07kLrUw/edit&#34;&gt;https://docs.google.com/document/d/1UwaaUgunnrFpL6jetA_DdNLQsbbqBx1HLcln07kLrUw/edit&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2018/01/%E5%9C%A8%E5%8C%BA%E5%9D%97%E9%93%BE%E4%B8%8A%E5%AD%98%E5%82%A8%E4%BF%A1%E6%81%AF/</guid>
+      <description>区块链本质上讲是一个分布式存储，目前流行的比特币/以太坊主要用来存储交易数据，那么是否可以利用这些公链存储别的信息呢？
+当然是有的，收集了几篇关于如何使用区块链存储数据文章，回头有空了再来整理一下。
+ http://www.righto.com/2014/02/ascii-bernanke-wikileaks-photographs.html https://bitcoin.stackexchange.com/questions/39347/how-to-store-data-on-the-blockchain https://ethereum.stackexchange.com/questions/7884/how-can-i-store-data-in-ethereum-blockchain https://docs.google.com/document/d/1UwaaUgunnrFpL6jetA_DdNLQsbbqBx1HLcln07kLrUw/edit  </description>
     </item>
     
     <item>
       <title>Hyperledger Intro</title>
-      <link>/2017/11/hyperledger-intro/</link>
+      <link>https://www.singleye.net/2017/11/hyperledger-intro/</link>
       <pubDate>Thu, 16 Nov 2017 17:23:21 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/11/hyperledger-intro/</guid>
-      <description>&lt;p&gt;Hyperledger项目：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Hyperledger Fabric&lt;/li&gt;
-&lt;li&gt;Hyperledger Sawtooth&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://hyperledger.github.io/composer/&#34;&gt;Hyperledger Composer&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;模型：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Assets(资产)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;一般定义方式：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;	/**
-	 * A vehicle asset.
-	 */
-	asset Vehicle identified by vin {
-	  o String vin
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;继承方式：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;	/**
-	 * A car asset. A car is related to a list of parts
-	 */
-	asset Car extends Vehicle {
-	  o String model
-	  --&amp;gt; Part[] Parts
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;抽象方式：&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;	/**
-	* An abstract Vehicle asset.
-	*/
-	abstract asset Vehicle identified by vin {
-	  o String vin
-	}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Participants(参与者)&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  /**
-  * An enumerated type
-  */
-  enum ProductType {
-  o DAIRY
-  o BEEF
-  o VEGETABLES
-  }
-  participant Farmer identified by farmerId {
-      o String farmerId
-      o ProductType primaryProduct
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Transactions(事务)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Concepts(概念)&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  abstract concept Address {
-    o String street
-    o String city default =&amp;quot;Winchester&amp;quot;
-    o String country default = &amp;quot;UK&amp;quot;
-    o Integer[] counts optional
-  }
-
-  concept UnitedStatesAddress extends Address {
-    o String zipcode
-  }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&#34;http://www.8btc.com/blockchain-poc-hyperledger&#34;&gt;http://www.8btc.com/blockchain-poc-hyperledger&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Test:&lt;/p&gt;
-&lt;p&gt;概念：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;BND: business network definition (BND)&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/11/hyperledger-intro/</guid>
+      <description>Hyperledger项目：
+ Hyperledger Fabric Hyperledger Sawtooth Hyperledger Composer  模型：
+ Assets(资产)  一般定义方式：
+ /** * A vehicle asset. */ asset Vehicle identified by vin { o String vin }  继承方式：
+ /** * A car asset. A car is related to a list of parts */ asset Car extends Vehicle { o String model --&amp;gt; Part[] Parts }  抽象方式：
+ /** * An abstract Vehicle asset. */ abstract asset Vehicle identified by vin { o String vin }   Participants(参与者)</description>
     </item>
     
   </channel>

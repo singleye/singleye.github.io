@@ -1,183 +1,29 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Technology on singleye</title>
-    <link>/tags/technology/</link>
-    <description>singleye (Technology)</description>
+    <title>Technology on 好奇心是探索未知世界的钥匙</title>
+    <link>https://www.singleye.net/tags/technology/</link>
+    <description>Recent content in Technology on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <managingEditor>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</managingEditor>
-    <webMaster>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</webMaster>
     <lastBuildDate>Mon, 01 May 2017 23:39:03 +0800</lastBuildDate>
     
-    <atom:link href="/tags/technology/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://www.singleye.net/tags/technology/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>如何在CentOS上部署shadowsocks服务</title>
-      <link>/2017/05/%E5%A6%82%E4%BD%95%E5%9C%A8centos%E4%B8%8A%E9%83%A8%E7%BD%B2shadowsocks%E6%9C%8D%E5%8A%A1/</link>
+      <link>https://www.singleye.net/2017/05/%E5%A6%82%E4%BD%95%E5%9C%A8centos%E4%B8%8A%E9%83%A8%E7%BD%B2shadowsocks%E6%9C%8D%E5%8A%A1/</link>
       <pubDate>Mon, 01 May 2017 23:39:03 +0800</pubDate>
-      <author>**Email:** [singleye512@gmail.com](mailto:singleye512@gmail.com) (singleye)</author>
-      <guid>/2017/05/%E5%A6%82%E4%BD%95%E5%9C%A8centos%E4%B8%8A%E9%83%A8%E7%BD%B2shadowsocks%E6%9C%8D%E5%8A%A1/</guid>
-      <description>&lt;h1 id=&#34;shadowsocks简单介绍&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#shadowsocks%e7%ae%80%e5%8d%95%e4%bb%8b%e7%bb%8d&#34;&gt;
-        ##
-    &lt;/a&gt;
-    shadowsocks简单介绍
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;shadowsocks是目前较流行的一种科学上网服务。他的工作原理也比较简单，shadowsocks本质上是socks5代理技术，然而架构方式上将单服务节点拆分成两个子服务：SS Local和SS Server。&lt;/p&gt;
-&lt;p&gt;工作过程如下：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;当本地请求端需要访问时首先将请求发送至本地SS Local服务&lt;/li&gt;
-&lt;li&gt;SS Local将数据加密在网络上传输到SS Server，由于信息经过加密不会被GFW提取到特征数据，因此也就翻了墙&lt;/li&gt;
-&lt;li&gt;SS Server收到数据后解密并访问真正的远程服务资源&lt;/li&gt;
-&lt;li&gt;远程返回数据返回到SS Server&lt;/li&gt;
-&lt;li&gt;SS Server将数据加密传输给SS Local&lt;/li&gt;
-&lt;li&gt;SS Local收到返回数据解密后发给本地请求端&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/what-is-shadowsocks.png&#34; alt=&#34;What&amp;rsquo;s shadow socks&#34;&gt;&lt;/p&gt;
-&lt;h1 id=&#34;部署shadow-socks服务-ss-server&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e9%83%a8%e7%bd%b2shadow-socks%e6%9c%8d%e5%8a%a1-ss-server&#34;&gt;
-        ##
-    &lt;/a&gt;
-    部署shadow socks服务 (SS Server)
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;安装服务&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%ae%89%e8%a3%85%e6%9c%8d%e5%8a%a1&#34;&gt;
-        #
-    &lt;/a&gt;
-    安装服务
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;shadowsocks服务的部署也极为简单，已经有完善的脚本帮助安装，需要稍微注意下的就是安装过程需要root权限，安装方法如下：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# wget --no-check-certificate -O shadowsocks.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks.sh
-
-# sh shadowsocks.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;配置服务&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e9%85%8d%e7%bd%ae%e6%9c%8d%e5%8a%a1&#34;&gt;
-        #
-    &lt;/a&gt;
-    配置服务
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;shadowsocks的配置文件是&amp;rsquo;/etc/shadowsocks.json&amp;rsquo;，一个简单的配置文件的写法可以参考这个例子。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# cat /etc/shadowsocks.json
-{
-    &amp;#34;server&amp;#34;:&amp;#34;0.0.0.0&amp;#34;,
-    &amp;#34;port_password&amp;#34;:{
-        &amp;#34;8989&amp;#34;:&amp;#34;password1&amp;#34;,    &amp;lt;--- 第一个服务端口及访问密码
-        &amp;#34;8990&amp;#34;:&amp;#34;password2&amp;#34;     &amp;lt;--- 多个服务端口指定方法
-    },
-    &amp;#34;timeout&amp;#34;:300,
-    &amp;#34;method&amp;#34;:&amp;#34;aes-256-cfb&amp;#34;,    &amp;lt;--- 注意这个加密方式，配置SS Local需要使用
-    &amp;#34;fast_open&amp;#34;:false,
-    &amp;#34;workers&amp;#34;:2
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;多数情况下一个端口就可以满足使用了，这个例子中提供了多个访问端口的配置方法，具体用法可以根据自己的实际情况配置。&lt;/p&gt;
-&lt;h2 id=&#34;启动服务&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%90%af%e5%8a%a8%e6%9c%8d%e5%8a%a1&#34;&gt;
-        #
-    &lt;/a&gt;
-    启动服务
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;服务安装过程同时会安装一个启动脚本&amp;rsquo;/etc/init.d/shadowsocks&amp;rsquo;，启动方法也很简单。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# service shadowsocks start
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;为了确保每次系统启动后服务会自动运行最好将服务使用chkconfig进行启用，这样就不必担心系统被运营商或者管理员维护重启后无法使用了。&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;chkconfig --add shadowsocks
-chkconfig --level 2345 shadowsocks on
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;客户端使用方法ss-local&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e5%ae%a2%e6%88%b7%e7%ab%af%e4%bd%bf%e7%94%a8%e6%96%b9%e6%b3%95ss-local&#34;&gt;
-        ##
-    &lt;/a&gt;
-    客户端使用方法（SS Local）
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;本人使用的是MBP，先分享一下Mac OS上的使用方法。&lt;/p&gt;
-&lt;h2 id=&#34;下载安装ss-local&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%b8%8b%e8%bd%bd%e5%ae%89%e8%a3%85ss-local&#34;&gt;
-        #
-    &lt;/a&gt;
-    下载安装SS Local
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;可以在这里下载&lt;a href=&#34;https://github.com/shadowsocks/ShadowsocksX-NG/releases/&#34;&gt;ShadowsocksX-NG&lt;/a&gt;这个软件，将这个软件安装到应用程序中就可以打开使用了，但首先需要一些设置。&lt;/p&gt;
-&lt;h2 id=&#34;配置ss-local&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e9%85%8d%e7%bd%aess-local&#34;&gt;
-        #
-    &lt;/a&gt;
-    配置SS Local
-&lt;/div&gt;
-&lt;/h2&gt;
-&lt;p&gt;程序运行后可以看到一个小飞机样子的图标，点击后可以看到配置菜单。&lt;/p&gt;
-&lt;h3 id=&#34;第一步打开配置界面&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%ac%ac%e4%b8%80%e6%ad%a5%e6%89%93%e5%bc%80%e9%85%8d%e7%bd%ae%e7%95%8c%e9%9d%a2&#34;&gt;
-        ##
-    &lt;/a&gt;
-    第一步：打开配置界面
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-icon.png&#34; alt=&#34;Step1&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;第二步配置ss-local连接的ss-server服务器&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e9%85%8d%e7%bd%aess-local%e8%bf%9e%e6%8e%a5%e7%9a%84ss-server%e6%9c%8d%e5%8a%a1%e5%99%a8&#34;&gt;
-        ##
-    &lt;/a&gt;
-    第二步：配置SS Local连接的SS Server服务器
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;点击“服务器设置”&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-server-1.png&#34; alt=&#34;Step2.1&#34;&gt;&lt;/p&gt;
-&lt;p&gt;将配置好的服务填入其中，注意的是“地址”／“端口号”／“加密方法”／“密码”信息需要与SS Server服务端的设置匹配。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-server-2.png&#34; alt=&#34;Step2.2&#34;&gt;&lt;/p&gt;
-&lt;p&gt;配置完成后记得在服务器列表中选择刚刚配置好的那项。&lt;/p&gt;
-&lt;h3 id=&#34;第三步设置高级服务&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%ac%ac%e4%b8%89%e6%ad%a5%e8%ae%be%e7%bd%ae%e9%ab%98%e7%ba%a7%e6%9c%8d%e5%8a%a1&#34;&gt;
-        ##
-    &lt;/a&gt;
-    第三步：设置“高级服务”
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;国内用户最好指定&amp;quot;GFW LIST URL&amp;quot;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-advanced.png&#34; alt=&#34;Step3&#34;&gt;&lt;/p&gt;
-&lt;p&gt;注意，这里有一个&amp;quot;Local PAC Listen Port&amp;quot;信息，这个配置需要在下面一步使用。&lt;/p&gt;
-&lt;h3 id=&#34;第四步设置本地代理方式&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e7%ac%ac%e5%9b%9b%e6%ad%a5%e8%ae%be%e7%bd%ae%e6%9c%ac%e5%9c%b0%e4%bb%a3%e7%90%86%e6%96%b9%e5%bc%8f&#34;&gt;
-        ##
-    &lt;/a&gt;
-    第四步：设置本地代理方式
-&lt;/div&gt;
-&lt;/h3&gt;
-&lt;p&gt;设置本地代理方式之前最好先将GFW list更新一下&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-gfw-update.png&#34; alt=&#34;Step4.1&#34;&gt;&lt;/p&gt;
-&lt;p&gt;打开“系统偏好设置”-&amp;gt;“网络”-&amp;gt;“高级”-&amp;gt;“代理”，勾选“自动代理配置”，在URL中输入：http://127.0.0.1:8090/proxy.pac&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/2017/05/shadowsocks-NG-local-pac.png&#34; alt=&#34;Step4.2&#34;&gt;&lt;/p&gt;
-&lt;p&gt;完成这个设置后就已经可以进行科学上网了，系统访问GFW屏蔽的服务时就会使用配置好的代理服务器。&lt;/p&gt;
-&lt;h1 id=&#34;使用kcptun加速&#34; &gt;
-&lt;div&gt;
-    &lt;a href=&#34;#%e4%bd%bf%e7%94%a8kcptun%e5%8a%a0%e9%80%9f&#34;&gt;
-        ##
-    &lt;/a&gt;
-    使用kcptun加速
-&lt;/div&gt;
-&lt;/h1&gt;
-&lt;p&gt;有些时候shadowsocks搭建的主服务器在国外机房中的延迟较大，这样会影响访问速度，这时可以使用一些手段为访问加速，比如&amp;quot;kcptun&amp;quot;。&lt;/p&gt;
-&lt;p&gt;TBC&lt;/p&gt;
-</description>
+      
+      <guid>https://www.singleye.net/2017/05/%E5%A6%82%E4%BD%95%E5%9C%A8centos%E4%B8%8A%E9%83%A8%E7%BD%B2shadowsocks%E6%9C%8D%E5%8A%A1/</guid>
+      <description>shadowsocks简单介绍 shadowsocks是目前较流行的一种科学上网服务。他的工作原理也比较简单，shadowsocks本质上是socks5代理技术，然而架构方式上将单服务节点拆分成两个子服务：SS Local和SS Server。
+工作过程如下：
+ 当本地请求端需要访问时首先将请求发送至本地SS Local服务 SS Local将数据加密在网络上传输到SS Server，由于信息经过加密不会被GFW提取到特征数据，因此也就翻了墙 SS Server收到数据后解密并访问真正的远程服务资源 远程返回数据返回到SS Server SS Server将数据加密传输给SS Local SS Local收到返回数据解密后发给本地请求端  部署shadow socks服务 (SS Server) 安装服务 shadowsocks服务的部署也极为简单，已经有完善的脚本帮助安装，需要稍微注意下的就是安装过程需要root权限，安装方法如下：
+# wget --no-check-certificate -O shadowsocks.sh https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks.sh # sh shadowsocks.sh  配置服务 shadowsocks的配置文件是&amp;rsquo;/etc/shadowsocks.json&amp;rsquo;，一个简单的配置文件的写法可以参考这个例子。
+# cat /etc/shadowsocks.json { &amp;quot;server&amp;quot;:&amp;quot;0.0.0.0&amp;quot;, &amp;quot;port_password&amp;quot;:{ &amp;quot;8989&amp;quot;:&amp;quot;password1&amp;quot;, &amp;lt;--- 第一个服务端口及访问密码 &amp;quot;8990&amp;quot;:&amp;quot;password2&amp;quot; &amp;lt;--- 多个服务端口指定方法 }, &amp;quot;timeout&amp;quot;:300, &amp;quot;method&amp;quot;:&amp;quot;aes-256-cfb&amp;quot;, &amp;lt;--- 注意这个加密方式，配置SS Local需要使用 &amp;quot;fast_open&amp;quot;:false, &amp;quot;workers&amp;quot;:2 }  多数情况下一个端口就可以满足使用了，这个例子中提供了多个访问端口的配置方法，具体用法可以根据自己的实际情况配置。
+启动服务 服务安装过程同时会安装一个启动脚本&amp;rsquo;/etc/init.d/shadowsocks&amp;rsquo;，启动方法也很简单。
+# service shadowsocks start  为了确保每次系统启动后服务会自动运行最好将服务使用chkconfig进行启用，这样就不必担心系统被运营商或者管理员维护重启后无法使用了。</description>
     </item>
     
   </channel>
