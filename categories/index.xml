@@ -345,6 +345,15 @@
     </item>
     
     <item>
+      <title>Ocr</title>
+      <link>https://www.singleye.net/categories/ocr/</link>
+      <pubDate>Tue, 10 Sep 2024 23:21:33 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/ocr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Pcl</title>
       <link>https://www.singleye.net/categories/pcl/</link>
       <pubDate>Fri, 22 Dec 2023 16:40:06 +0800</pubDate>
@@ -374,7 +383,7 @@
     <item>
       <title>Projects</title>
       <link>https://www.singleye.net/categories/projects/</link>
-      <pubDate>Fri, 27 Jan 2017 17:10:07 +0800</pubDate>
+      <pubDate>Tue, 10 Sep 2024 23:21:33 +0800</pubDate>
       
       <guid>https://www.singleye.net/categories/projects/</guid>
       <description></description>
@@ -392,7 +401,7 @@
     <item>
       <title>Robotics</title>
       <link>https://www.singleye.net/categories/robotics/</link>
-      <pubDate>Sun, 09 Jun 2024 17:01:36 +0800</pubDate>
+      <pubDate>Tue, 16 Jul 2024 14:22:37 +0800</pubDate>
       
       <guid>https://www.singleye.net/categories/robotics/</guid>
       <description></description>
@@ -431,6 +440,15 @@
       <pubDate>Sun, 15 Jan 2017 22:08:38 +0800</pubDate>
       
       <guid>https://www.singleye.net/categories/shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Slam</title>
+      <link>https://www.singleye.net/categories/slam/</link>
+      <pubDate>Tue, 16 Jul 2024 14:22:37 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/categories/slam/</guid>
       <description></description>
     </item>
     

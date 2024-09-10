@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.singleye.net/2024/09/ocr-%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%E4%BA%86/</loc>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/2024/07/slam-%E7%AE%97%E6%B3%95%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88%E6%96%B9%E6%B3%95/</loc>
+    <lastmod>2024-07-16T14:22:37+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://www.singleye.net/2024/06/%E6%AC%A7%E6%8B%89%E8%A7%92%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%B4%E8%A7%92%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/</loc>
     <lastmod>2024-06-09T17:01:36+08:00</lastmod>
   </url>
@@ -398,7 +408,7 @@
   
   <url>
     <loc>https://www.singleye.net/post/</loc>
-    <lastmod>2019-07-08T22:38:07+08:00</lastmod>
+    <lastmod>2024-07-16T14:22:37+08:00</lastmod>
   </url>
   
   <url>
@@ -838,6 +848,12 @@
   </url>
   
   <url>
+    <loc>https://www.singleye.net/tags/fusion/</loc>
+    <lastmod>2024-07-16T14:22:37+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://www.singleye.net/tags/gc/</loc>
     <lastmod>2023-11-21T14:40:28+08:00</lastmod>
     <priority>0</priority>
@@ -1256,6 +1272,12 @@
   </url>
   
   <url>
+    <loc>https://www.singleye.net/tags/nuxt3/</loc>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://www.singleye.net/tags/nvidia/</loc>
     <lastmod>2019-07-08T22:38:07+08:00</lastmod>
     <priority>0</priority>
@@ -1270,6 +1292,18 @@
   <url>
     <loc>https://www.singleye.net/tags/objecttracking/</loc>
     <lastmod>2024-06-06T09:26:40+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/tags/ocr/</loc>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/categories/ocr/</loc>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -1333,12 +1367,13 @@
   
   <url>
     <loc>https://www.singleye.net/categories/projects/</loc>
-    <lastmod>2017-01-27T17:10:07+08:00</lastmod>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://www.singleye.net/post/projects/</loc>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
   </url>
   
   <url>
@@ -1432,7 +1467,7 @@
   
   <url>
     <loc>https://www.singleye.net/categories/robotics/</loc>
-    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
+    <lastmod>2024-07-16T14:22:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -1553,6 +1588,18 @@
   <url>
     <loc>https://www.singleye.net/tags/simplejwt/</loc>
     <lastmod>2023-12-10T11:40:29+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/tags/slam/</loc>
+    <lastmod>2024-07-16T14:22:37+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.singleye.net/categories/slam/</loc>
+    <lastmod>2024-07-16T14:22:37+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -1870,7 +1917,7 @@
   
   <url>
     <loc>https://www.singleye.net/</loc>
-    <lastmod>2024-06-09T17:01:36+08:00</lastmod>
+    <lastmod>2024-09-10T23:21:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   

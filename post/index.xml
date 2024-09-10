@@ -6,10 +6,19 @@
     <description>Recent content on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 08 Jul 2019 22:38:07 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 16 Jul 2024 14:22:37 +0800</lastBuildDate>
     
 	<atom:link href="https://www.singleye.net/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>SLAM 算法传感器融合方法</title>
+      <link>https://www.singleye.net/2024/07/slam-%E7%AE%97%E6%B3%95%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Tue, 16 Jul 2024 14:22:37 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/2024/07/slam-%E7%AE%97%E6%B3%95%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;p&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>VMware ESXi 6.7.0 update2 使用 GPU Passthrough 模式的坑</title>

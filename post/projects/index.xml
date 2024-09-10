@@ -6,9 +6,25 @@
     <description>Recent content in Projects on 好奇心是探索未知世界的钥匙</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
+    <lastBuildDate>Tue, 10 Sep 2024 23:21:33 +0800</lastBuildDate>
     
 	<atom:link href="https://www.singleye.net/post/projects/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>OCR 项目上线了</title>
+      <link>https://www.singleye.net/2024/09/ocr-%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%E4%BA%86/</link>
+      <pubDate>Tue, 10 Sep 2024 23:21:33 +0800</pubDate>
+      
+      <guid>https://www.singleye.net/2024/09/ocr-%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%E4%BA%86/</guid>
+      <description>最近我开发了一个 OCR 系统，并顺便学习了 Nuxt3，写了一个简单的前端页面。经过一番努力，终于将第一个版本成功上线！
+目前这个版本的功能：
+ 文字识别并不稀奇，但目前这个工具尤其擅长识别非常长图 页面上可以查看、选择、编辑识别结果 识别结果还可以进行二次编辑和下载，方便快捷  项目链接奉上，欢迎来体验一下！
+https://smartocr.singleye.net
+后续还会持续迭代，有建议或需求欢迎给我留言或发邮件。
+另外，这次还试用了一个 AI 生成页面的工具：https://v0.dev
+通过简单的描述就能自动生成页面，节省了设计和部分代码的工作，对个人开发者来说真是个提高效率的利器！</description>
+    </item>
     
   </channel>
 </rss>

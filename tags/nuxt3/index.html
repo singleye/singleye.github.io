@@ -1,0 +1,576 @@
+
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.49 with theme Tranquilpeak 0.4.3-BETA">
+    <title>Nuxt3</title>
+    <meta name="author" content="singleye">
+    <meta name="keywords" content="">
+
+    <link rel="icon" href="https://www.singleye.net/favicon.png">
+    
+      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://www.singleye.net/tags/nuxt3/index.xml">
+    
+
+    
+    <meta name="description" content="www.singleye.net">
+    <meta property="og:description" content="www.singleye.net">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Nuxt3">
+    <meta property="og:url" content="/tags/nuxt3/">
+    <meta property="og:site_name" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="好奇心是探索未知世界的钥匙">
+    <meta name="twitter:description" content="www.singleye.net">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://www.singleye.net/css/style-xlk5y0ryj5axy7jbwodqvhtodmk0fc90eewtlacey1uvrjqw1eaqwgcyz4xb.min.css" />
+    
+    
+
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-90087618-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\$', '\$']]                  
+    }
+  };
+</script>
+
+
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="2">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://www.singleye.net/">好奇心是探索未知世界的钥匙</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://www.singleye.net/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="2">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://www.singleye.net/#about">
+          <img class="sidebar-profile-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">singleye</h4>
+        
+          <h5 class="sidebar-profile-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://smartocr.singleye.net" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-print"></i>
+      
+      <span class="sidebar-button-desc">Smart OCR</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/singleye" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.singleye.net/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+        
+
+      
+      <div id="main" data-behavior="2"
+        class="
+               hasCoverMetaIn
+               ">
+        
+          <section class="postShorten-group main-content-wrap">
+            
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-right" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://www.singleye.net/2024/09/ocr-%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%E4%BA%86/">
+          OCR 项目上线了
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2024-09-10T23:21:33&#43;08:00">
+        
+  九月 10, 2024
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://www.singleye.net/categories/projects">Projects</a>, 
+    
+      <a class="category-link" href="https://www.singleye.net/categories/ocr">OCR</a>
+    
+  
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+        
+        上线了一个OCR系统，支持图片识别、编辑与下载，还试用了AI生成页面工具，提高了开发效率。快来体验吧！
+      <p>
+        <a href="https://www.singleye.net/2024/09/ocr-%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%E4%BA%86/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+            
+
+          </section>
+        
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2024 singleye. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/avatar.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">singleye</h4>
+    
+      <div id="about-card-bio"><strong>Email:</strong> <a href="mailto:singleye512@gmail.com">singleye512@gmail.com</a></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Product &amp; Engineering
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/09/ocr-%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%E4%BA%86/">
+                <h3 class="media-heading">OCR 项目上线了</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">最近我开发了一个 OCR 系统，并顺便学习了 Nuxt3，写了一个简单的前端页面。经过一番努力，终于将第一个版本成功上线！
+目前这个版本的功能：
+ 文字识别并不稀奇，但目前这个工具尤其擅长识别非常长图 页面上可以查看、选择、编辑识别结果 识别结果还可以进行二次编辑和下载，方便快捷  项目链接奉上，欢迎来体验一下！
+https://smartocr.singleye.net
+后续还会持续迭代，有建议或需求欢迎给我留言或发邮件。
+另外，这次还试用了一个 AI 生成页面的工具：https://v0.dev
+通过简单的描述就能自动生成页面，节省了设计和部分代码的工作，对个人开发者来说真是个提高效率的利器！</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/07/slam-%E7%AE%97%E6%B3%95%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88%E6%96%B9%E6%B3%95/">
+                <h3 class="media-heading">SLAM 算法传感器融合方法</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jul 7, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E6%AC%A7%E6%8B%89%E8%A7%92%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E5%9B%9B%E5%85%83%E6%95%B0%E8%BD%B4%E8%A7%92%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/">
+                <h3 class="media-heading">欧拉角、旋转矩阵、四元数、轴角相互转换</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/06/%E5%9F%BA%E4%BA%8E-kalman-filter-%E7%9A%84%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">
+                <h3 class="media-heading">基于 Kalman filter 的目标跟踪</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/%E5%9C%A8-apple-silicon-m3-max-%E4%B8%8A%E5%AF%B9-llama2-%E8%BF%9B%E8%A1%8C%E5%BE%AE%E8%B0%83/">
+                <h3 class="media-heading">在 Apple silicon (M3 Max) 上对 Llama2 进行微调</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/04/tmux-ai-%E5%8A%A9%E6%89%8B/">
+                <h3 class="media-heading">tmux AI 助手</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">日产开发时很喜欢用 tmux，最近写了一个 tmux 的 AI 插件，这个插件可以使用 ollama 支持的 LLM 生成 shell / 编程相关的内容，会对日常使用 CLI 的同学们带来一些帮助。
+使用方法：  + Q 调出命令输入栏，在输入栏中写好问题回车，之后 tmux 会把生成的答案在新的窗口中显示出来。
+项目链接： https://github.com/singleye/tmux-ai-helper</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2024/03/%E4%BD%BF%E7%94%A8-roswaitforshutdown-%E5%AF%BC%E8%87%B4-dynamic_reconfigureserver-%E6%97%A0%E6%B3%95%E6%AD%A3%E5%B8%B8%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE%E6%9B%B4%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98/">
+                <h3 class="media-heading">使用 ros::waitForShutdown() 导致 dynamic_reconfigure::Server 无法正常获取配置更新的问题</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2024
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/pcl-3d-%E7%A9%BA%E9%97%B4%E6%A3%80%E6%B5%8B%E5%B9%B3%E8%A1%8C%E5%9B%9B%E8%BE%B9%E5%BD%A2/">
+                <h3 class="media-heading">PCL 3D 空间检测平行四边形</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/javascript-var/let/const-%E6%AF%94%E8%BE%83/">
+                <h3 class="media-heading">javascript var/let/const 比较</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!--toc-->
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://www.singleye.net/2023/12/django-rest-framework-%E5%92%8C-simplejwt-%E7%9A%84%E7%B1%BB%E5%85%B3%E7%B3%BB/">
+                <h3 class="media-heading">django-rest-framework 和 simplejwt 的类关系</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2023
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         82 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('http://singleye-public-read.oss-cn-shanghai.aliyuncs.com/singleye.net/static/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://www.singleye.net/js/script-id5yjczimn7hvkl7hmhqf7f2rihleozgxiext4jwyj7u507rwphg9wvfbks4.min.js"></script>
+
+
+
+
+
+
+    
+  </body>
+</html>
+
